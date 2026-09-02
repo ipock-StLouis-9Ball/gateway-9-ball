@@ -1,6 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+<svg xmlns="http://www.w3/2000/svg.org" viewBox="0 0 1600 900" width="100%" height="100%">
   <defs>
-    <!-- White Oak Wood Gradients for 3D Rail Texture -->
     <linearGradient id="white-oak-top" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#ab9e87" />
       <stop offset="25%" stop-color="#e8dfcc" />
@@ -33,7 +32,6 @@
       <stop offset="100%" stop-color="#ab9e87" />
     </linearGradient>
 
-    <!-- HIGH-SHINE POLISHED SILVER GRADIENT (Outer Plates & Rail Caps) -->
     <linearGradient id="polished-silver-bezel" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#737e8c" />
       <stop offset="12%" stop-color="#cfd6df" />
@@ -45,7 +43,6 @@
       <stop offset="100%" stop-color="#2a3038" />
     </linearGradient>
 
-    <!-- 24 KARAT SHINY POLISHED GOLD GRADIENT (Inner Pockets) -->
     <linearGradient id="polished-gold-24k" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#61460b" />
       <stop offset="15%" stop-color="#e6b73c" />
@@ -54,7 +51,6 @@
       <stop offset="100%" stop-color="#3d2b02" />
     </linearGradient>
 
-    <!-- GEMSTONE RADIAL GRADIENT FOR FACETED RUBIES -->
     <radialGradient id="ruby-gem" cx="35%" cy="35%" r="65%">
       <stop offset="0%" stop-color="#ff6b81" />
       <stop offset="30%" stop-color="#ff1e43" />
@@ -62,7 +58,6 @@
       <stop offset="100%" stop-color="#52000a" />
     </radialGradient>
 
-    <!-- Inner Cushion Bumper St. Louis Cardinals Red Neon Glow Filter -->
     <filter id="red-neon-filter" x="-30%" y="-30%" width="160%" height="160%">
       <feGaussianBlur in="SourceGraphic" stdDeviation="11" result="blur-wide" />
       <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur-med" />
@@ -78,7 +73,6 @@
       </feMerge>
     </filter>
 
-    <!-- 6600K Kelvin Daylight Outer Chassis Neon Glow Filter -->
     <filter id="kelvin-chassis-filter" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="blur-wide" />
       <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur-med" />
@@ -95,30 +89,13 @@
     </filter>
   </defs>
 
-  <!-- MASTER TRANSPARENCY MASK & CHASSIS INTERIOR FIELD -->
-  <path fill-rule="evenodd" fill="#4d4436" d="
-    M 100,100 L 1500,100 L 1500,800 L 100,800 Z 
-    M 180,240 
-    A 60,60 0 0,1 240,180 
-    L 750,180 
-    A 50,50 0 0,0 850,180 
-    L 1360,180 
-    A 60,60 0 0,1 1420,240 
-    L 1420,660 
-    A 60,60 0 0,1 1360,720 
-    L 850,720 
-    A 50,50 0 0,0 750,720 
-    L 240,720 
-    A 60,60 0 0,1 180,660 Z" />
+  <path fill-rule="evenodd" fill="#4d4436" d="M 100,100 L 1500,100 L 1500,800 L 100,800 Z M 180,240 A 60,60 0 0,1 240,180 L 750,180 A 50,50 0 0,0 850,180 L 1360,180 A 60,60 0 0,1 1420,240 L 1420,660 A 60,60 0 0,1 1360,720 L 850,720 A 50,50 0 0,0 750,720 L 240,720 A 60,60 0 0,1 180,660 Z" />
 
-  <!-- 6600K KELVIN DAYLIGHT EXTERIOR CHASSIS UNDERGLOW -->
-  <!-- Set out at the structural canvas edge, bleeding outward into the room space -->
   <g fill="none" stroke="#ebf3ff" stroke-width="5" filter="url(#kelvin-chassis-filter)" opacity="0.9">
     <rect x="98" y="98" width="1404" height="704" rx="42" stroke="#adcfff" stroke-width="6" />
     <rect x="100" y="100" width="1400" height="700" rx="40" />
   </g>
 
-  <!-- 3D WHITE OAK WOOD RAILS LAYOUT -->
   <path fill="url(#white-oak-top)" d="M 180,100 L 775,100 L 750,180 L 240,180 A 60,60 0 0,0 180,240 L 100,160 C 100,120 120,100 180,100 Z" />
   <path fill="url(#white-oak-top)" d="M 825,100 L 1420,100 C 1480,100 1500,120 1500,160 L 1420,240 A 60,60 0 0,0 1360,180 L 850,180 Z" />
   <path fill="url(#white-oak-bottom)" d="M 100,740 L 180,660 A 60,60 0 0,0 240,720 L 750,720 L 775,800 L 180,800 C 120,800 100,780 100,740 Z" />
@@ -126,7 +103,6 @@
   <path fill="url(#white-oak-left)" d="M 100,160 L 180,240 L 180,660 L 100,740 Z" />
   <path fill="url(#white-oak-right)" d="M 1420,240 L 1500,160 L 1500,740 L 1420,660 Z" />
 
-  <!-- RUBY GEMSTONE DIAMOND SIGHTS -->
   <g fill="url(#ruby-gem)" stroke="#3b1116" stroke-width="1.2">
     <polygon points="135,300 140,306 135,312 130,306" />
     <polygon points="135,450 140,456 135,462 130,456" />
@@ -148,8 +124,6 @@
     <polygon points="1280,765 1286,770 1292,765 1286,760" />
   </g>
 
-  <!-- TWO-PIECE METALLIC POCKETS ACCENTS -->
-  <!-- Outer Covers: Highly Polished Mirror Silver -->
   <g fill="url(#polished-silver-bezel)" stroke="#ffffff" stroke-width="0.5">
     <path d="M 100,160 C 100,120 120,100 180,100 L 205,125 A 50,50 0 0,0 125,205 Z" />
     <path d="M 1420,100 C 1480,100 1500,120 1500,160 L 1475,205 A 50,50 0 0,0 1395,125 Z" />
@@ -159,7 +133,6 @@
     <path d="M 765,800 L 835,800 L 845,765 A 45,45 0 0,0 755,765 Z" />
   </g>
 
-  <!-- Inner Pockets Cores: 24k Shiny Gold -->
   <g fill="url(#polished-gold-24k)" stroke="#ffffff" stroke-width="0.3">
     <path d="M 125,205 A 50,50 0 0,1 205,125 L 200,120 A 45,45 0 0,0 120,200 Z" />
     <path d="M 1395,125 A 50,50 0 0,1 1475,205 L 1480,200 A 45,45 0 0,0 1400,120 Z" />
@@ -169,8 +142,6 @@
     <path d="M 755,765 A 45,45 0 0,1 845,765 L 840,770 A 40,40 0 0,0 760,770 Z" />
   </g>
 
-  <!-- HIGH-INTENSITY INNER CUSHION ST. LOUIS CARDINALS RED NEON LIGHTS -->
-  <!-- Perfectly targeted beneath the bumper lip to cast illumination onto the felt -->
   <g fill="none" stroke="#C41E3A" stroke-width="4.5" filter="url(#red-neon-filter)">
     <path d="M 240,180 L 750,180" />
     <path d="M 850,180 L 1360,180" />
