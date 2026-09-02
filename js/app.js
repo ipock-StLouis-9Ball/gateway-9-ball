@@ -11,6 +11,8 @@ import { ECONOMY, STORE_ITEMS, TABLE_COLORS, BALL_SKINS, CUE_STICKS } from './co
 const screens = ['menu', 'lobby', 'store', 'wallet', 'game'];
 function show(name) {
   screens.forEach((s) => document.getElementById('screen-' + s).classList.toggle('hidden', s !== name));
+  const canvas = document.getElementById('game-canvas');
+  if (canvas) canvas.classList.toggle('hidden', name !== 'game');
   if (name === 'menu') refreshMenu();
   if (name === 'wallet') { document.getElementById('wd-result').textContent = ''; refreshWallet(); }
   if (name === 'store') refreshStore();
@@ -222,10 +224,9 @@ function updateHud(hud) {
   const t = document.getElementById('shot-timer');
   t.textContent = hud.shotTimer;
   t.parentElement.classList.toggle('warn', hud.shotTimer <= 8);
-  // Spring shows rest (uncharged) unless the player is actively dragging or snapping.
-  if (!cueCharging && !cueSnapping) {
-    document.getElementById('cue-power-fill').style.height = '0%';
-    positionCueStick(0);
+  // Power fill and handle at rest unless actively dragging
+  if (!cueCharging) {
+    updatePowerUI(0);
   }
   const banner = document.getElementById('msg-banner');
   if (hud.message) { banner.textContent = hud.message; banner.classList.remove('hidden'); }
@@ -251,91 +252,61 @@ function updateHud(hud) {
 }
 
 // ---------- Game controls ----------
-let cueCharging = false;     // true while the player is pulling the cue stick
-let cueStartY = 0;          // pointer Y at charge start
-let cuePowerAtStart = 0;   // power when the current drag began
+let cueCharging = false;     // true while the player is pulling the power meter
+let cueStartY = 0;          // pointer Y at pull start
 let pushOutMode = false;   // when true, the next release fires a push-out
-let cueSnapping = false;   // true while the snap-forward release animation plays
 
-// Translate the cue-stick graphic down and compress the spring to reflect the charge.
-function positionCueStick(powerFrac) {
-  const stick = document.getElementById('cue-stick');
-  const spring = document.getElementById('cue-spring');
-  const track = document.getElementById('cue-stick-track');
-  if (!stick || !track) return;
-  const maxPull = track.clientHeight * 0.26; // pullback range
-  const p = Math.max(0, Math.min(1, powerFrac));
-  const pull = p * maxPull;
-  stick.style.transition = 'transform 0.04s linear';
-  stick.style.transform = `translate(-50%, ${pull}px)`;
-  if (spring) {
-    spring.style.transition = 'height 0.04s linear';
-    spring.style.height = (55 * (1 - p * 0.72)) + '%'; // compress the coil as power rises
-  }
-}
-
-// Quick snap-forward animation on release (spring expands, cue thrusts up).
-function snapCueForward() {
-  const stick = document.getElementById('cue-stick');
-  const spring = document.getElementById('cue-spring');
+function updatePowerUI(powerFrac) {
   const fill = document.getElementById('cue-power-fill');
-  if (!stick) return;
-  cueSnapping = true;
-  const ease = 'cubic-bezier(0.18, 0.9, 0.32, 1)';
-  stick.style.transition = `transform 0.10s ${ease}`;
-  stick.style.transform = 'translate(-50%, -16px)';
-  if (spring) { spring.style.transition = `height 0.10s ${ease}`; spring.style.height = '72%'; }
-  if (fill) fill.style.height = '0%';
-  setTimeout(() => {
-    if (cueCharging) { cueSnapping = false; return; }
-    stick.style.transition = 'transform 0.16s ease-out';
-    stick.style.transform = 'translate(-50%, 0)';
-    if (spring) { spring.style.transition = 'height 0.16s ease-out'; spring.style.height = '55%'; }
-    if (fill) fill.style.height = '0%';
-    cueSnapping = false;
-  }, 120);
+  const handle = document.getElementById('cue-power-handle');
+  const p = Math.max(0, Math.min(1, powerFrac));
+  const pct = (p * 100) + '%';
+  if (fill) fill.style.height = pct;
+  if (handle) handle.style.bottom = pct;
 }
 
 function bindGameControls() {
-  // --- Vertical cue-stick pullback mechanic ---
-  // Drag DOWN on the stick to charge; release fires the spring-strike.
+  // --- Solid vertical power bar pull-and-release mechanic ---
+  // Drag DOWN from initial point (or tap & drag anywhere along track) to charge power.
   const track = document.getElementById('cue-stick-track');
-  const fill = document.getElementById('cue-power-fill');
+
   const chargeFromEvent = (e) => {
     if (!game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
     const rect = track.getBoundingClientRect();
-    const maxPull = rect.height * 0.7; // drag range that maps to 0..100%
+    const maxPull = rect.height * 0.75; // drag range mapping to 100%
     const dy = Math.max(0, (e.clientY - cueStartY));
     let frac = Math.max(0, Math.min(1, dy / maxPull));
-    // Snap to the 25/50/75 marks when very close, for tactile feel.
-    for (const m of [0.25, 0.5, 0.75]) if (Math.abs(frac - m) < 0.035) frac = m;
+    // Magnetic snap to 25%, 50%, 75% markers
+    for (const m of [0.25, 0.5, 0.75]) {
+      if (Math.abs(frac - m) < 0.035) frac = m;
+    }
     game.setPower(frac);
-    fill.style.height = (frac * 100) + '%';
-    positionCueStick(frac);
+    updatePowerUI(frac);
   };
+
   track.addEventListener('pointerdown', (e) => {
     if (!game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
     cueCharging = true;
     cueStartY = e.clientY;
-    cuePowerAtStart = game.power;
     track.setPointerCapture(e.pointerId);
     chargeFromEvent(e);
   });
-  track.addEventListener('pointermove', (e) => { if (cueCharging) chargeFromEvent(e); });
+
+  track.addEventListener('pointermove', (e) => {
+    if (cueCharging) chargeFromEvent(e);
+  });
+
   const releaseCue = () => {
     if (!cueCharging) return;
     cueCharging = false;
     const firedPower = game.power;
-    // Require a minimum pull so a tap doesn't fire a weak shot.
-    if (firedPower >= 0.12 && game.state === 'AIMING' && game.currentPlayer === 0) {
-      snapCueForward();
+    if (firedPower >= 0.10 && game.state === 'AIMING' && game.currentPlayer === 0) {
       if (pushOutMode) { pushOutMode = false; game.pushOut(); }
       else game.shoot();
-    } else {
-      // Not enough pull — ease the stick back to rest.
-      setTimeout(() => { if (!cueCharging) { document.getElementById('cue-power-fill').style.height = '0%'; positionCueStick(0); } }, 30);
     }
+    updatePowerUI(0);
   };
+
   track.addEventListener('pointerup', releaseCue);
   track.addEventListener('pointercancel', releaseCue);
 

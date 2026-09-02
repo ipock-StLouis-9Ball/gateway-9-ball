@@ -56,25 +56,26 @@ export class Renderer {
   }
 
   resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = window.devicePixelRatio || 1;
     const rect = this.canvas.getBoundingClientRect();
-    this.canvas.width = Math.floor(rect.width * dpr);
-    this.canvas.height = Math.floor(rect.height * dpr);
+    this.canvas.width = Math.round(rect.width * dpr);
+    this.canvas.height = Math.round(rect.height * dpr);
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.imageSmoothingQuality = 'high';
     this.cssW = rect.width;
     this.cssH = rect.height;
     this._computeTableRect();
     this._woodPattern = null; // rebuild pattern at new scale
   }
 
-  // Table fills the canvas (fit + center). The container background is the
-  // cherry wood gradient, so any leftover margin blends — no dark padding.
+  // Table fills the left 80% of canvas (right 20% is controls overlay).
   _computeTableRect() {
     const W = TABLE.width;
     const H = TABLE.height;
     const rail = TABLE.railThickness;
     const tableAspect = (W + rail * 2) / (H + rail * 2);
-    const availW = this.cssW;
+    const availW = this.cssW * 0.8;
     const availH = this.cssH;
     let drawW = availW;
     let drawH = drawW / tableAspect;
@@ -114,6 +115,15 @@ export class Renderer {
   draw(balls) {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.cssW, this.cssH);
+
+    // Rich cherry-wood background gradient behind table area (left 80%)
+    const bg = ctx.createLinearGradient(0, 0, 0, this.cssH);
+    bg.addColorStop(0, '#96562e');
+    bg.addColorStop(0.5, '#6e3c20');
+    bg.addColorStop(1, '#4a2814');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, this.cssW * 0.8, this.cssH);
+
     this._drawTable();
     this._drawBalls(balls);
     if (this.aim) this._drawAim(balls);
@@ -135,9 +145,9 @@ export class Renderer {
 
     // 1. Table drop shadow (soft, grounded depth).
     ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,0.55)';
-    ctx.shadowBlur = 24;
-    ctx.shadowOffsetY = 8;
+    ctx.shadowColor = 'rgba(0,0,0,0.65)';
+    ctx.shadowBlur = 32;
+    ctx.shadowOffsetY = 10;
     this._roundRect(tr.x, tr.y, tr.w, tr.h, r * 0.5);
     ctx.fillStyle = cols.rail;
     ctx.fill();
@@ -156,6 +166,13 @@ export class Renderer {
       this._roundRect(tr.x, tr.y, tr.w, tr.h, r * 0.5);
       ctx.fill();
     }
+
+    // Metallic gold inlay trim around inner rail edge
+    ctx.save();
+    ctx.strokeStyle = 'rgba(232, 183, 90, 0.45)';
+    ctx.lineWidth = Math.max(1.5, r * 0.05);
+    ctx.strokeRect(px - r * 0.1, py - r * 0.1, pw + r * 0.2, ph + r * 0.2);
+    ctx.restore();
 
     // 3. Metallic pocket plates (under the rail edge, around each pocket).
     if (this.ready && this.imgs.plate && this.imgs.plate.complete) {
@@ -347,17 +364,33 @@ export class Renderer {
     if (this.ready && img && img.complete && img.naturalWidth) {
       ctx.drawImage(img, p.x - rp, p.y - rp, rp * 2, rp * 2);
     } else {
-      // Fallback: flat shaded circle while assets load.
+      // High-grade 3D sphere fallback with multi-stop radial gradient
       const base = b.id === CUE_ID ? '#f7f7f0' : (BALL_COLORS[b.id] || '#fff');
-      const g = ctx.createRadialGradient(p.x - rp * 0.3, p.y - rp * 0.3, rp * 0.1, p.x, p.y, rp);
-      g.addColorStop(0, this._lighten(base, 0.4));
-      g.addColorStop(0.5, base);
-      g.addColorStop(1, this._darken(base, 0.4));
+      const g = ctx.createRadialGradient(p.x - rp * 0.35, p.y - rp * 0.35, rp * 0.1, p.x, p.y, rp);
+      g.addColorStop(0, '#ffffff');
+      g.addColorStop(0.25, this._lighten(base, 0.35));
+      g.addColorStop(0.75, base);
+      g.addColorStop(1, this._darken(base, 0.45));
       ctx.fillStyle = g;
       ctx.beginPath();
       ctx.arc(p.x, p.y, rp, 0, Math.PI * 2);
       ctx.fill();
     }
+
+    // Realistic 3D glossy specular lighting highlight overlay on all balls
+    ctx.save();
+    const hl = ctx.createRadialGradient(
+      p.x - rp * 0.3, p.y - rp * 0.35, rp * 0.05,
+      p.x - rp * 0.15, p.y - rp * 0.15, rp * 0.75
+    );
+    hl.addColorStop(0, 'rgba(255, 255, 255, 0.55)');
+    hl.addColorStop(0.4, 'rgba(255, 255, 255, 0.15)');
+    hl.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = hl;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, rp, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
   }
 
   // Clean 2D vector aim with true tangent-line physics:

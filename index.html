@@ -18,6 +18,9 @@
     <div>Rotate your device to landscape</div>
   </div>
 
+  <!-- Edge-to-edge Direct Child Game Canvas -->
+  <canvas id="game-canvas" class="hidden"></canvas>
+
   <!-- ================= ST. LOUIS MAIN MENU ================= -->
   <section id="screen-menu" class="screen menu-screen">
     <div class="menu-bg"></div>
@@ -122,12 +125,7 @@
 
   <!-- ================= GAME ================= -->
   <section id="screen-game" class="screen hidden game-screen">
-    <div class="game-stage">
-      <div class="table-wrap">
-        <canvas id="game-canvas"></canvas>
-      </div>
-
-      <div class="controls-col">
+    <div class="controls-col">
         <div class="cc-top">
           <button id="game-menu" class="icon-btn cc-menu" title="Menu">☰</button>
           <button id="pushout-btn" class="pushout-pill hidden" title="Available after a legal break">Push Out</button>
@@ -146,19 +144,13 @@
 
         <div class="cue-spring-wrap">
           <div class="cue-power-scale">
-            <span class="cue-mark" data-pct="75">75</span>
-            <span class="cue-mark" data-pct="50">50</span>
-            <span class="cue-mark" data-pct="25">25</span>
+            <div class="cue-mark-row" data-pct="75"><span class="cue-mark">75%</span><span class="cue-tick"></span></div>
+            <div class="cue-mark-row" data-pct="50"><span class="cue-mark">50%</span><span class="cue-tick"></span></div>
+            <div class="cue-mark-row" data-pct="25"><span class="cue-mark">25%</span><span class="cue-tick"></span></div>
           </div>
           <div class="cue-stick-track" id="cue-stick-track">
             <div class="cue-power-fill" id="cue-power-fill"></div>
-            <div class="cue-spring" id="cue-spring">
-              <svg viewBox="0 0 40 200" preserveAspectRatio="none" aria-hidden="true"><path d="M20,0 L0,14 L40,28 L0,42 L40,56 L0,70 L40,84 L0,98 L40,112 L0,126 L40,140 L0,154 L40,168 L0,182 L40,196 L20,200"/></svg>
-            </div>
-            <div class="cue-stick" id="cue-stick">
-              <div class="cue-tip"></div>
-              <div class="cue-shaft"></div>
-            </div>
+            <div class="cue-power-handle" id="cue-power-handle"></div>
           </div>
         </div>
 
@@ -172,7 +164,6 @@
           <div class="turn-dot" id="p2-turn"></div>
         </div>
       </div>
-    </div>
 
     <!-- Push-out decision (take or pass back) -->
     <div id="push-decision" class="modal hidden">
