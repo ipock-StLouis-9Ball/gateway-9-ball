@@ -39,7 +39,7 @@ export const ECONOMY = {
 export const TABLE = {
   width: 100, // playfield width (long axis), inches
   height: 50, // playfield height (short axis), inches
-  railThickness: 5,
+  railThickness: 7.5,
   ballRadius: 1.125, // 2.25" diameter regulation ball
   pocketRadius: 2.4, // pocket mouth capture radius
   cushionRestitution: 0.85, // K-66 rubber: ~85% energy retained off rail
@@ -66,7 +66,7 @@ export const TABLE_COLORS = {
   classic: { felt: '#1a6b3a', rail: '#3a2418', railEdge: '#5a3624' },
   tournament: { felt: '#16557f', rail: '#2a1d12', railEdge: '#4a2e1c' },
   // Maroon cloth with medium cherry wood rails (the requested look).
-  maroon: { felt: '#6b1f2b', rail: '#7a3b22', railEdge: '#5a2a18', cushion: '#5a1a24', plate: '#c9b074' },
+  maroon: { felt: '#800d0d', rail: '#3d1c06', railEdge: '#5a2a18', cushion: '#5c1616', plate: '#c9b074' },
   crimson: { felt: '#7a1f2e', rail: '#1d1410', railEdge: '#3a2620' },
   midnight: { felt: '#1d2a4a', rail: '#0d0f1a', railEdge: '#222638' },
 };
