@@ -29,7 +29,7 @@ export class Game {
     this.aimAngle = 0;
     this.power = 0.6;
     this.english = { x: 0, y: 0 };
-    this.shotTimer = 30;
+    this.shotTimer = 45;
     this.lastTime = 0;
     this.accumulator = 0;
     this.running = false;
@@ -61,7 +61,7 @@ export class Game {
     this.aimAngle = 0;
     this.power = 0.6;
     this.english = { x: 0, y: 0 };
-    this.shotTimer = 30;
+    this.shotTimer = 45;
     this.isBreakShot = true;
     this.pushOutAvailable = false;
     this.pendingPushDecision = null;
@@ -297,7 +297,7 @@ export class Game {
 
     if (outcome.continueShooting) {
       this.state = this.currentPlayer === 1 ? 'AI_THINKING' : 'AIMING';
-      this.shotTimer = 30;
+      this.shotTimer = 45;
       this.message = this.currentPlayer === 0 ? 'Nice shot — continue' : 'Opponent continues';
       this.aiTimer = 1.4;
       this._updateAim();
@@ -325,7 +325,7 @@ export class Game {
       this.state = this.currentPlayer === 1 ? 'AI_THINKING' : 'AIMING';
       this.aiTimer = 1.2;
     }
-    this.shotTimer = 30;
+    this.shotTimer = 45;
     this.aimAngle = 0;
     this._updateAim();
     this._pushHud();
@@ -337,7 +337,7 @@ export class Game {
     this.pendingPushDecision = null;
     this.state = 'AIMING';
     this.message = 'You take the shot';
-    this.shotTimer = 30;
+    this.shotTimer = 45;
     this._updateAim();
     this._pushHud();
   }
@@ -349,7 +349,7 @@ export class Game {
     this.state = pusher === 1 ? 'AI_THINKING' : 'AIMING';
     this.aiTimer = 1.4;
     this.message = pusher === 0 ? 'You passed back' : 'Opponent passes back';
-    this.shotTimer = 30;
+    this.shotTimer = 45;
     this._updateAim();
     this._pushHud();
   }

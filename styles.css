@@ -178,12 +178,17 @@ body {
 
 .icon-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 50%; width: 36px; height: 36px; font-size: 16px; cursor: pointer; flex-shrink: 0; }
 
-/* Control column: right 20%, compact stack. */
+/* Control column: right 20%, grid layout. */
 .controls-col {
-  flex: 0 0 20%; min-width: 0; height: 100%; display: flex; flex-direction: column;
-  gap: 6px; padding: 8px 6px; background: rgba(0,0,0,0.32); border-left: 1px solid var(--border);
+  flex: 0 0 20%; min-width: 0; height: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto 1fr auto auto;
+  gap: 6px; padding: 8px 6px;
+  background: #0b1220; border-left: 1px solid var(--border);
+  align-items: center;
 }
-.cc-top { display: flex; align-items: center; gap: 6px; }
+.cc-top { grid-column: 2; grid-row: 1; display: flex; align-items: center; gap: 6px; }
 .cc-menu { width: 32px; height: 32px; font-size: 15px; }
 .pushout-pill {
   background: transparent; color: var(--arch-gold); border: 1.5px solid var(--arch-gold);
@@ -194,6 +199,8 @@ body {
 
 /* Compact player cards for the narrow column. */
 .player-card { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 5px 6px; position: relative; flex-shrink: 0; }
+.player-card.p1 { grid-column: 2; grid-row: 2; }
+.player-card.p2 { grid-column: 2; grid-row: 5; }
 .player-card.active { border-color: var(--arch-gold); box-shadow: 0 0 0 1px var(--arch-gold); }
 .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--cardinal), #6a0f1e); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #fff; flex-shrink: 0; }
 .pc-info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
@@ -203,14 +210,14 @@ body {
 .player-card.active .turn-dot { opacity: 1; box-shadow: 0 0 6px var(--arch-gold); }
 .foul-badge { position: absolute; bottom: 3px; right: 4px; font-size: 9px; font-weight: 700; color: var(--cardinal-bright); background: rgba(0,0,0,0.35); padding: 1px 4px; border-radius: 3px; }
 
-.timer-block { display: flex; flex-direction: column; align-items: center; gap: 2px; flex-shrink: 0; }
+.timer-block { grid-column: 2; grid-row: 3; display: flex; flex-direction: column; align-items: center; gap: 2px; flex-shrink: 0; justify-self: center; }
 .timer-ring { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 18px; color: var(--text); }
 .timer-ring.warn { border-color: var(--cardinal); color: var(--cardinal-bright); }
 .match-info { font-size: 9px; color: var(--text-muted); text-align: center; white-space: nowrap; overflow: hidden; }
 
 /* Spring-release cue control: vertical spring that compresses on drag-down,
    snaps forward on release. */
-.cue-spring-wrap { flex: 1; display: flex; flex-direction: row; align-items: stretch; gap: 3px; min-height: 0; width: 100%; justify-content: center; }
+.cue-spring-wrap { grid-column: 1; grid-row: 1 / -1; display: flex; flex-direction: row; align-items: stretch; gap: 3px; min-height: 0; width: 100%; justify-content: center; height: 100%; }
 .cue-power-scale { display: flex; flex-direction: column; justify-content: flex-end; width: 18px; padding-bottom: 4px; }
 .cue-mark { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.7); text-align: right; line-height: 1; flex: 1; display: flex; align-items: center; justify-content: flex-end; }
 .cue-mark::after { content: '—'; margin-left: 2px; opacity: 0.5; }
@@ -242,7 +249,7 @@ body {
 .cue-tip { width: 10px; height: 9px; border-radius: 50% 50% 0 0; background: linear-gradient(180deg, #e8e2d0, #b9a98a); flex-shrink: 0; }
 .cue-shaft { width: 8px; flex: 1; border-radius: 0 0 4px 4px; background: linear-gradient(90deg, #6b3a1e 0%, #c98a4a 45%, #7a4220 100%); }
 
-.english-ball { position: relative; width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #cfcfc8); border: 1px solid var(--border); flex-shrink: 0; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.4); align-self: center; }
+.english-ball { grid-column: 2; grid-row: 4; justify-self: center; position: relative; width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #cfcfc8); border: 1px solid var(--border); flex-shrink: 0; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.4); align-self: center; }
 .eb-dot { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: var(--cardinal); top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
 /* English popover */
