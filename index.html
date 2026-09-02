@@ -123,35 +123,16 @@
   <!-- ================= GAME ================= -->
   <section id="screen-game" class="screen hidden game-screen">
     <div class="game-stage">
-      <div class="game-left">
+      <div class="table-wrap">
         <canvas id="game-canvas"></canvas>
       </div>
 
       <div class="controls-col">
-        <button id="game-menu" class="icon-btn" title="Menu">☰</button>
-        <button id="pushout-btn" class="pushout-pill hidden" title="Available after a legal break">Push Out</button>
-        <div class="cue-stick-wrap">
-          <div class="cue-power-scale">
-            <span class="cue-mark" data-pct="75">75</span>
-            <span class="cue-mark" data-pct="50">50</span>
-            <span class="cue-mark" data-pct="25">25</span>
-          </div>
-          <div class="cue-stick-track" id="cue-stick-track">
-            <div class="cue-power-fill" id="cue-power-fill"></div>
-            <div class="cue-stick" id="cue-stick">
-              <div class="cue-tip"></div>
-              <div class="cue-shaft"></div>
-            </div>
-          </div>
+        <div class="cc-top">
+          <button id="game-menu" class="icon-btn cc-menu" title="Menu">☰</button>
+          <button id="pushout-btn" class="pushout-pill hidden" title="Available after a legal break">Push Out</button>
         </div>
-        <div class="english-block">
-          <button id="english-btn" class="english-ball" title="Spin / English">
-            <span class="eb-dot" id="eb-dot"></span>
-          </button>
-        </div>
-      </div>
 
-      <div class="game-right">
         <div class="player-card p1">
           <div class="avatar" id="p1-avatar">JP</div>
           <div class="pc-info"><span class="pc-name" id="p1-name">You</span><span class="pc-score" id="p1-score">0</span></div>
@@ -159,12 +140,31 @@
         </div>
 
         <div class="timer-block">
-          <div class="timer-ring">
-            <span id="shot-timer">30</span>
-          </div>
-          <span class="timer-label">SHOT TIMER</span>
+          <div class="timer-ring"><span id="shot-timer">30</span></div>
           <div class="match-info" id="match-info">Best of 3</div>
         </div>
+
+        <div class="cue-spring-wrap">
+          <div class="cue-power-scale">
+            <span class="cue-mark" data-pct="75">75</span>
+            <span class="cue-mark" data-pct="50">50</span>
+            <span class="cue-mark" data-pct="25">25</span>
+          </div>
+          <div class="cue-stick-track" id="cue-stick-track">
+            <div class="cue-power-fill" id="cue-power-fill"></div>
+            <div class="cue-spring" id="cue-spring">
+              <svg viewBox="0 0 40 200" preserveAspectRatio="none" aria-hidden="true"><path d="M20,0 L0,14 L40,28 L0,42 L40,56 L0,70 L40,84 L0,98 L40,112 L0,126 L40,140 L0,154 L40,168 L0,182 L40,196 L20,200"/></svg>
+            </div>
+            <div class="cue-stick" id="cue-stick">
+              <div class="cue-tip"></div>
+              <div class="cue-shaft"></div>
+            </div>
+          </div>
+        </div>
+
+        <button id="english-btn" class="english-ball" title="Spin / English">
+          <span class="eb-dot" id="eb-dot"></span>
+        </button>
 
         <div class="player-card p2">
           <div class="avatar" id="p2-avatar">AI</div>
