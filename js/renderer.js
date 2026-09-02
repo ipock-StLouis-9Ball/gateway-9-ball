@@ -57,6 +57,9 @@ export class Renderer {
     this.camera = new BABYLON.TargetCamera('OrthographicCamera', new BABYLON.Vector3(0, 100, 0), this.scene);
     this.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
     this.camera.upVector = new BABYLON.Vector3(0, 0, -1); // +Z is down on screen, matching 2D canvas Y
+    this.camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+    this.camera.minZ = 0.1;
+    this.camera.maxZ = 1000;
 
     // 3. Build plane layers
     this._createPlanes();
@@ -260,10 +263,10 @@ export class Renderer {
     this.engine.resize();
 
     // Configure top-down orthographic camera frustum matching viewport CSS pixels
-    this.camera.orthoLeft = -cssW / 2;
-    this.camera.orthoRight = cssW / 2;
-    this.camera.orthoTop = -cssH / 2;
-    this.camera.orthoBottom = cssH / 2;
+    this.camera.orthoLeft = cssW / 2;
+    this.camera.orthoRight = -cssW / 2;
+    this.camera.orthoTop = cssH / 2;
+    this.camera.orthoBottom = -cssH / 2;
     this.camera.position.set(cssW / 2, 100, cssH / 2);
     this.camera.setTarget(new BABYLON.Vector3(cssW / 2, 0, cssH / 2));
 
