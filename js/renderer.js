@@ -85,9 +85,10 @@ export class Renderer {
     light.intensity = 1.0;
 
     // 2. Fixed top-down OrthographicCamera positioned overhead looking straight down
-    this.camera = new BABYLON.TargetCamera('OrthographicCamera', new BABYLON.Vector3(0, 100, 0), this.scene);
+    this.camera = new BABYLON.TargetCamera('OrthographicCamera', new BABYLON.Vector3(311.5, 500, 180), this.scene);
     this.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
     this.camera.upVector = new BABYLON.Vector3(0, 0, -1); // +Z is down on screen, matching 2D canvas Y
+    this.camera.setTarget(new BABYLON.Vector3(311.5, 0, 180));
     this.camera.minZ = 0.1;
     this.camera.maxZ = 1000;
 
@@ -308,7 +309,7 @@ export class Renderer {
     this.camera.orthoRight = -cssW / 2;
     this.camera.orthoTop = cssH / 2;
     this.camera.orthoBottom = -cssH / 2;
-    this.camera.position.set(tableCenterX, 100, tableCenterZ);
+    this.camera.position.set(tableCenterX, 500, tableCenterZ);
     this.camera.setTarget(new BABYLON.Vector3(tableCenterX, 0, tableCenterZ));
   }
 
