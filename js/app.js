@@ -11,6 +11,8 @@ import { ECONOMY, STORE_ITEMS, TABLE_COLORS, BALL_SKINS, CUE_STICKS } from './co
 const screens = ['menu', 'lobby', 'store', 'wallet', 'game'];
 function show(name) {
   screens.forEach((s) => document.getElementById('screen-' + s).classList.toggle('hidden', s !== name));
+  const canvas = document.getElementById('game-canvas');
+  if (canvas) canvas.classList.toggle('hidden', name !== 'game');
   if (name === 'menu') refreshMenu();
   if (name === 'wallet') { document.getElementById('wd-result').textContent = ''; refreshWallet(); }
   if (name === 'store') refreshStore();

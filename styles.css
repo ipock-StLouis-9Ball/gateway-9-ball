@@ -24,7 +24,13 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; }
+html, body, canvas {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+html, body { overflow: hidden; }
 body {
   font-family: var(--font-body);
   background: var(--navy-900);
@@ -166,29 +172,46 @@ body {
 .hist-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; font-variant-numeric: tabular-nums; }
 
 /* ---------- Game screen ---------- */
-.game-screen { display: flex; flex-direction: row; background: var(--navy-900); overflow: hidden; }
-.game-stage { display: flex; flex-direction: row; flex: 1; min-width: 0; height: 100%; }
-
-/* Table fills 80% width; cherry-wood background eliminates dark padding. */
-.table-wrap {
-  flex: 0 0 80%; position: relative; min-width: 0; height: 100%;
-  background: linear-gradient(180deg, #96562e 0%, #6e3c20 50%, #4a2814 100%);
+#game-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  z-index: 1;
+  cursor: crosshair;
+  touch-action: none;
 }
-#game-canvas { display: block; width: 100%; height: 100%; cursor: crosshair; touch-action: none; }
+
+.game-screen {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: transparent;
+  overflow: hidden;
+  z-index: 5;
+}
 
 .icon-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 50%; width: 36px; height: 36px; font-size: 16px; cursor: pointer; flex-shrink: 0; }
 
-/* Control column: right 20%, grid layout. Anchored at the top. */
+/* Control column: fixed 20% right sidebar overlay. Anchored at top. */
 .controls-col {
-  flex: 0 0 20%; min-width: 0; height: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 20%;
+  height: 100vh;
+  pointer-events: auto;
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto auto auto auto auto 1fr;
   gap: 10px 8px; padding: 12px 10px;
   background: #0b1220; border-left: 1px solid var(--border);
+  box-shadow: -4px 0 20px rgba(0,0,0,0.5);
   align-items: start;
   justify-content: flex-start;
   align-content: flex-start;
+  z-index: 10;
 }
 .cc-top { grid-column: 2; grid-row: 1; display: flex; align-items: center; gap: 6px; }
 .cc-menu { width: 32px; height: 32px; font-size: 15px; }
@@ -255,13 +278,13 @@ body {
 .eb-dot { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: var(--cardinal); top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
 /* English popover */
-.english-pop { position: absolute; bottom: 70px; right: 16px; background: var(--navy-700); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 20; }
+.english-pop { position: absolute; bottom: 70px; right: 16px; background: var(--navy-700); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 20; pointer-events: auto; }
 .ep-ball { width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #c8c8c0); position: relative; cursor: pointer; box-shadow: inset 0 -8px 20px rgba(0,0,0,0.2); }
 .ep-dot { position: absolute; width: 16px; height: 16px; border-radius: 50%; background: var(--cardinal); top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
 /* Message banner + modal */
-.msg-banner { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.75); border: 1px solid var(--border); border-radius: 999px; padding: 8px 18px; font-size: 14px; z-index: 15; }
-.modal { position: absolute; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 30; }
+.msg-banner { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.75); border: 1px solid var(--border); border-radius: 999px; padding: 8px 18px; font-size: 14px; z-index: 15; pointer-events: auto; }
+.modal { position: absolute; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 30; pointer-events: auto; }
 .modal-card { background: var(--navy-700); border: 1px solid var(--border); border-radius: 14px; padding: 28px; max-width: 360px; text-align: center; }
 .modal-card h2 { font-family: var(--font-display); letter-spacing: 2px; font-size: 36px; margin-bottom: 8px; }
 .modal-card p { color: var(--text-muted); margin-bottom: 20px; }

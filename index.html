@@ -18,6 +18,9 @@
     <div>Rotate your device to landscape</div>
   </div>
 
+  <!-- Edge-to-edge Direct Child Game Canvas -->
+  <canvas id="game-canvas" class="hidden"></canvas>
+
   <!-- ================= ST. LOUIS MAIN MENU ================= -->
   <section id="screen-menu" class="screen menu-screen">
     <div class="menu-bg"></div>
@@ -122,12 +125,7 @@
 
   <!-- ================= GAME ================= -->
   <section id="screen-game" class="screen hidden game-screen">
-    <div class="game-stage">
-      <div class="table-wrap">
-        <canvas id="game-canvas"></canvas>
-      </div>
-
-      <div class="controls-col">
+    <div class="controls-col">
         <div class="cc-top">
           <button id="game-menu" class="icon-btn cc-menu" title="Menu">☰</button>
           <button id="pushout-btn" class="pushout-pill hidden" title="Available after a legal break">Push Out</button>
@@ -166,7 +164,6 @@
           <div class="turn-dot" id="p2-turn"></div>
         </div>
       </div>
-    </div>
 
     <!-- Push-out decision (take or pass back) -->
     <div id="push-decision" class="modal hidden">
