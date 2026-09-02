@@ -57,7 +57,6 @@ export class Renderer {
     this.camera = new BABYLON.TargetCamera('OrthographicCamera', new BABYLON.Vector3(0, 100, 0), this.scene);
     this.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
     this.camera.upVector = new BABYLON.Vector3(0, 0, -1); // +Z is down on screen, matching 2D canvas Y
-    this.camera.setTarget(new BABYLON.Vector3(0, 0, 0));
     this.camera.minZ = 0.1;
     this.camera.maxZ = 1000;
 
@@ -262,16 +261,24 @@ export class Renderer {
 
     this.engine.resize();
 
+    this._computeTableRect();
+    this._updatePlanesGeometry();
+
+    // Table mesh bounding center
+    const tableCenterX = this.tableRect.x + this.tableRect.w / 2;
+    const tableCenterZ = this.tableRect.y + this.tableRect.h / 2;
+
+    console.log('[Renderer] Table mesh world position (felt):', this.feltPlane.position.x, this.feltPlane.position.y, this.feltPlane.position.z);
+    console.log('[Renderer] Table mesh world position (frame):', this.framePlane.position.x, this.framePlane.position.y, this.framePlane.position.z);
+    console.log('[Renderer] Table bounding center:', tableCenterX, 0, tableCenterZ);
+
     // Configure top-down orthographic camera frustum matching viewport CSS pixels
     this.camera.orthoLeft = cssW / 2;
     this.camera.orthoRight = -cssW / 2;
     this.camera.orthoTop = cssH / 2;
     this.camera.orthoBottom = -cssH / 2;
-    this.camera.position.set(cssW / 2, 100, cssH / 2);
-    this.camera.setTarget(new BABYLON.Vector3(cssW / 2, 0, cssH / 2));
-
-    this._computeTableRect();
-    this._updatePlanesGeometry();
+    this.camera.position.set(tableCenterX, 100, tableCenterZ);
+    this.camera.setTarget(new BABYLON.Vector3(tableCenterX, 0, tableCenterZ));
   }
 
   _computeTableRect() {
