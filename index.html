@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>Gateway 9-Ball</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Rotate hint (portrait phones) -->
+  <div id="rotate-hint">
+    <div class="rh-icon">⟳</div>
+    <div>Rotate your device to landscape</div>
+  </div>
+
+  <!-- ================= ST. LOUIS MAIN MENU ================= -->
+  <section id="screen-menu" class="screen menu-screen">
+    <div class="menu-bg"></div>
+    <div class="menu-inner">
+      <div class="brand">
+        <svg class="arch" viewBox="0 0 100 60" aria-hidden="true">
+          <path d="M20 58 Q20 14 50 6 Q80 14 80 58 M30 58 Q30 22 50 16 Q70 22 70 58"
+                fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <path d="M50 6 L50 58" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+        </svg>
+        <div class="brand-text">
+          <h1>GATEWAY 9-BALL</h1>
+          <p class="tagline">St. Louis · Real-Table Pool</p>
+        </div>
+      </div>
+
+      <div class="balance-pill">
+        <span class="bal-label">Balance</span>
+        <span id="menu-balance" class="bal-value">DB$0.00</span>
+        <button id="menu-add" class="bal-add">+ Deposit</button>
+      </div>
+
+      <div class="menu-actions">
+        <button class="menu-btn primary" data-goto="lobby">
+          <span class="mb-title">Wager Match</span>
+          <span class="mb-sub">Best of 3 · Demo pot</span>
+        </button>
+        <button class="menu-btn" data-goto="practice">
+          <span class="mb-title">Practice</span>
+          <span class="mb-sub">Free play, no stakes</span>
+        </button>
+        <button class="menu-btn" data-goto="store">
+          <span class="mb-title">Pro Shop</span>
+          <span class="mb-sub">Tables · Cues · Balls</span>
+        </button>
+        <button class="menu-btn" data-goto="wallet">
+          <span class="mb-title">Wallet</span>
+          <span class="mb-sub">Deposit · Withdraw · History</span>
+        </button>
+      </div>
+
+      <p class="demo-note">Demo currency (DB$) — no real money. This preview runs the server-authoritative shot resolver on a Cloud Run backend (Node.js/TypeScript) that decides every shot. Push-out and three-foul rules are live. On a static deploy (e.g. GitHub Pages) the client falls back to the same local resolver.</p>
+    </div>
+  </section>
+
+  <!-- ================= MATCH LOBBY ================= -->
+  <section id="screen-lobby" class="screen hidden">
+    <div class="panel">
+      <button class="back-btn" data-goto="menu">‹ Menu</button>
+      <h2>Wager Match</h2>
+      <p class="muted">Best of 3 · first to 2 racks wins the pot</p>
+
+      <div class="tier-grid" id="tier-grid"></div>
+
+      <div class="lobby-summary" id="lobby-summary"></div>
+      <button id="find-match" class="cta" disabled>Find Match</button>
+    </div>
+  </section>
+
+  <!-- ================= STORE ================= -->
+  <section id="screen-store" class="screen hidden">
+    <div class="panel">
+      <button class="back-btn" data-goto="menu">‹ Menu</button>
+      <h2>Pro Shop</h2>
+      <div class="store-tabs">
+        <button class="tab active" data-tab="tables">Tables</button>
+        <button class="tab" data-tab="cues">Cues</button>
+        <button class="tab" data-tab="balls">Balls</button>
+      </div>
+      <div class="balance-pill small"><span>Balance</span><span id="store-balance" class="bal-value">DB$0.00</span></div>
+      <div class="store-grid" id="store-grid"></div>
+    </div>
+  </section>
+
+  <!-- ================= WALLET ================= -->
+  <section id="screen-wallet" class="screen hidden">
+    <div class="panel">
+      <button class="back-btn" data-goto="menu">‹ Menu</button>
+      <h2>Wallet</h2>
+      <div class="wallet-balance"><span class="bal-label">Demo Balance</span><span id="wallet-balance" class="bal-value big">DB$0.00</span></div>
+
+      <div class="wallet-cols">
+        <div class="wallet-card">
+          <h3>Deposit</h3>
+          <div class="dep-grid" id="dep-grid"></div>
+        </div>
+        <div class="wallet-card">
+          <h3>Withdraw</h3>
+          <div class="withdraw-form">
+            <input id="wd-amount" type="number" step="0.01" placeholder="Amount" />
+            <button id="wd-btn" class="cta small">Withdraw</button>
+          </div>
+          <p class="muted small" id="wd-fee-note">Withdraw fee: $0.30 + 10% (min $1.50). Minimum DB$10.00.</p>
+          <p class="muted small" id="wd-result"></p>
+        </div>
+      </div>
+
+      <h3 class="hist-title">History</h3>
+      <div class="history-list" id="history-list"></div>
+    </div>
+  </section>
+
+  <!-- ================= GAME ================= -->
+  <section id="screen-game" class="screen hidden game-screen">
+    <div class="game-left">
+      <canvas id="game-canvas"></canvas>
+      <div class="game-controls">
+        <button id="game-menu" class="icon-btn" title="Menu">☰</button>
+        <div class="power-wrap">
+          <span class="ctrl-label">POWER</span>
+          <div class="power-track" id="power-track">
+            <div class="power-fill" id="power-fill"></div>
+            <div class="power-handle" id="power-handle"></div>
+          </div>
+          <span class="power-pct" id="power-pct">60%</span>
+        </div>
+        <button id="english-btn" class="english-ball" title="Spin / English">
+          <span class="eb-dot" id="eb-dot"></span>
+        </button>
+        <button id="shoot-btn" class="shoot-btn">SHOOT</button>
+        <button id="pushout-btn" class="pushout-btn hidden" title="Available after a legal break">PUSH OUT</button>
+      </div>
+    </div>
+
+    <!-- Push-out decision (take or pass back) -->
+    <div id="push-decision" class="modal hidden">
+      <div class="modal-card">
+        <h2>Push Out</h2>
+        <p>Opponent played a push-out. Take the shot, or pass it back?</p>
+        <div class="modal-actions">
+          <button class="cta" id="pd-take">Take Shot</button>
+          <button class="ghost-btn" id="pd-pass">Pass Back</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="game-right">
+      <div class="player-card p1">
+        <div class="avatar" id="p1-avatar">JP</div>
+        <div class="pc-info"><span class="pc-name" id="p1-name">You</span><span class="pc-score" id="p1-score">0</span></div>
+        <div class="turn-dot" id="p1-turn"></div>
+      </div>
+
+      <div class="timer-block">
+        <div class="timer-ring">
+          <span id="shot-timer">30</span>
+        </div>
+        <span class="timer-label">SHOT TIMER</span>
+        <div class="match-info" id="match-info">Best of 3</div>
+      </div>
+
+      <div class="player-card p2">
+        <div class="avatar" id="p2-avatar">AI</div>
+        <div class="pc-info"><span class="pc-name" id="p2-name">Breaker AI</span><span class="pc-score" id="p2-score">0</span></div>
+        <div class="turn-dot" id="p2-turn"></div>
+      </div>
+    </div>
+
+    <!-- English popover -->
+    <div id="english-pop" class="english-pop hidden">
+      <div class="ep-ball">
+        <span class="ep-dot" id="ep-dot"></span>
+      </div>
+      <p class="muted small">Drag the dot for spin</p>
+      <button id="ep-clear" class="link-btn">Reset spin</button>
+    </div>
+
+    <!-- Message banner -->
+    <div id="msg-banner" class="msg-banner hidden"></div>
+
+    <!-- Match over modal -->
+    <div id="match-modal" class="modal hidden">
+      <div class="modal-card">
+        <h2 id="mm-title">Match Over</h2>
+        <p id="mm-detail"></p>
+        <div class="modal-actions">
+          <button class="cta" data-goto="lobby">Rematch</button>
+          <button class="ghost-btn" data-goto="menu">Main Menu</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "type": "module",
+  "private": true,
+  "comment": "Marks these browser modules as ESM so Node/tsx imports them with named exports. Browsers ignore this file."
+}

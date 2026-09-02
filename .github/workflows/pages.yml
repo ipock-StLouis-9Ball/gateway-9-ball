@@ -1,0 +1,47 @@
+# Deploy a static preview to GitHub Pages so you can playtest on a phone.
+#
+# Setup (one time): in your repo Settings -> Pages, set "Build and deployment"
+# Source to "GitHub Actions". Then push to main and this workflow publishes the
+# game at https://<your-username>.github.io/<repo>/ .
+#
+# On GitHub Pages there is no /resolve-shot backend, so the client automatically
+# falls back to the local deterministic resolver (see js/resolverClient.js) —
+# the game stays fully playable, just not server-authoritative.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload static build
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: nine-ball-mvp
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
