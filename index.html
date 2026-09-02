@@ -10,6 +10,104 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Inline on-page debug console (mobile-friendly) -->
+  <style>
+    #debug-toggle { position: fixed; left: 8px; top: 8px; z-index: 99999; background: rgba(0,0,0,0.6); color: #fff; border-radius: 6px; padding: 6px 8px; font-size: 18px; backdrop-filter: blur(4px); }
+    #debug-log { position: fixed; left: 8px; bottom: 8px; z-index: 99998; background: rgba(10,10,10,0.92); color: #e6eef8; max-width: 94vw; width: 94vw; max-height: 40vh; overflow: auto; border-radius: 8px; padding: 8px; font-family: monospace; font-size: 12px; line-height: 1.2; box-shadow: 0 6px 18px rgba(0,0,0,0.6); display: none; }
+    #debug-log .dbg-line { padding: 2px 4px; border-bottom: 1px solid rgba(255,255,255,0.02); }
+    #debug-log .dbg-err { color: #ffb3b3; }
+    #debug-controls { display:flex; gap:8px; align-items:center; margin-bottom:6px; }
+    #debug-controls button { background: #122032; color:#e6eef8; border: none; padding: 6px 8px; border-radius: 6px; font-size:12px; }
+  </style>
+  <script>
+    (function(){
+      // Minimal on-page debug overlay that captures console logs & uncaught errors.
+      const MAX_LINES = 200;
+      const lines = [];
+      function appendLine(type, msg) {
+        const ts = new Date().toLocaleTimeString();
+        const entry = { ts, type, msg };
+        lines.push(entry);
+        if (lines.length > MAX_LINES) lines.shift();
+        render();
+      }
+      function render(){
+        if (!window.__dbg_el) return;
+        const el = window.__dbg_el;
+        // Rebuild contents
+        const inner = [];
+        inner.push('<div id="debug-controls"><button id="dbg-clear">Clear</button><button id="dbg-copy">Copy</button><div style="flex:1"></div><small style="opacity:0.8">Debug log</small></div>');
+        for (let i=0;i<lines.length;i++){
+          const e = lines[i];
+          const cls = e.type === 'error' || e.type === 'uncaught' ? 'dbg-err' : '';
+          inner.push(`<div class="dbg-line ${cls}"><strong>[${e.ts}]</strong> <span style="opacity:0.9">${e.type}</span> — <span>${escapeHtml(e.msg)}</span></div>`);
+        }
+        el.innerHTML = inner.join('');
+        // scroll to bottom
+        el.scrollTop = el.scrollHeight;
+      }
+      function escapeHtml(s){
+        if (s === undefined) return '';
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      }
+
+      // Create toggle button and log container on DOMContentLoaded if body exists
+      function setupUI(){
+        if (!document.body) return;
+        const tog = document.createElement('button');
+        tog.id = 'debug-toggle';
+        tog.textContent = '🐞';
+        tog.title = 'Toggle debug log';
+        document.body.appendChild(tog);
+
+        const log = document.createElement('div');
+        log.id = 'debug-log';
+        document.body.appendChild(log);
+        window.__dbg_el = log;
+
+        tog.addEventListener('click', function(){
+          if (log.style.display === 'block') { log.style.display = 'none'; }
+          else { log.style.display = 'block'; render(); }
+        });
+
+        // delegated controls
+        log.addEventListener('click', function(e){
+          const t = e.target;
+          if (t && t.id === 'dbg-clear') { lines.length = 0; render(); }
+          if (t && t.id === 'dbg-copy') { navigator.clipboard?.writeText(lines.map(l=>`[${l.ts}] ${l.type} - ${l.msg}`).join('\n')) .then(()=>{ appendLine('info','copied debug text to clipboard'); }).catch(()=>{ appendLine('warn','copy failed'); }); }
+        });
+
+        // show automatically if any errors already captured
+        if (lines.some(l=>l.type==='error' || l.type==='uncaught')) { log.style.display='block'; }
+      }
+
+      // Intercept console
+      const native = { log: console.log.bind(console), info: console.info.bind(console), warn: console.warn.bind(console), error: console.error.bind(console) };
+      console.log = function(){ native.log.apply(null, arguments); appendLine('log', Array.from(arguments).map(a=>String(a)).join(' ')); };
+      console.info = function(){ native.info.apply(null, arguments); appendLine('info', Array.from(arguments).map(a=>String(a)).join(' ')); };
+      console.warn = function(){ native.warn.apply(null, arguments); appendLine('warn', Array.from(arguments).map(a=>String(a)).join(' ')); };
+      console.error = function(){ native.error.apply(null, arguments); appendLine('error', Array.from(arguments).map(a=>String(a)).join(' ')); };
+
+      window.addEventListener('error', function(ev){
+        const msg = ev && (ev.message || ev.error && ev.error.stack) ? (ev.message || (ev.error && ev.error.stack)) : ev.toString();
+        appendLine('uncaught', msg);
+      });
+      window.addEventListener('unhandledrejection', function(ev){ appendLine('unhandledrejection', ev && ev.reason ? (ev.reason.stack || ev.reason) : String(ev)); });
+
+      // Expose helper to add lines from app code
+      window.__debug = { log: function(t,m){ appendLine(t,m); } };
+
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setupUI); else setupUI();
+
+      // Also provide a visible shortcut: press and hold two fingers (touch) for 1s to toggle log (mobile)
+      let touchTimer = null;
+      window.addEventListener('touchstart', function(e){ if (e.touches && e.touches.length >= 2) { touchTimer = setTimeout(()=>{ if (window.__dbg_el) window.__dbg_el.style.display = (window.__dbg_el.style.display === 'block' ? 'none':'block'); render(); }, 1000); } }, {passive:true});
+      window.addEventListener('touchend', function(e){ if (touchTimer) { clearTimeout(touchTimer); touchTimer = null; } }, {passive:true});
+
+    })();
+  </script>
+
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
 </head>
 <body>
@@ -66,7 +164,7 @@
         </button>
       </div>
 
-      <p class="demo-note">Demo currency (DB$) — no real money. This preview runs the server-authoritative shot resolver on a Cloud Run backend (Node.js/TypeScript) that decides every shot. Push-out and three-foul rules are live. On a static deploy (e.g. GitHub Pages) the client falls back to the same local resolver.</p>
+      <p class="demo-note">Demo currency (DB$) — no real money. This preview runs the server-authoritative shot resolver on a Cloud Run backend (Node.js/TypeScript) that decides every shot. Push[...]</p>
     </div>
   </section>
 
