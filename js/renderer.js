@@ -58,32 +58,47 @@ export class Renderer {
   resize() {
     const dpr = window.devicePixelRatio || 1;
     const rect = this.canvas.getBoundingClientRect();
-    this.canvas.width = Math.round(rect.width * dpr);
-    this.canvas.height = Math.round(rect.height * dpr);
+    const cssW = rect.width || window.innerWidth;
+    const cssH = rect.height || window.innerHeight;
+    this.cssW = cssW;
+    this.cssH = cssH;
+
+    // Set high-DPI internal backing store dimensions to prevent distortion
+    this.canvas.width = Math.round(cssW * dpr);
+    this.canvas.height = Math.round(cssH * dpr);
+
+    // Normalize coordinate system to logical CSS pixels
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     this.ctx.imageSmoothingEnabled = true;
     this.ctx.imageSmoothingQuality = 'high';
-    this.cssW = rect.width;
-    this.cssH = rect.height;
+
     this._computeTableRect();
     this._woodPattern = null; // rebuild pattern at new scale
   }
 
-  // Table fills the left 80% of canvas (right 20% is controls overlay).
+  // Calculate table bounds dynamically within the canvas.
+  // Left 80% of canvas is reserved for table, right 20% for power meter/controls overlay.
+  // Maintains 2:1 aspect ratio playing surface with surrounding outer rails.
   _computeTableRect() {
-    const W = TABLE.width;
-    const H = TABLE.height;
-    const rail = TABLE.railThickness;
-    const tableAspect = (W + rail * 2) / (H + rail * 2);
+    const W = TABLE.width; // 100
+    const H = TABLE.height; // 50 (2:1 aspect ratio playing surface)
+    const rail = TABLE.railThickness; // 7.5
+    const outerW = W + rail * 2; // 115
+    const outerH = H + rail * 2; // 65
+    const tableAspect = outerW / outerH;
+
     const availW = this.cssW * 0.8;
     const availH = this.cssH;
-    let drawW = availW;
-    let drawH = drawW / tableAspect;
-    if (drawH > availH) {
-      drawH = availH;
-      drawW = drawH * tableAspect;
-    }
-    const scale = drawW / (W + rail * 2);
+
+    // Safety margin around outer rails so table & power meter fit cleanly without clipping
+    const margin = Math.max(8, Math.min(availW, availH) * 0.025);
+    const maxW = availW - margin * 2;
+    const maxH = availH - margin * 2;
+
+    const scale = Math.min(maxW / outerW, maxH / outerH);
+    const drawW = outerW * scale;
+    const drawH = outerH * scale;
+
     this.scale = scale;
     this.tableRect = {
       x: (availW - drawW) / 2,
@@ -92,8 +107,8 @@ export class Renderer {
       h: drawH,
     };
     this.playOffset = { x: rail * scale, y: rail * scale };
-    this.playW = W * scale;
-    this.playH = H * scale;
+    this.playW = W * scale; // Exactly 2:1 ratio (100 * scale)
+    this.playH = H * scale; // (50 * scale)
   }
 
   toPx(tx, ty) {
