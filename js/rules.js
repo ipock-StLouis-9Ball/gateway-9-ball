@@ -112,12 +112,17 @@ export function resolveShot(input) {
   const frames = [];
   const MAX_STEPS = 4000;
   const dt = 1 / 120;
+  const deadline = Date.now() + 5000; // 5-second CPU limit safeguard
   frames.push(snapshotFrame(balls, 0));
   for (let i = 1; i <= MAX_STEPS; i++) {
     const ev = phys.step(balls, dt);
     events.push(...ev);
-    if (i % 2 === 0) frames.push(snapshotFrame(balls, i * dt)); // ~60fps
+    if (i % 4 === 0) frames.push(snapshotFrame(balls, i * dt)); // ~30fps
     if (phys.atRest(balls)) break;
+    if (i % 100 === 0 && Date.now() > deadline) {
+      for (const b of balls) { b.vx = 0; b.vy = 0; }
+      break;
+    }
     if (i === MAX_STEPS) { for (const b of balls) { b.vx = 0; b.vy = 0; } }
   }
   // Clear english after the shot.
