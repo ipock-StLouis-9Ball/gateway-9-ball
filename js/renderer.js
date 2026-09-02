@@ -11,7 +11,7 @@
 import { TABLE, BALL_COLORS } from './config.js';
 
 const CUE_ID = 0;
-const ASSET_DIR = 'assets';
+const ASSET_DIR = './assets';
 
 export class Renderer {
   constructor(canvas, settings) {
