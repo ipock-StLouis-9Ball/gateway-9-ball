@@ -80,17 +80,25 @@ export class Renderer {
     this.scene = new BABYLON.Scene(this.engine);
     this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
 
-    // Light
-    const light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(0, 1, 0), this.scene);
-    light.intensity = 1.0;
+    // Purge active cameras array to ensure no secondary camera viewports
+    this.scene.activeCameras = [];
 
-    // 2. Fixed top-down OrthographicCamera positioned overhead looking straight down
+    // Medium brightness background lighting circling the backdrop area
+    const light = new BABYLON.HemisphericLight('bgLight', new BABYLON.Vector3(0, 1, 0), this.scene);
+    light.intensity = 0.75;
+    light.groundColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+
+    // 2. Single overhead master OrthographicCamera pointing down at the table coordinates
     this.camera = new BABYLON.TargetCamera('OrthographicCamera', new BABYLON.Vector3(311.5, 500, 180), this.scene);
     this.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
     this.camera.upVector = new BABYLON.Vector3(0, 0, -1); // +Z is down on screen, matching 2D canvas Y
+    this.camera.position = new BABYLON.Vector3(311.5, 500, 180);
     this.camera.setTarget(new BABYLON.Vector3(311.5, 0, 180));
     this.camera.minZ = 0.1;
     this.camera.maxZ = 1000;
+
+    // Force single active camera setup
+    this.scene.activeCamera = this.camera;
 
     // 3. Build plane layers
     this._createPlanes();
