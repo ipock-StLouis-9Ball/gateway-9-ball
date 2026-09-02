@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 1000" preserveAspectRatio="none" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#101a2e" />
+      <stop offset="50%" stop-color="#0b1220" />
+      <stop offset="100%" stop-color="#060911" />
+    </linearGradient>
+    <linearGradient id="goldBorder" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e8b75a" stop-opacity="0.8" />
+      <stop offset="30%" stop-color="#ffe8a8" stop-opacity="0.95" />
+      <stop offset="70%" stop-color="#c4933a" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#7a5218" stop-opacity="0.6" />
+    </linearGradient>
+    <radialGradient id="sideGlow" cx="0%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="#e8b75a" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="200" height="1000" fill="url(#bgGrad)" />
+  <!-- Subtle Glow -->
+  <rect width="200" height="1000" fill="url(#sideGlow)" />
+  <!-- Left Metallic Gold Accent Border -->
+  <rect x="0" y="0" width="3" height="1000" fill="url(#goldBorder)" />
+</svg>
