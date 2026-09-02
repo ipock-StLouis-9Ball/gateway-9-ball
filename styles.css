@@ -178,15 +178,17 @@ body {
 
 .icon-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 50%; width: 36px; height: 36px; font-size: 16px; cursor: pointer; flex-shrink: 0; }
 
-/* Control column: right 20%, grid layout. */
+/* Control column: right 20%, grid layout. Anchored at the top. */
 .controls-col {
   flex: 0 0 20%; min-width: 0; height: 100%;
   display: grid;
   grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto 1fr auto auto;
-  gap: 6px; padding: 8px 6px;
+  grid-template-rows: auto auto auto auto auto 1fr;
+  gap: 10px 8px; padding: 12px 10px;
   background: #0b1220; border-left: 1px solid var(--border);
-  align-items: center;
+  align-items: start;
+  justify-content: flex-start;
+  align-content: flex-start;
 }
 .cc-top { grid-column: 2; grid-row: 1; display: flex; align-items: center; gap: 6px; }
 .cc-menu { width: 32px; height: 32px; font-size: 15px; }
@@ -198,7 +200,7 @@ body {
 .pushout-pill.active { background: var(--arch-gold); color: #1a1a1a; box-shadow: 0 0 10px var(--arch-gold); }
 
 /* Compact player cards for the narrow column. */
-.player-card { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 5px 6px; position: relative; flex-shrink: 0; }
+.player-card { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; position: relative; flex-shrink: 0; width: 100%; }
 .player-card.p1 { grid-column: 2; grid-row: 2; }
 .player-card.p2 { grid-column: 2; grid-row: 5; }
 .player-card.active { border-color: var(--arch-gold); box-shadow: 0 0 0 1px var(--arch-gold); }
@@ -210,44 +212,44 @@ body {
 .player-card.active .turn-dot { opacity: 1; box-shadow: 0 0 6px var(--arch-gold); }
 .foul-badge { position: absolute; bottom: 3px; right: 4px; font-size: 9px; font-weight: 700; color: var(--cardinal-bright); background: rgba(0,0,0,0.35); padding: 1px 4px; border-radius: 3px; }
 
-.timer-block { grid-column: 2; grid-row: 3; display: flex; flex-direction: column; align-items: center; gap: 2px; flex-shrink: 0; justify-self: center; }
+.timer-block { grid-column: 2; grid-row: 3; display: flex; flex-direction: column; align-items: center; gap: 2px; flex-shrink: 0; justify-self: center; margin: 2px 0; }
 .timer-ring { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 18px; color: var(--text); }
 .timer-ring.warn { border-color: var(--cardinal); color: var(--cardinal-bright); }
 .match-info { font-size: 9px; color: var(--text-muted); text-align: center; white-space: nowrap; overflow: hidden; }
 
-/* Spring-release cue control: vertical spring that compresses on drag-down,
-   snaps forward on release. */
-.cue-spring-wrap { grid-column: 1; grid-row: 1 / -1; display: flex; flex-direction: row; align-items: stretch; gap: 3px; min-height: 0; width: 100%; justify-content: center; height: 100%; }
-.cue-power-scale { display: flex; flex-direction: column; justify-content: flex-end; width: 18px; padding-bottom: 4px; }
-.cue-mark { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.7); text-align: right; line-height: 1; flex: 1; display: flex; align-items: center; justify-content: flex-end; }
-.cue-mark::after { content: '—'; margin-left: 2px; opacity: 0.5; }
+/* Solid vertical power meter slider with percentage ticks */
+.cue-spring-wrap {
+  grid-column: 1; grid-row: 1 / span 6;
+  display: flex; flex-direction: row; align-items: center; gap: 6px;
+  min-height: 220px; max-height: 320px; width: 100%; justify-content: center; height: 100%;
+}
+.cue-power-scale {
+  position: relative; height: 100%; display: flex; flex-direction: column;
+  justify-content: space-between; padding: 8px 0; width: 32px;
+}
+.cue-mark-row {
+  display: flex; align-items: center; justify-content: flex-end; gap: 4px; width: 100%;
+}
+.cue-mark { font-size: 10px; font-weight: 700; color: var(--text-muted); line-height: 1; }
+.cue-tick { width: 6px; height: 2px; background: rgba(255, 255, 255, 0.4); border-radius: 1px; }
 
 .cue-stick-track {
-  position: relative; flex: 1; width: 30px; min-height: 120px; border-radius: 6px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.3));
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.5); cursor: grab; touch-action: none; overflow: hidden;
+  position: relative; width: 22px; height: 100%; border-radius: 11px;
+  background: var(--navy-700); border: 1.5px solid var(--border);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.6); cursor: pointer; touch-action: none; overflow: visible;
 }
 .cue-stick-track:active { cursor: grabbing; }
 .cue-power-fill {
-  position: absolute; left: 3px; right: 3px; bottom: 0; height: 0%; border-radius: 4px;
-  background: linear-gradient(0deg, #7a1f1a 0%, #e8741a 40%, #9fd63a 75%, #f5d442 100%); opacity: 0.45; pointer-events: none;
+  position: absolute; left: 2px; right: 2px; bottom: 2px; height: 0%; border-radius: 9px;
+  background: linear-gradient(0deg, #1a6b3a 0%, var(--arch-gold) 60%, var(--cardinal) 100%);
+  pointer-events: none; transition: height 0.04s linear;
 }
-/* The coiled spring (SVG zigzag). Compresses vertically as power rises. */
-.cue-spring {
-  position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
-  width: 18px; height: 55%; pointer-events: none; transform-origin: bottom center;
-  transition: height 0.04s linear;
+.cue-power-handle {
+  position: absolute; left: 50%; bottom: 0%; transform: translate(-50%, 50%);
+  width: 32px; height: 16px; border-radius: 8px; background: #ffffff;
+  border: 2px solid var(--arch-gold); box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  pointer-events: none; transition: bottom 0.04s linear;
 }
-.cue-spring svg { width: 100%; height: 100%; display: block; }
-.cue-spring path { fill: none; stroke: #d9b27a; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
-/* The cue stick (tip UP). Translates down on charge; snaps up on release. */
-.cue-stick {
-  position: absolute; left: 50%; top: 4px; transform: translate(-50%, 0);
-  width: 12px; height: 50%; display: flex; flex-direction: column; align-items: center;
-  will-change: transform; transition: transform 0.04s linear;
-}
-.cue-tip { width: 10px; height: 9px; border-radius: 50% 50% 0 0; background: linear-gradient(180deg, #e8e2d0, #b9a98a); flex-shrink: 0; }
-.cue-shaft { width: 8px; flex: 1; border-radius: 0 0 4px 4px; background: linear-gradient(90deg, #6b3a1e 0%, #c98a4a 45%, #7a4220 100%); }
 
 .english-ball { grid-column: 2; grid-row: 4; justify-self: center; position: relative; width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #cfcfc8); border: 1px solid var(--border); flex-shrink: 0; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.4); align-self: center; }
 .eb-dot { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: var(--cardinal); top: 50%; left: 50%; transform: translate(-50%, -50%); }
