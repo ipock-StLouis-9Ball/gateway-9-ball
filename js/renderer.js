@@ -1,17 +1,44 @@
 // ============================================================================
 // renderer.js — Orthographic Babylon.js Pool Table Renderer Engine.
 // Enforces hardcoded 80vw viewport layout and 2:1 ratio plane layers:
-// 1. Base Felt Plane: 'assets/felt.svg' (2:1 playing surface)
-// 2. Shadows Plane Layer: 'assets/shadow.svg' under active balls
+// 1. Base Felt Plane: './assets/felt.svg' (2:1 playing surface)
+// 2. Shadows Plane Layer: './assets/shadow.svg' under active balls
 // 3. Balls Plane Layer: Composite textured ball meshes with numbers & templates
 // 4. Aim Overlay Plane Layer: Guide lines & cue stick graphic
-// 5. Upper Rail Plane: 'assets/frame.svg' layered over table with alpha blending
+// 5. Upper Rail Plane: './assets/frame.svg' layered over table with alpha blending
 // ============================================================================
 
 import { TABLE, BALL_COLORS } from './config.js';
 
 const CUE_ID = 0;
 const ASSET_DIR = './assets';
+
+// Small wrapper to load a Babylon texture with success/error logging and a lightweight fallback
+function loadTexture(path, scene, options = {}) {
+  const url = path;
+  const onLoad = () => { console.log(`[Renderer] Loaded texture: ${url}`); };
+  const onError = (msg, exception) => {
+    console.error(`[Renderer] Failed to load texture: ${url}`, msg, exception);
+    try {
+      const fallback = new BABYLON.DynamicTexture(`fallback_${Math.random().toString(36).slice(2)}`, { width: 2, height: 2 }, scene, false);
+      const ctx = fallback.getContext();
+      ctx.fillStyle = '#222'; ctx.fillRect(0, 0, 2, 2);
+      fallback.update();
+      fallback.hasAlpha = false;
+      return fallback;
+    } catch (e) {
+      console.warn('[Renderer] Could not create fallback DynamicTexture', e);
+      return null;
+    }
+  };
+  try {
+    const tex = new BABYLON.Texture(url, scene, false, false, undefined, onLoad, onError);
+    return tex;
+  } catch (e) {
+    console.error('[Renderer] Exception while creating texture for', url, e);
+    return onError(e.message, e);
+  }
+}
 
 export class Renderer {
   constructor(canvas, settings) {
@@ -33,6 +60,10 @@ export class Renderer {
     this.ballTemplateImg.onload = () => {
       this.ballTemplateLoaded = true;
       this._rebuildBallMaterials();
+    };
+    this.ballTemplateImg.onerror = (e) => {
+      this.ballTemplateLoaded = false;
+      console.error('[Renderer] Failed to load ball template image:', `${ASSET_DIR}/ball_template.svg`, e);
     };
     this.ballTemplateImg.src = `${ASSET_DIR}/ball_template.svg`;
 
@@ -72,7 +103,7 @@ export class Renderer {
     this.feltPlane.position.y = 0;
 
     const feltMat = new BABYLON.StandardMaterial('feltMat', this.scene);
-    const feltTex = new BABYLON.Texture(`${ASSET_DIR}/felt.svg`, this.scene);
+    const feltTex = loadTexture(`${ASSET_DIR}/felt.svg`, this.scene);
     feltMat.diffuseTexture = feltTex;
     feltMat.emissiveTexture = feltTex;
     feltMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
@@ -86,8 +117,8 @@ export class Renderer {
     this.framePlane.position.y = 2.0;
 
     const frameMat = new BABYLON.StandardMaterial('frameMat', this.scene);
-    const frameTex = new BABYLON.Texture(`${ASSET_DIR}/pool_table_frame.svg`, this.scene);
-    frameTex.hasAlpha = true;
+    const frameTex = loadTexture(`${ASSET_DIR}/pool_table_frame.svg`, this.scene);
+    if (frameTex) frameTex.hasAlpha = true;
     frameMat.diffuseTexture = frameTex;
     frameMat.emissiveTexture = frameTex;
     frameMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
@@ -116,8 +147,8 @@ export class Renderer {
 
     // Common shadow material
     const shadowMat = new BABYLON.StandardMaterial('shadowMat', this.scene);
-    const shadowTex = new BABYLON.Texture(`${ASSET_DIR}/shadow.svg`, this.scene);
-    shadowTex.hasAlpha = true;
+    const shadowTex = loadTexture(`${ASSET_DIR}/shadow.svg`, this.scene);
+    if (shadowTex) shadowTex.hasAlpha = true;
     shadowMat.diffuseTexture = shadowTex;
     shadowMat.emissiveTexture = shadowTex;
     shadowMat.useAlphaFromDiffuseTexture = true;
