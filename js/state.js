@@ -11,12 +11,12 @@ export const State = {
     history: [], // {type, amount, fee, balanceAfter, ts}
   },
   owned: {
-    tables: ['classic'],
+    tables: ['classic', 'maroon'],
     cues: ['maple'],
     balls: ['classic'],
   },
   settings: {
-    table: 'classic',
+    table: 'maroon',
     cue: 'maple',
     balls: 'classic',
     sound: true,

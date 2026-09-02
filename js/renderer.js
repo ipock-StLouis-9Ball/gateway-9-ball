@@ -29,13 +29,13 @@ export class Renderer {
     this._computeTableRect();
   }
 
-  // Table is shifted up-left, leaving the right strip for the HUD panel.
+  // Table fills the canvas area; the side columns (controls + players) are
+  // laid out by flexbox outside the canvas, so we use the full rect here.
   _computeTableRect() {
     const W = TABLE.width;
     const H = TABLE.height;
     const rail = TABLE.railThickness;
-    // Available area: left ~72% of canvas width, full height minus margins.
-    const availW = this.cssW * 0.72;
+    const availW = this.cssW - 24;
     const availH = this.cssH - 24;
     const aspect = (W + rail * 2) / (H + rail * 2);
     let drawW = availW;
@@ -46,9 +46,8 @@ export class Renderer {
     }
     const scale = drawW / (W + rail * 2);
     this.scale = scale;
-    // Shift up & left: small margin from top-left corner.
     this.tableRect = {
-      x: 16,
+      x: 12,
       y: 12,
       w: drawW,
       h: drawH,
@@ -97,21 +96,32 @@ export class Renderer {
     const tr = this.tableRect;
     const cols = this._tableColors();
     const r = TABLE.railThickness * this.scale;
+    const W = TABLE.width;
+    const H = TABLE.height;
+    const isCherry = this.settings.table === 'maroon';
+    const pocketList = [
+      [0, 0], [W / 2, 0], [W, 0], [0, H], [W / 2, H], [W, H],
+    ];
 
-    // Outer wood rail with bevel.
     ctx.save();
-    const railGrad = ctx.createLinearGradient(tr.x, tr.y, tr.x, tr.y + tr.h);
-    railGrad.addColorStop(0, cols.railEdge);
-    railGrad.addColorStop(0.5, cols.rail);
-    railGrad.addColorStop(1, cols.railEdge);
-    ctx.fillStyle = railGrad;
-    this._roundRect(tr.x, tr.y, tr.w, tr.h, r * 0.8);
-    ctx.fill();
 
-    // Rail highlight (top edge sheen).
-    ctx.fillStyle = 'rgba(255,255,255,0.07)';
-    this._roundRect(tr.x + 2, tr.y + 2, tr.w - 4, r * 0.4, r * 0.4);
-    ctx.fill();
+    // --- Outer cherry wood rail with procedural grain ---
+    this._roundRect(tr.x, tr.y, tr.w, tr.h, r * 0.8);
+    ctx.save();
+    ctx.clip();
+    const railGrad = ctx.createLinearGradient(tr.x, tr.y, tr.x, tr.y + tr.h);
+    railGrad.addColorStop(0, this._lighten(cols.rail, 0.18));
+    railGrad.addColorStop(0.5, cols.rail);
+    railGrad.addColorStop(1, this._darken(cols.rail, 0.22));
+    ctx.fillStyle = railGrad;
+    ctx.fillRect(tr.x, tr.y, tr.w, tr.h);
+    if (isCherry) this._drawWoodGrain(tr.x, tr.y, tr.w, tr.h, cols.rail);
+    ctx.fillStyle = 'rgba(255,255,255,0.08)';
+    ctx.fillRect(tr.x, tr.y, tr.w, r * 0.35);
+    ctx.restore();
+
+    // --- Polished metallic pocket plates (cast into the rail) ---
+    for (const [tx, ty] of pocketList) this._drawPocketPlate(tx, ty, cols);
 
     // Felt playfield with radial shading (lighter center, darker edges).
     const px = tr.x + this.playOffset.x;
@@ -126,6 +136,7 @@ export class Renderer {
     feltGrad.addColorStop(1, this._darken(cols.felt, 0.28));
     ctx.fillStyle = feltGrad;
     ctx.fillRect(px, py, pw, ph);
+    this._drawFeltNap(px, py, pw, ph);
 
     // Inner cushion edge shadow (vignette inside the playfield).
     ctx.save();
@@ -139,10 +150,11 @@ export class Renderer {
     ctx.fillRect(px, py, pw, ph);
     ctx.restore();
 
+    // --- K-66 cushion nose bevels, broken at pocket mouths (recessed facings) ---
+    this._drawCushions(cols);
+
     // Diamond sight markers on rails.
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    const W = TABLE.width;
-    const H = TABLE.height;
     const mark = (tx, ty, off) => {
       const p = this.toPx(tx, ty);
       ctx.beginPath();
@@ -154,28 +166,169 @@ export class Renderer {
       mark(tx, 0, { x: 0, y: -r * 0.55 });
       mark(tx, H, { x: 0, y: r * 0.55 });
     }
-    for (let i = 1; i <= 1; i++) {
-      mark(0, H / 2, { x: -r * 0.55, y: 0 });
-      mark(W, H / 2, { x: r * 0.55, y: 0 });
-    }
+    mark(0, H / 2, { x: -r * 0.55, y: 0 });
+    mark(W, H / 2, { x: r * 0.55, y: 0 });
 
-    // Pockets (dark wells with inner shadow).
-    const pockets = [
-      [0, 0], [W / 2, 0], [W, 0], [0, H], [W / 2, H], [W, H],
-    ];
-    const pr = TABLE.pocketRadius * this.scale;
-    for (const [tx, ty] of pockets) {
-      const p = this.toPx(tx, ty);
-      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, pr);
-      g.addColorStop(0, '#000');
-      g.addColorStop(0.7, '#000');
-      g.addColorStop(1, this._darken(cols.felt, 0.4));
-      ctx.fillStyle = g;
+    // --- Recessed pocket drop-holes cut into the rail ---
+    for (const [tx, ty] of pocketList) this._drawPocketHole(tx, ty, cols);
+
+    ctx.restore();
+  }
+
+  // Procedural cherry wood grain: layered translucent streaks along the rail.
+  _drawWoodGrain(x, y, w, h, baseHex) {
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.globalAlpha = 0.16;
+    const dark = this._darken(baseHex, 0.5);
+    const light = this._lighten(baseHex, 0.25);
+    let seed = 7;
+    const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    const streaks = Math.max(10, Math.floor(w / 14));
+    for (let i = 0; i < streaks; i++) {
+      const t = i / streaks;
+      const yy = y + t * h + (rand() - 0.5) * h * 0.12;
+      const wob = (rand() - 0.5) * 3;
+      ctx.strokeStyle = rand() > 0.5 ? dark : light;
+      ctx.lineWidth = 0.6 + rand() * 1.4;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, pr, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.moveTo(x, yy);
+      ctx.bezierCurveTo(x + w * 0.3, yy + wob * 4, x + w * 0.7, yy - wob * 4, x + w, yy + wob);
+      ctx.stroke();
     }
+    ctx.restore();
+  }
 
+  // Subtle felt nap: very light diagonal hatch, barely visible.
+  _drawFeltNap(x, y, w, h) {
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.globalAlpha = 0.035;
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1;
+    const step = 6;
+    ctx.beginPath();
+    for (let d = -h; d < w; d += step) {
+      ctx.moveTo(x + d, y);
+      ctx.lineTo(x + d + h, y + h);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // Polished metallic pocket plate (ring) beneath the rail opening.
+  _drawPocketPlate(tx, ty, cols) {
+    const ctx = this.ctx;
+    const p = this.toPx(tx, ty);
+    const pr = TABLE.pocketRadius * this.scale;
+    const plateR = pr * 1.55;
+    const grad = ctx.createLinearGradient(p.x - plateR, p.y - plateR, p.x + plateR, p.y + plateR);
+    grad.addColorStop(0, '#e8dcb8');
+    grad.addColorStop(0.35, '#8a7748');
+    grad.addColorStop(0.5, '#f0e6c8');
+    grad.addColorStop(0.7, '#7a6838');
+    grad.addColorStop(1, '#d8caa0');
+    ctx.save();
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, plateR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // K-66 cushion nose bevels (141deg nose), broken at pocket mouths to form
+  // the 142deg corner / 103deg side facing cuts. Purely visual — physics
+  // coordinates/collision are unchanged.
+  _drawCushions(cols) {
+    const ctx = this.ctx;
+    const W = TABLE.width;
+    const H = TABLE.height;
+    const cushionColor = cols.cushion || this._darken(cols.felt, 0.15);
+    const noseDepth = TABLE.railThickness * 0.34 * this.scale;
+    const facing = TABLE.pocketRadius * 0.55 * this.scale;
+
+    const drawWall = (isHorizontal, fixed, gaps) => {
+      ctx.save();
+      const a = this.toPx(0, fixed);
+      const grad = isHorizontal
+        ? ctx.createLinearGradient(0, a.y - noseDepth, 0, a.y + noseDepth)
+        : ctx.createLinearGradient(a.x - noseDepth, 0, a.x + noseDepth, 0);
+      grad.addColorStop(0, this._lighten(cushionColor, 0.15));
+      grad.addColorStop(0.5, cushionColor);
+      grad.addColorStop(1, this._darken(cushionColor, 0.3));
+      ctx.fillStyle = grad;
+
+      const end = isHorizontal ? W : H;
+      let cursor = 0;
+      const segs = [];
+      for (const [lo, hi] of gaps) {
+        if (lo > cursor) segs.push([cursor, lo]);
+        cursor = Math.max(cursor, hi);
+      }
+      if (cursor < end) segs.push([cursor, end]);
+
+      for (const [s0, s1] of segs) {
+        ctx.beginPath();
+        if (isHorizontal) {
+          const pa = this.toPx(s0, fixed);
+          const pb = this.toPx(s1, fixed);
+          const dir = fixed === 0 ? 1 : -1;
+          const f0 = s0 === 0 ? 0 : facing * 0.5;
+          const f1 = s1 === end ? 0 : facing * 0.5;
+          ctx.moveTo(pa.x + f0, pa.y);
+          ctx.lineTo(pb.x - f1, pb.y);
+          ctx.lineTo(pb.x - f1 - facing * 0.35, pb.y + noseDepth * dir);
+          ctx.lineTo(pa.x + f0 + facing * 0.35, pa.y + noseDepth * dir);
+        } else {
+          const pa = this.toPx(fixed, s0);
+          const pb = this.toPx(fixed, s1);
+          const dir = fixed === 0 ? 1 : -1;
+          const f0 = s0 === 0 ? 0 : facing * 0.5;
+          const f1 = s1 === end ? 0 : facing * 0.5;
+          ctx.moveTo(pa.x, pa.y + f0);
+          ctx.lineTo(pb.x, pb.y - f1);
+          ctx.lineTo(pb.x + noseDepth * dir, pb.y - f1 - facing * 0.35);
+          ctx.lineTo(pa.x + noseDepth * dir, pa.y + f0 + facing * 0.35);
+        }
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    };
+
+    drawWall(true, 0, this.gapsFor('top'));
+    drawWall(true, H, this.gapsFor('bottom'));
+    drawWall(false, 0, this.gapsFor('left'));
+    drawWall(false, W, this.gapsFor('right'));
+  }
+
+  gapsFor(wall) {
+    const W = TABLE.width, H = TABLE.height;
+    const mw = TABLE.pocketRadius * 0.92;
+    if (wall === 'top' || wall === 'bottom') return [[0, mw], [W / 2 - mw, W / 2 + mw], [W - mw, W]];
+    return [[0, mw], [H - mw, H]];
+  }
+
+  // Recessed drop-hole cut directly into the rail/cushion corner.
+  _drawPocketHole(tx, ty, cols) {
+    const ctx = this.ctx;
+    const p = this.toPx(tx, ty);
+    const pr = TABLE.pocketRadius * this.scale;
+    const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, pr);
+    g.addColorStop(0, '#000');
+    g.addColorStop(0.65, '#000');
+    g.addColorStop(0.85, this._darken(cols.felt, 0.5));
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.save();
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, pr, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+    ctx.lineWidth = Math.max(1, pr * 0.08);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, pr * 0.98, -2.4, -0.7);
+    ctx.stroke();
     ctx.restore();
   }
 
@@ -300,13 +453,19 @@ export class Renderer {
       ctx.beginPath();
       ctx.arc(gp.x, gp.y, rp, 0, Math.PI * 2);
       ctx.stroke();
-      // Post-contact projection.
-      ctx.setLineDash([3, 5]);
-      ctx.strokeStyle = 'rgba(120,255,170,0.5)';
-      ctx.beginPath();
-      ctx.moveTo(gp.x, gp.y);
-      ctx.lineTo(gp.x + Math.cos(ang) * rp * 6, gp.y + Math.sin(ang) * rp * 6);
-      ctx.stroke();
+      // Post-contact deflection: short path (~2.5-3 ball diameters) showing
+      // the object ball's post-collision direction (along the impact normal).
+      if (this.aim.target) {
+        const tp = this.toPx(this.aim.target.x, this.aim.target.y);
+        const defLen = rp * 5.5; // ~2.75 ball diameters (d=2rp)
+        ctx.setLineDash([3, 5]);
+        ctx.strokeStyle = 'rgba(120,255,170,0.55)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(tp.x, tp.y);
+        ctx.lineTo(tp.x + Math.cos(ang) * defLen, tp.y + Math.sin(ang) * defLen);
+        ctx.stroke();
+      }
     } else {
       ctx.lineTo(ex, ey);
     }

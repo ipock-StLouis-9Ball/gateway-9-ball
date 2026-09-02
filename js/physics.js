@@ -75,10 +75,13 @@ export class Physics {
         b.vx = 0;
         b.vy = 0;
       }
-      // spin: cue ball english — modest curve. Only applies while the ball is
-      // still rolling meaningfully; cleared once it stops so the shot always
-      // resolves (no perpetual drift / never-ending simulation).
+      // spin: cue ball english — modest curve. Angular damping wears spin
+      // off exponentially over distance so backspin/topspin/side fade naturally;
+      // cleared near rest so the shot always resolves (no perpetual drift).
       if (b.englishX || b.englishY) {
+        const damp = Math.exp(-TABLE.spinDamping * dt);
+        b.englishX *= damp;
+        b.englishY *= damp;
         const sp2 = Math.hypot(b.vx, b.vy);
         if (sp2 > 1.2) {
           b.vx += (b.englishX || 0) * dt * 6;

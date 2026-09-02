@@ -42,9 +42,10 @@ export const TABLE = {
   railThickness: 5,
   ballRadius: 1.125, // 2.25" diameter regulation ball
   pocketRadius: 2.4, // pocket mouth capture radius
-  cushionRestitution: 0.72, // bounce energy retained off rail
-  ballRestitution: 0.94, // ball-ball energy retained
-  friction: 2.6, // rolling deceleration (inches/sec^2) — tuned for snappy resolution
+  cushionRestitution: 0.85, // K-66 rubber: ~85% energy retained off rail
+  ballRestitution: 0.88, // ball-ball: ~88% energy retained
+  friction: 2.3, // rolling deceleration (inches/sec^2) — felt cloth drag
+  spinDamping: 1.6, // english/spin wears off exponentially over distance
   stopThreshold: 1.0, // below this speed, ball stops
 };
 
@@ -64,6 +65,8 @@ export const BALL_COLORS = {
 export const TABLE_COLORS = {
   classic: { felt: '#1a6b3a', rail: '#3a2418', railEdge: '#5a3624' },
   tournament: { felt: '#16557f', rail: '#2a1d12', railEdge: '#4a2e1c' },
+  // Maroon cloth with medium cherry wood rails (the requested look).
+  maroon: { felt: '#6b1f2b', rail: '#7a3b22', railEdge: '#5a2a18', cushion: '#5a1a24', plate: '#c9b074' },
   crimson: { felt: '#7a1f2e', rail: '#1d1410', railEdge: '#3a2620' },
   midnight: { felt: '#1d2a4a', rail: '#0d0f1a', railEdge: '#222638' },
 };

@@ -222,19 +222,20 @@ function updateHud(hud) {
   const t = document.getElementById('shot-timer');
   t.textContent = hud.shotTimer;
   t.parentElement.classList.toggle('warn', hud.shotTimer <= 8);
-  document.getElementById('power-pct').textContent = Math.round(hud.power * 100) + '%';
-  document.getElementById('power-fill').style.width = (hud.power * 100) + '%';
-  document.getElementById('power-handle').style.left = (hud.power * 100) + '%';
+  // Cue-stick power fill mirrors the current charge (live during drag, synced here otherwise).
+  if (!cueCharging) {
+    document.getElementById('cue-power-fill').style.height = (hud.power * 100) + '%';
+    positionCueStick(hud.power);
+  }
   const banner = document.getElementById('msg-banner');
   if (hud.message) { banner.textContent = hud.message; banner.classList.remove('hidden'); }
   else banner.classList.add('hidden');
-  // Shoot button enabled only when aiming and it's your turn.
-  const shoot = document.getElementById('shoot-btn');
-  shoot.disabled = !(hud.state === 'AIMING' && hud.currentPlayer === 0);
-  // Push-out button: only after a legal break, on your turn, while aiming.
+  // Push-out pill: only after a legal break, on your turn, while aiming.
   const pushBtn = document.getElementById('pushout-btn');
   pushBtn.classList.toggle('hidden', !hud.pushOutAvailable);
   pushBtn.disabled = !(hud.state === 'AIMING' && hud.currentPlayer === 0);
+  if (!hud.pushOutAvailable) pushOutMode = false;
+  pushBtn.classList.toggle('active', pushOutMode);
   // Push-out decision prompt (you are the chooser).
   const pd = document.getElementById('push-decision');
   pd.classList.toggle('hidden', !hud.pendingPushDecision);
@@ -250,22 +251,69 @@ function updateHud(hud) {
 }
 
 // ---------- Game controls ----------
-function bindGameControls() {
-  // Power slider drag
-  const track = document.getElementById('power-track');
-  const setPowerFromEvent = (e) => {
-    const rect = track.getBoundingClientRect();
-    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-    const frac = Math.max(0, Math.min(1, x / rect.width));
-    if (game) game.setPower(frac);
-  };
-  track.addEventListener('pointerdown', (e) => { setPowerFromEvent(e); track.setPointerCapture(e.pointerId); });
-  track.addEventListener('pointermove', (e) => { if (e.buttons) setPowerFromEvent(e); });
+let cueCharging = false;     // true while the player is pulling the cue stick
+let cueStartY = 0;          // pointer Y at charge start
+let cuePowerAtStart = 0;   // power when the current drag began
+let pushOutMode = false;   // when true, the next release fires a push-out
 
-  // Shoot
-  document.getElementById('shoot-btn').addEventListener('click', () => game && game.shoot());
-  // Push-out (available after a legal break)
-  document.getElementById('pushout-btn').addEventListener('click', () => game && game.pushOut());
+// Translate the cue-stick graphic down to reflect the current charge.
+function positionCueStick(powerFrac) {
+  const stick = document.getElementById('cue-stick');
+  const track = document.getElementById('cue-stick-track');
+  if (!stick || !track) return;
+  const maxPull = track.clientHeight * 0.26; // pullback range
+  const pull = Math.max(0, Math.min(1, powerFrac)) * maxPull;
+  stick.style.transform = `translate(-50%, ${pull}px)`;
+}
+
+function bindGameControls() {
+  // --- Vertical cue-stick pullback mechanic ---
+  // Drag DOWN on the stick to charge; release fires the spring-strike.
+  const track = document.getElementById('cue-stick-track');
+  const fill = document.getElementById('cue-power-fill');
+  const chargeFromEvent = (e) => {
+    if (!game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
+    const rect = track.getBoundingClientRect();
+    const maxPull = rect.height * 0.7; // drag range that maps to 0..100%
+    const dy = Math.max(0, (e.clientY - cueStartY));
+    let frac = Math.max(0, Math.min(1, dy / maxPull));
+    // Snap to the 25/50/75 marks when very close, for tactile feel.
+    for (const m of [0.25, 0.5, 0.75]) if (Math.abs(frac - m) < 0.035) frac = m;
+    game.setPower(frac);
+    fill.style.height = (frac * 100) + '%';
+    positionCueStick(frac);
+  };
+  track.addEventListener('pointerdown', (e) => {
+    if (!game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
+    cueCharging = true;
+    cueStartY = e.clientY;
+    cuePowerAtStart = game.power;
+    track.setPointerCapture(e.pointerId);
+    chargeFromEvent(e);
+  });
+  track.addEventListener('pointermove', (e) => { if (cueCharging) chargeFromEvent(e); });
+  const releaseCue = () => {
+    if (!cueCharging) return;
+    cueCharging = false;
+    const firedPower = game.power;
+    // Require a minimum pull so a tap doesn't fire a weak shot.
+    if (firedPower >= 0.12 && game.state === 'AIMING' && game.currentPlayer === 0) {
+      if (pushOutMode) { pushOutMode = false; game.pushOut(); }
+      else game.shoot();
+    }
+    // Reset the stick graphic after the strike.
+    setTimeout(() => { if (!cueCharging) { fill.style.height = '0%'; positionCueStick(0); } }, 220);
+  };
+  track.addEventListener('pointerup', releaseCue);
+  track.addEventListener('pointercancel', releaseCue);
+
+  // Push-out toggle pill: arms the next release as a push-out (after legal break).
+  document.getElementById('pushout-btn').addEventListener('click', () => {
+    if (!game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
+    if (!game.pushOutAvailable) return;
+    pushOutMode = !pushOutMode;
+    document.getElementById('pushout-btn').classList.toggle('active', pushOutMode);
+  });
   // Push-out decision: take or pass back
   document.getElementById('pd-take').addEventListener('click', () => game && game.takePush());
   document.getElementById('pd-pass').addEventListener('click', () => game && game.passPush());
@@ -273,7 +321,6 @@ function bindGameControls() {
   // English popover
   const pop = document.getElementById('english-pop');
   const epBall = document.querySelector('.ep-ball');
-  const epDot = document.getElementById('ep-dot');
   document.getElementById('english-btn').addEventListener('click', (e) => { e.stopPropagation(); pop.classList.toggle('hidden'); });
   document.addEventListener('click', (e) => { if (!pop.contains(e.target) && e.target.id !== 'english-btn') pop.classList.add('hidden'); });
   const setEnglishFromEvent = (e) => {
@@ -283,8 +330,8 @@ function bindGameControls() {
     const ex = Math.max(-1, Math.min(1, cx / (rect.width / 2)));
     const ey = Math.max(-1, Math.min(1, -cy / (rect.height / 2)));
     if (game) game.setEnglish(ex, ey);
-    epDot.style.left = (50 + ex * 40) + '%';
-    epDot.style.top = (50 - ey * 40) + '%';
+    document.getElementById('ep-dot').style.left = (50 + ex * 40) + '%';
+    document.getElementById('ep-dot').style.top = (50 - ey * 40) + '%';
   };
   epBall.addEventListener('pointerdown', (e) => { setEnglishFromEvent(e); epBall.setPointerCapture(e.pointerId); });
   epBall.addEventListener('pointermove', (e) => { if (e.buttons) setEnglishFromEvent(e); });

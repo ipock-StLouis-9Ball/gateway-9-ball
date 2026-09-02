@@ -122,23 +122,55 @@
 
   <!-- ================= GAME ================= -->
   <section id="screen-game" class="screen hidden game-screen">
-    <div class="game-left">
-      <canvas id="game-canvas"></canvas>
-      <div class="game-controls">
+    <div class="game-stage">
+      <div class="game-left">
+        <canvas id="game-canvas"></canvas>
+      </div>
+
+      <div class="controls-col">
         <button id="game-menu" class="icon-btn" title="Menu">☰</button>
-        <div class="power-wrap">
-          <span class="ctrl-label">POWER</span>
-          <div class="power-track" id="power-track">
-            <div class="power-fill" id="power-fill"></div>
-            <div class="power-handle" id="power-handle"></div>
+        <button id="pushout-btn" class="pushout-pill hidden" title="Available after a legal break">Push Out</button>
+        <div class="cue-stick-wrap">
+          <div class="cue-power-scale">
+            <span class="cue-mark" data-pct="75">75</span>
+            <span class="cue-mark" data-pct="50">50</span>
+            <span class="cue-mark" data-pct="25">25</span>
           </div>
-          <span class="power-pct" id="power-pct">60%</span>
+          <div class="cue-stick-track" id="cue-stick-track">
+            <div class="cue-power-fill" id="cue-power-fill"></div>
+            <div class="cue-stick" id="cue-stick">
+              <div class="cue-tip"></div>
+              <div class="cue-shaft"></div>
+            </div>
+          </div>
         </div>
-        <button id="english-btn" class="english-ball" title="Spin / English">
-          <span class="eb-dot" id="eb-dot"></span>
-        </button>
-        <button id="shoot-btn" class="shoot-btn">SHOOT</button>
-        <button id="pushout-btn" class="pushout-btn hidden" title="Available after a legal break">PUSH OUT</button>
+        <div class="english-block">
+          <button id="english-btn" class="english-ball" title="Spin / English">
+            <span class="eb-dot" id="eb-dot"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="game-right">
+        <div class="player-card p1">
+          <div class="avatar" id="p1-avatar">JP</div>
+          <div class="pc-info"><span class="pc-name" id="p1-name">You</span><span class="pc-score" id="p1-score">0</span></div>
+          <div class="turn-dot" id="p1-turn"></div>
+        </div>
+
+        <div class="timer-block">
+          <div class="timer-ring">
+            <span id="shot-timer">30</span>
+          </div>
+          <span class="timer-label">SHOT TIMER</span>
+          <div class="match-info" id="match-info">Best of 3</div>
+        </div>
+
+        <div class="player-card p2">
+          <div class="avatar" id="p2-avatar">AI</div>
+          <div class="pc-info"><span class="pc-name" id="p2-name">Breaker AI</span><span class="pc-score" id="p2-score">0</span></div>
+          <div class="turn-dot" id="p2-turn"></div>
+        </div>
       </div>
     </div>
 
@@ -151,28 +183,6 @@
           <button class="cta" id="pd-take">Take Shot</button>
           <button class="ghost-btn" id="pd-pass">Pass Back</button>
         </div>
-      </div>
-    </div>
-
-    <div class="game-right">
-      <div class="player-card p1">
-        <div class="avatar" id="p1-avatar">JP</div>
-        <div class="pc-info"><span class="pc-name" id="p1-name">You</span><span class="pc-score" id="p1-score">0</span></div>
-        <div class="turn-dot" id="p1-turn"></div>
-      </div>
-
-      <div class="timer-block">
-        <div class="timer-ring">
-          <span id="shot-timer">30</span>
-        </div>
-        <span class="timer-label">SHOT TIMER</span>
-        <div class="match-info" id="match-info">Best of 3</div>
-      </div>
-
-      <div class="player-card p2">
-        <div class="avatar" id="p2-avatar">AI</div>
-        <div class="pc-info"><span class="pc-name" id="p2-name">Breaker AI</span><span class="pc-score" id="p2-score">0</span></div>
-        <div class="turn-dot" id="p2-turn"></div>
       </div>
     </div>
 

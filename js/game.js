@@ -125,13 +125,14 @@ export class Game {
     if (!cue) { this.renderer.aim = null; return; }
     const r = TABLE.ballRadius;
     const ghost = this._ghostBall(cue, this.aimAngle, r);
-    this.renderer.aim = { angle: this.aimAngle, power: this.power, ghost };
+    this.renderer.aim = { angle: this.aimAngle, power: this.power, ghost: ghost ? ghost.pos : null, target: ghost ? ghost.target : null };
   }
 
   _ghostBall(cue, angle, r) {
     const dx = Math.cos(angle);
     const dy = Math.sin(angle);
     let bestT = Infinity;
+    let target = null;
     for (const b of this.balls) {
       if (b.pocketed || b.id === CUE_ID) continue;
       const ex = b.x - cue.x;
@@ -141,10 +142,10 @@ export class Game {
       const disc = proj * proj - (ex * ex + ey * ey - (2 * r) * (2 * r));
       if (disc < 0) continue;
       const t = proj - Math.sqrt(disc);
-      if (t > 0 && t < bestT) bestT = t;
+      if (t > 0 && t < bestT) { bestT = t; target = b; }
     }
     if (bestT === Infinity) return null;
-    return { x: cue.x + dx * bestT, y: cue.y + dy * bestT };
+    return { pos: { x: cue.x + dx * bestT, y: cue.y + dy * bestT }, target: { x: target.x, y: target.y } };
   }
 
   // --- Shot execution (async: resolver may be remote) ---
