@@ -249,7 +249,7 @@ export class Renderer {
     const W = TABLE.width;
     const H = TABLE.height;
     const cushionColor = cols.cushion || this._darken(cols.felt, 0.15);
-    const noseDepth = TABLE.railThickness * 0.32 * this.scale;
+    const noseDepth = TABLE.railThickness * 0.55 * this.scale;
     const facing = TABLE.pocketRadius * 0.5 * this.scale;
 
     const drawWall = (isHorizontal, fixed, gaps) => {
