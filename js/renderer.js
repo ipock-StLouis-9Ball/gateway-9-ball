@@ -47,7 +47,7 @@ export class Renderer {
       stencil: true,
     });
     this.scene = new BABYLON.Scene(this.engine);
-    this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 1);
+    this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
 
     // Light
     const light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(0, 1, 0), this.scene);
@@ -84,7 +84,7 @@ export class Renderer {
     this.framePlane.position.y = 2.0;
 
     const frameMat = new BABYLON.StandardMaterial('frameMat', this.scene);
-    const frameTex = new BABYLON.Texture(`${ASSET_DIR}/frame.svg`, this.scene);
+    const frameTex = new BABYLON.Texture(`${ASSET_DIR}/pool_table_frame.svg`, this.scene);
     frameTex.hasAlpha = true;
     frameMat.diffuseTexture = frameTex;
     frameMat.emissiveTexture = frameTex;
@@ -308,9 +308,11 @@ export class Renderer {
     this.feltPlane.scaling.set(this.playW, this.playH, 1);
     this.feltPlane.position.set(px + this.playW / 2, 0, py + this.playH / 2);
 
-    // 2. Frame Plane (outer rail dimensions overlay)
-    this.framePlane.scaling.set(this.tableRect.w, this.tableRect.h, 1);
-    this.framePlane.position.set(this.tableRect.x + this.tableRect.w / 2, 2.0, this.tableRect.y + this.tableRect.h / 2);
+    // 2. Frame Plane (outer rail dimensions overlay, viewBox 1600x900 with 1240x540 inner cutout)
+    const frameW = this.playW * (1600 / 1240);
+    const frameH = this.playH * (900 / 540);
+    this.framePlane.scaling.set(frameW, frameH, 1);
+    this.framePlane.position.set(px + this.playW / 2, 2.0, py + this.playH / 2);
 
     // 3. Aim Overlay Plane
     if (this.aimTexture) {
