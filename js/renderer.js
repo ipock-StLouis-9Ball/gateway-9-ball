@@ -144,6 +144,116 @@ export class Renderer {
     if (this.aim) this._drawAim(balls);
   }
 
+  drawTableFelt(arg1, arg2, arg3, arg4, arg5) {
+    const ctx = (arg1 && arg1.fillRect) ? arg1 : this.ctx;
+    const x = (arg1 && arg1.fillRect) ? arg2 : arg1;
+    const y = (arg1 && arg1.fillRect) ? arg3 : arg2;
+    const width = (arg1 && arg1.fillRect) ? arg4 : arg3;
+    const height = (arg1 && arg1.fillRect) ? arg5 : arg4;
+
+    // Center point of the pool table
+    const centerX = x + width / 2;
+    const centerY = y + height / 2;
+
+    // Start radius at 50, end radius covers the table corners
+    const outerRadius = Math.sqrt((width / 2) ** 2 + (height / 2) ** 2);
+
+    const gradient = ctx.createRadialGradient(
+      centerX, centerY, 50,           // Inner circle
+      centerX, centerY, outerRadius   // Outer circle boundary
+    );
+
+    // Color stops: Vivid crimson center fading to deep burgundy/black edge
+    gradient.addColorStop(0, '#9e1a32');
+    gradient.addColorStop(0.6, '#5c0b1a');
+    gradient.addColorStop(1, '#1f0207');
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x, y, width, height);
+  }
+
+  drawBeveledRails(arg1, arg2, arg3, arg4, arg5, arg6) {
+    const ctx = (arg1 && arg1.fillRect) ? arg1 : this.ctx;
+    const tableX = (arg1 && arg1.fillRect) ? arg2 : arg1;
+    const tableY = (arg1 && arg1.fillRect) ? arg3 : arg2;
+    const tableWidth = (arg1 && arg1.fillRect) ? arg4 : arg3;
+    const tableHeight = (arg1 && arg1.fillRect) ? arg5 : arg4;
+    const railWidth = (arg1 && arg1.fillRect) ? arg6 : arg5;
+
+    // Outer wooden rail frame
+    ctx.fillStyle = '#2b1108'; // Dark mahogany base
+    ctx.fillRect(tableX - railWidth, tableY - railWidth, tableWidth + (railWidth * 2), tableHeight + (railWidth * 2));
+
+    // Inner Gloss/Bevel Highlight Cut
+    const bevelHighlight = ctx.createLinearGradient(tableX, tableY, tableX, tableY + railWidth);
+    bevelHighlight.addColorStop(0, 'rgba(255, 255, 255, 0.25)'); // Bright specular top edge
+    bevelHighlight.addColorStop(0.3, 'rgba(0, 0, 0, 0.4)');
+    bevelHighlight.addColorStop(1, 'rgba(0, 0, 0, 0.8)');       // Inner shadow contact
+
+    ctx.fillStyle = bevelHighlight;
+    ctx.fillRect(tableX, tableY - railWidth, tableWidth, railWidth);
+  }
+
+  drawTableDiamonds(arg1, arg2, arg3, arg4, arg5, arg6) {
+    const ctx = (arg1 && arg1.fillRect) ? arg1 : this.ctx;
+    const tableX = (arg1 && arg1.fillRect) ? arg2 : arg1;
+    const tableY = (arg1 && arg1.fillRect) ? arg3 : arg2;
+    const tableWidth = (arg1 && arg1.fillRect) ? arg4 : arg3;
+    const tableHeight = (arg1 && arg1.fillRect) ? arg5 : arg4;
+    const railOffset = (arg1 && arg1.fillRect) ? arg6 : arg5;
+
+    ctx.fillStyle = '#ebd2b0'; // Mother-of-pearl / Ivory cream color
+
+    const segmentWidth = tableWidth / 2; // Split table into two perfect squares
+    const stepX = segmentWidth / 4;
+    const stepY = tableHeight / 4;
+
+    // Draw Diamond Shape Utility
+    function drawDiamond(cx, cy) {
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - 6);       // Top point
+      ctx.lineTo(cx + 10, cy);      // Right point
+      ctx.lineTo(cx, cy + 6);       // Bottom point
+      ctx.lineTo(cx - 10, cy);      // Left point
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Loop through and map positions along Top/Bottom rails
+    for (let i = 1; i <= 7; i++) {
+      if (i === 4) continue; // Skip the middle index where the side pockets sit
+      drawDiamond(tableX + (i * (tableWidth / 8)), tableY - railOffset); // Top Rail
+      drawDiamond(tableX + (i * (tableWidth / 8)), tableY + tableHeight + railOffset); // Bottom Rail
+    }
+
+    // Loop through and map positions along Left/Right rails
+    for (let i = 1; i <= 3; i++) {
+      drawDiamond(tableX - railOffset, tableY + (i * stepY)); // Left Rail
+      drawDiamond(tableX + tableWidth + railOffset, tableY + (i * stepY)); // Right Rail
+    }
+  }
+
+  drawBallWithShadow(arg1, arg2) {
+    const ctx = (arg1 && arg1.beginPath) ? arg1 : this.ctx;
+    const ball = (arg1 && arg1.beginPath) ? arg2 : arg1;
+
+    ctx.save();
+
+    // Configure soft drop shadow mapping
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
+    ctx.shadowBlur = 12;      // Softness expansion
+    ctx.shadowOffsetX = 6;    // Light source angle offset (X)
+    ctx.shadowOffsetY = 10;   // Light source angle offset (Y)
+
+    // Draw base shadow & ball surface simultaneously
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+    ctx.fillStyle = ball.color;
+    ctx.fill();
+
+    ctx.restore(); // Instantly clears shadow rules for subsequent elements
+  }
+
   _drawTable() {
     const ctx = this.ctx;
     const tr = this.tableRect;
@@ -168,7 +278,7 @@ export class Renderer {
     ctx.fill();
     ctx.restore();
 
-    // 2. Cherry wood rail (texture stretched to fill the table rect = rails).
+    // 2. Beveled rails frame
     const wood = this.imgs.wood;
     if (this.ready && wood && wood.complete && wood.naturalWidth) {
       ctx.save();
@@ -177,9 +287,7 @@ export class Renderer {
       ctx.drawImage(wood, tr.x, tr.y, tr.w, tr.h);
       ctx.restore();
     } else {
-      ctx.fillStyle = cols.rail;
-      this._roundRect(tr.x, tr.y, tr.w, tr.h, r * 0.5);
-      ctx.fill();
+      this.drawBeveledRails(px, py, pw, ph, r);
     }
 
     // Metallic gold inlay trim around inner rail edge
@@ -199,18 +307,12 @@ export class Renderer {
       }
     }
 
-    // 4. Felt playfield (texture stretched to the 2:1 playfield rect).
+    // 4. Felt playfield
     const felt = this.imgs.felt;
     if (this.ready && felt && felt.complete && felt.naturalWidth) {
       ctx.drawImage(felt, px, py, pw, ph);
     } else {
-      const cx = px + pw / 2, cy = py + ph / 2;
-      const g = ctx.createRadialGradient(cx, cy, Math.min(pw, ph) * 0.1, cx, cy, Math.max(pw, ph) * 0.7);
-      g.addColorStop(0, this._lighten(cols.felt, 0.12));
-      g.addColorStop(0.6, cols.felt);
-      g.addColorStop(1, this._darken(cols.felt, 0.28));
-      ctx.fillStyle = g;
-      ctx.fillRect(px, py, pw, ph);
+      this.drawTableFelt(px, py, pw, ph);
     }
 
     // 5. Cushion inner-edge drop shadow (grounds the cushions on the felt).
@@ -247,21 +349,8 @@ export class Renderer {
     // 6. K-66 cushion nose bevels (vector trapezoids, broken at pocket mouths).
     this._drawCushions(cols);
 
-    // 7. Diamond sight markers on rails.
-    ctx.fillStyle = 'rgba(255,255,255,0.55)';
-    const mark = (tx, ty, off) => {
-      const p = this.toPx(tx, ty);
-      ctx.beginPath();
-      ctx.arc(p.x + off.x, p.y + off.y, r * 0.12, 0, Math.PI * 2);
-      ctx.fill();
-    };
-    for (let i = 1; i <= 3; i++) {
-      const tx = (W / 4) * i;
-      mark(tx, 0, { x: 0, y: -r * 0.55 });
-      mark(tx, H, { x: 0, y: r * 0.55 });
-    }
-    mark(0, H / 2, { x: -r * 0.55, y: 0 });
-    mark(W, H / 2, { x: r * 0.55, y: 0 });
+    // 7. Table diamonds on rails.
+    this.drawTableDiamonds(px, py, pw, ph, r * 0.5);
 
     // 8. Recessed pocket drop-holes (dark wells) on top of felt/cushion.
     if (this.ready && this.imgs.well && this.imgs.well.complete) {
