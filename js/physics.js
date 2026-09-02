@@ -47,6 +47,7 @@ export class Physics {
     this.gaps = wallGaps(W, H);
     this.pockets = pocketCenters(W, H);
     this.captureR = TABLE.pocketRadius * 0.82;
+    this.captureR2 = this.captureR * this.captureR;
   }
 
   // Step the world by dt (seconds). Mutates balls in place. Returns events.
@@ -138,8 +139,9 @@ export class Physics {
     for (const b of moving) {
       for (let p = 0; p < this.pockets.length; p++) {
         const pc = this.pockets[p];
-        const d = Math.hypot(b.x - pc.x, b.y - pc.y);
-        if (d < this.captureR) {
+        const dx = b.x - pc.x;
+        const dy = b.y - pc.y;
+        if (dx * dx + dy * dy < this.captureR2) {
           b.pocketed = true;
           b.vx = 0;
           b.vy = 0;
