@@ -1,11 +1,11 @@
 // ============================================================================
 // renderer.js — Orthographic Babylon.js Pool Table Renderer Engine.
 // Enforces hardcoded 80vw viewport layout and 2:1 ratio plane layers:
-// 1. Base Felt Plane: 'assets/felt.png' (2:1 playing surface)
-// 2. Shadows Plane Layer: 'assets/shadow.png' under active balls
+// 1. Base Felt Plane: 'assets/felt.svg' (2:1 playing surface)
+// 2. Shadows Plane Layer: 'assets/shadow.svg' under active balls
 // 3. Balls Plane Layer: Composite textured ball meshes with numbers & templates
 // 4. Aim Overlay Plane Layer: Guide lines & cue stick graphic
-// 5. Upper Rail Plane: 'assets/frame.png' layered over table with alpha testing
+// 5. Upper Rail Plane: 'assets/frame.svg' layered over table with alpha blending
 // ============================================================================
 
 import { TABLE, BALL_COLORS } from './config.js';
@@ -34,7 +34,7 @@ export class Renderer {
       this.ballTemplateLoaded = true;
       this._rebuildBallMaterials();
     };
-    this.ballTemplateImg.src = `${ASSET_DIR}/ball_template.png`;
+    this.ballTemplateImg.src = `${ASSET_DIR}/ball_template.svg`;
 
     this._initBabylon();
     this.resize();
@@ -70,7 +70,7 @@ export class Renderer {
     this.feltPlane.position.y = 0;
 
     const feltMat = new BABYLON.StandardMaterial('feltMat', this.scene);
-    const feltTex = new BABYLON.Texture(`${ASSET_DIR}/felt.png`, this.scene);
+    const feltTex = new BABYLON.Texture(`${ASSET_DIR}/felt.svg`, this.scene);
     feltMat.diffuseTexture = feltTex;
     feltMat.emissiveTexture = feltTex;
     feltMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
@@ -84,14 +84,13 @@ export class Renderer {
     this.framePlane.position.y = 2.0;
 
     const frameMat = new BABYLON.StandardMaterial('frameMat', this.scene);
-    const frameTex = new BABYLON.Texture(`${ASSET_DIR}/frame.png`, this.scene);
+    const frameTex = new BABYLON.Texture(`${ASSET_DIR}/frame.svg`, this.scene);
     frameTex.hasAlpha = true;
-    frameTex.getAlphaFromRGB = true;
     frameMat.diffuseTexture = frameTex;
     frameMat.emissiveTexture = frameTex;
     frameMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
     frameMat.useAlphaFromDiffuseTexture = true;
-    frameMat.transparencyMode = BABYLON.Material.MATERIAL_ALPHATEST;
+    frameMat.transparencyMode = BABYLON.Material.MATERIAL_ALPHABLEND;
     frameMat.disableLighting = true;
     frameMat.backFaceCulling = false;
     this.framePlane.material = frameMat;
@@ -115,7 +114,7 @@ export class Renderer {
 
     // Common shadow material
     const shadowMat = new BABYLON.StandardMaterial('shadowMat', this.scene);
-    const shadowTex = new BABYLON.Texture(`${ASSET_DIR}/shadow.png`, this.scene);
+    const shadowTex = new BABYLON.Texture(`${ASSET_DIR}/shadow.svg`, this.scene);
     shadowTex.hasAlpha = true;
     shadowMat.diffuseTexture = shadowTex;
     shadowMat.emissiveTexture = shadowTex;

@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1150 650" width="100%" height="100%">
+  <defs>
+    <!-- Cherry Wood Rail Linear Gradients -->
+    <linearGradient id="railWoodH" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8c4e2d" />
+      <stop offset="20%" stop-color="#a45e36" />
+      <stop offset="40%" stop-color="#7a4124" />
+      <stop offset="60%" stop-color="#9a5631" />
+      <stop offset="80%" stop-color="#6e391e" />
+      <stop offset="100%" stop-color="#8c4e2d" />
+    </linearGradient>
+    <linearGradient id="railWoodV" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8c4e2d" />
+      <stop offset="25%" stop-color="#a45e36" />
+      <stop offset="50%" stop-color="#7a4124" />
+      <stop offset="75%" stop-color="#9a5631" />
+      <stop offset="100%" stop-color="#8c4e2d" />
+    </linearGradient>
+
+    <!-- Outer Sheen / Shadow -->
+    <linearGradient id="railBevelTop" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.4" />
+    </linearGradient>
+
+    <!-- Cushion Rubber Bevel & Shadow -->
+    <linearGradient id="cushionTop" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d2e18" />
+      <stop offset="40%" stop-color="#1a5a31" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.6" />
+    </linearGradient>
+    <linearGradient id="cushionBottom" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#0d2e18" />
+      <stop offset="40%" stop-color="#1a5a31" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.6" />
+    </linearGradient>
+    <linearGradient id="cushionLeft" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0d2e18" />
+      <stop offset="40%" stop-color="#1a5a31" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.6" />
+    </linearGradient>
+    <linearGradient id="cushionRight" x1="100%" y1="0%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#0d2e18" />
+      <stop offset="40%" stop-color="#1a5a31" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.6" />
+    </linearGradient>
+
+    <!-- Brass Pocket Plate Gradient -->
+    <radialGradient id="brassPocket" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#ffe8a8" />
+      <stop offset="35%" stop-color="#d8b268" />
+      <stop offset="70%" stop-color="#8e682e" />
+      <stop offset="100%" stop-color="#3a280e" />
+    </radialGradient>
+
+    <!-- Diamond Sight Inlay -->
+    <polygon id="diamond" points="0,-6 5,0 0,6 -5,0" fill="#e8b75a" stroke="#fff" stroke-width="0.8" />
+  </defs>
+
+  <!-- Main Outer Rail Frame with Center Cutout -->
+  <path d="M 0,0 L 1150,0 L 1150,650 L 0,650 Z M 75,75 L 75,575 L 1075,575 L 1075,75 Z" fill="url(#railWoodH)" fill-rule="evenodd" />
+  <rect width="1150" height="650" fill="url(#railBevelTop)" opacity="0.6" pointer-events="none" />
+
+  <!-- Rubber Cushion Edges along inner play area -->
+  <!-- Top Cushion -->
+  <polygon points="75,60 1075,60 1060,75 90,75" fill="url(#cushionTop)" />
+  <!-- Bottom Cushion -->
+  <polygon points="75,590 1075,590 1060,575 90,575" fill="url(#cushionBottom)" />
+  <!-- Left Cushion -->
+  <polygon points="60,75 60,575 75,560 75,90" fill="url(#cushionLeft)" />
+  <!-- Right Cushion -->
+  <polygon points="1090,75 1090,575 1075,560 1075,90" fill="url(#cushionRight)" />
+
+  <!-- Cushion Inner Boundary Line -->
+  <rect x="75" y="75" width="1000" height="500" fill="none" stroke="#0a0a0a" stroke-width="2" />
+
+  <!-- Brass Pocket Plates & Pocket Cutouts (4 Corners + 2 Side Mids) -->
+  <!-- Corner TL -->
+  <circle cx="75" cy="75" r="48" fill="url(#brassPocket)" />
+  <circle cx="75" cy="75" r="32" fill="#050505" stroke="#12080a" stroke-width="3" />
+
+  <!-- Corner TR -->
+  <circle cx="1075" cy="75" r="48" fill="url(#brassPocket)" />
+  <circle cx="1075" cy="75" r="32" fill="#050505" stroke="#12080a" stroke-width="3" />
+
+  <!-- Corner BL -->
+  <circle cx="75" cy="575" r="48" fill="url(#brassPocket)" />
+  <circle cx="75" cy="575" r="32" fill="#050505" stroke="#12080a" stroke-width="3" />
+
+  <!-- Corner BR -->
+  <circle cx="1075" cy="575" r="48" fill="url(#brassPocket)" />
+  <circle cx="1075" cy="575" r="32" fill="#050505" stroke="#12080a" stroke-width="3" />
+
+  <!-- Side Mid Top -->
+  <circle cx="575" cy="65" r="42" fill="url(#brassPocket)" />
+  <circle cx="575" cy="65" r="28" fill="#050505" stroke="#12080a" stroke-width="3" />
+
+  <!-- Side Mid Bottom -->
+  <circle cx="575" cy="585" r="42" fill="url(#brassPocket)" />
+  <circle cx="575" cy="585" r="28" fill="#050505" stroke="#12080a" stroke-width="3" />
+
+  <!-- Diamond Sight Markers on Wood Rails -->
+  <!-- Top Rail Sights (x = 325, 575, 825; y = 32) -->
+  <use href="#diamond" x="325" y="32" />
+  <use href="#diamond" x="575" y="32" />
+  <use href="#diamond" x="825" y="32" />
+
+  <!-- Bottom Rail Sights (x = 325, 575, 825; y = 618) -->
+  <use href="#diamond" x="325" y="618" />
+  <use href="#diamond" x="575" y="618" />
+  <use href="#diamond" x="825" y="618" />
+
+  <!-- Left Rail Sights (x = 32; y = 200, 325, 450) -->
+  <use href="#diamond" x="32" y="200" />
+  <use href="#diamond" x="32" y="325" />
+  <use href="#diamond" x="32" y="450" />
+
+  <!-- Right Rail Sights (x = 1118; y = 200, 325, 450) -->
+  <use href="#diamond" x="1118" y="200" />
+  <use href="#diamond" x="1118" y="325" />
+  <use href="#diamond" x="1118" y="450" />
+</svg>
