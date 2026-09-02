@@ -24,26 +24,38 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body, canvas {
-  width: 100vw;
-  height: 100dvh;
-  margin: 0;
-  padding: 0;
-}
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100vw;
-  height: 100dvh;
-  overflow: hidden;
-}
 body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  overflow: hidden !important;
+  background: #000 !important;
   font-family: var(--font-body);
-  background: var(--navy-900);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   touch-action: none;
   user-select: none;
+}
+
+#canvas-container, canvas {
+  width: 80vw !important;
+  height: 100vh !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+}
+
+#ui-sidebar {
+  width: 20vw !important;
+  height: 100vh !important;
+  position: absolute !important;
+  right: 0 !important;
+  top: 0 !important;
+  background-image: url('assets/ui_sidebar.png') !important;
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
 }
 
 .hidden { display: none !important; }
@@ -179,12 +191,11 @@ body {
 
 /* ---------- Game screen ---------- */
 #game-canvas {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100dvh;
-  margin: 0;
-  padding: 0;
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 80vw !important;
+  height: 100vh !important;
   display: block;
   z-index: 1;
   cursor: crosshair;
@@ -195,7 +206,7 @@ body {
   position: fixed;
   inset: 0;
   width: 100vw;
-  height: 100dvh;
+  height: 100vh;
   pointer-events: none;
   background: transparent;
   overflow: hidden;
@@ -206,17 +217,16 @@ body {
 
 /* Control column: fixed 20% right sidebar overlay. Anchored at top. */
 .controls-col {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 20%;
-  height: 100dvh;
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  width: 20vw !important;
+  height: 100vh !important;
   pointer-events: auto;
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto auto auto auto auto 1fr;
   gap: 10px 8px; padding: 12px 10px;
-  background: #0b1220; border-left: 1px solid var(--border);
   box-shadow: -4px 0 20px rgba(0,0,0,0.5);
   align-items: start;
   justify-content: flex-start;

@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
 </head>
 <body>
   <!-- Rotate hint (portrait phones) -->
@@ -18,8 +19,11 @@
     <div>Rotate your device to landscape</div>
   </div>
 
-  <!-- Edge-to-edge Direct Child Game Canvas -->
-  <canvas id="game-canvas" class="hidden"></canvas>
+  <!-- Canvas container and sidebar for strict layout structure -->
+  <div id="canvas-container">
+    <canvas id="game-canvas" class="hidden"></canvas>
+  </div>
+  <div id="ui-sidebar"></div>
 
   <!-- ================= ST. LOUIS MAIN MENU ================= -->
   <section id="screen-menu" class="screen menu-screen">

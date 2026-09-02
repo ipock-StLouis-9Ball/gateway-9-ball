@@ -1,235 +1,154 @@
 // ============================================================================
-// renderer.js — 5-Layer Composite Pool Table Renderer.
-// Loads high-res layer PNGs: felt.png, shadow.png, ball_template.png, frame.png, ui_sidebar.png.
-// Enforces explicit draw order:
-// 1. Base Layer: felt.png
-// 2. Shadows Layer: shadow.png offset under balls
-// 3. Balls Layer: ball_template.png with canvas programmatic tinting and crisp text numbers
-// 4. Table Overlay: frame.png aligned over table bounds to mask felt & pocket edges
-// 5. UI Sidebar: ui_sidebar.png docked vertically on right 20% column
+// renderer.js — Orthographic Babylon.js Pool Table Renderer Engine.
+// Enforces hardcoded 80vw viewport layout and 2:1 ratio plane layers:
+// 1. Base Felt Plane: 'assets/felt.png' (2:1 playing surface)
+// 2. Shadows Plane Layer: 'assets/shadow.png' under active balls
+// 3. Balls Plane Layer: Composite textured ball meshes with numbers & templates
+// 4. Aim Overlay Plane Layer: Guide lines & cue stick graphic
+// 5. Upper Rail Plane: 'assets/frame.png' layered over table with alpha testing
 // ============================================================================
 
-import { TABLE, TABLE_COLORS, BALL_COLORS } from './config.js';
+import { TABLE, BALL_COLORS } from './config.js';
 
 const CUE_ID = 0;
 const ASSET_DIR = 'assets';
 
-const ASSETS = {
-  felt: `${ASSET_DIR}/felt.png`,
-  shadow: `${ASSET_DIR}/shadow.png`,
-  ballTemplate: `${ASSET_DIR}/ball_template.png`,
-  frame: `${ASSET_DIR}/frame.png`,
-  uiSidebar: `${ASSET_DIR}/ui_sidebar.png`,
-};
-
 export class Renderer {
   constructor(canvas, settings) {
     this.canvas = canvas;
-    this.ctx = canvas.getContext('2d');
     this.settings = settings;
+
     this.tableRect = { x: 0, y: 0, w: 0, h: 0 };
+    this.playOffset = { x: 0, y: 0 };
+    this.playW = 0;
+    this.playH = 0;
+    this.scale = 1;
+    this.cssW = 0;
+    this.cssH = 0;
     this.aim = null;
-    this.imgs = {};
-    this.ready = false;
-    this._ballCache = {};
-    this._loadAssets();
-  }
 
-  _loadAssets() {
-    let remaining = 0;
-    const keys = ['felt', 'shadow', 'ballTemplate', 'frame', 'uiSidebar'];
-    for (const k of keys) {
-      remaining++;
-      const img = new Image();
-      img.onload = img.onerror = () => {
-        remaining--;
-        if (remaining === 0) this.ready = true;
-      };
-      img.src = ASSETS[k];
-      this.imgs[k] = img;
-    }
-  }
-
-  resize() {
-    const dpr = window.devicePixelRatio || 1;
-    const rect = this.canvas.getBoundingClientRect();
-    const cssW = rect.width || window.innerWidth;
-    const cssH = rect.height || window.innerHeight;
-    this.cssW = cssW;
-    this.cssH = cssH;
-
-    this.canvas.width = Math.round(cssW * dpr);
-    this.canvas.height = Math.round(cssH * dpr);
-
-    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    this.ctx.imageSmoothingEnabled = true;
-    this.ctx.imageSmoothingQuality = 'high';
-
-    this._computeTableRect();
-    this._ballCache = {};
-  }
-
-  // Calculate table bounds dynamically within the canvas.
-  // Left 80% of canvas is reserved for pool table layout, right 20% for ui_sidebar.png overlay.
-  // Playable table cloth area maintains strict legal 2:1 tournament aspect ratio (100x50 inches).
-  _computeTableRect() {
-    const W = TABLE.width; // 100
-    const H = TABLE.height; // 50 (2:1 aspect ratio playing surface)
-    const rail = TABLE.railThickness; // 7.5
-    const outerW = W + rail * 2; // 115
-    const outerH = H + rail * 2; // 65
-
-    const availW = this.cssW * 0.8; // Exactly 80% landscape screen width
-    const availH = this.cssH;
-
-    const margin = Math.max(8, Math.min(availW, availH) * 0.025);
-    const maxW = availW - margin * 2;
-    const maxH = availH - margin * 2;
-
-    const scale = Math.min(maxW / outerW, maxH / outerH);
-    const drawW = outerW * scale;
-    const drawH = outerH * scale;
-
-    this.scale = scale;
-    this.tableRect = {
-      x: (availW - drawW) / 2,
-      y: (availH - drawH) / 2,
-      w: drawW,
-      h: drawH,
+    // Load ball template image for composite rendering
+    this.ballTemplateImg = new Image();
+    this.ballTemplateLoaded = false;
+    this.ballTemplateImg.onload = () => {
+      this.ballTemplateLoaded = true;
+      this._rebuildBallMaterials();
     };
-    this.playOffset = { x: rail * scale, y: rail * scale };
-    this.playW = W * scale; // Exactly 2:1 ratio (100 * scale)
-    this.playH = H * scale; // (50 * scale)
+    this.ballTemplateImg.src = `${ASSET_DIR}/ball_template.png`;
+
+    this._initBabylon();
+    this.resize();
   }
 
-  toPx(tx, ty) {
-    return {
-      x: this.tableRect.x + this.playOffset.x + tx * this.scale,
-      y: this.tableRect.y + this.playOffset.y + ty * this.scale,
-    };
+  _initBabylon() {
+    // 1. Create Babylon Engine & Scene attached to the 80vw canvas
+    this.engine = new BABYLON.Engine(this.canvas, true, {
+      preserveDrawingBuffer: true,
+      stencil: true,
+    });
+    this.scene = new BABYLON.Scene(this.engine);
+    this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 1);
+
+    // Light
+    const light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(0, 1, 0), this.scene);
+    light.intensity = 1.0;
+
+    // 2. Fixed top-down OrthographicCamera positioned overhead looking straight down
+    this.camera = new BABYLON.TargetCamera('OrthographicCamera', new BABYLON.Vector3(0, 100, 0), this.scene);
+    this.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+    this.camera.upVector = new BABYLON.Vector3(0, 0, -1); // +Z is down on screen, matching 2D canvas Y
+
+    // 3. Build plane layers
+    this._createPlanes();
+    this._createBallAndShadowMeshes();
   }
 
-  pxToIn(px, py) {
-    return {
-      x: (px - this.tableRect.x - this.playOffset.x) / this.scale,
-      y: (py - this.tableRect.y - this.playOffset.y) / this.scale,
-    };
+  _createPlanes() {
+    // Layer 1: Base Felt Plane (2:1 aspect ratio playing surface)
+    this.feltPlane = BABYLON.MeshBuilder.CreatePlane('feltPlane', { width: 1, height: 1 }, this.scene);
+    this.feltPlane.rotation.x = Math.PI / 2;
+    this.feltPlane.position.y = 0;
+
+    const feltMat = new BABYLON.StandardMaterial('feltMat', this.scene);
+    const feltTex = new BABYLON.Texture(`${ASSET_DIR}/felt.png`, this.scene);
+    feltMat.diffuseTexture = feltTex;
+    feltMat.emissiveTexture = feltTex;
+    feltMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
+    feltMat.disableLighting = true;
+    feltMat.backFaceCulling = false;
+    this.feltPlane.material = feltMat;
+
+    // Layer 4: Upper Rail Plane (frame overlay layered directly over felt and balls)
+    this.framePlane = BABYLON.MeshBuilder.CreatePlane('framePlane', { width: 1, height: 1 }, this.scene);
+    this.framePlane.rotation.x = Math.PI / 2;
+    this.framePlane.position.y = 2.0;
+
+    const frameMat = new BABYLON.StandardMaterial('frameMat', this.scene);
+    const frameTex = new BABYLON.Texture(`${ASSET_DIR}/frame.png`, this.scene);
+    frameTex.hasAlpha = true;
+    frameTex.getAlphaFromRGB = true;
+    frameMat.diffuseTexture = frameTex;
+    frameMat.emissiveTexture = frameTex;
+    frameMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
+    frameMat.useAlphaFromDiffuseTexture = true;
+    frameMat.transparencyMode = BABYLON.Material.MATERIAL_ALPHATEST;
+    frameMat.disableLighting = true;
+    frameMat.backFaceCulling = false;
+    this.framePlane.material = frameMat;
+
+    // Layer 5: Aim Overlay Plane Layer (renders cue stick & vector guides)
+    this.aimPlane = BABYLON.MeshBuilder.CreatePlane('aimPlane', { width: 1, height: 1 }, this.scene);
+    this.aimPlane.rotation.x = Math.PI / 2;
+    this.aimPlane.position.y = 1.5;
+
+    this.aimTexture = null;
+    this.aimMat = new BABYLON.StandardMaterial('aimMat', this.scene);
+    this.aimMat.disableLighting = true;
+    this.aimMat.backFaceCulling = false;
+    this.aimPlane.material = this.aimMat;
   }
 
-  ballRadiusPx() {
-    return TABLE.ballRadius * this.scale;
-  }
+  _createBallAndShadowMeshes() {
+    this.ballMeshes = {};
+    this.shadowMeshes = {};
+    this.ballMaterials = {};
 
-  // Explicit 5-layer draw order:
-  // 1. Base Layer: felt.png
-  // 2. Shadows Layer: shadow.png offset under active balls
-  // 3. Balls Layer: ball_template.png with tinting + numbers
-  // 4. Table Overlay: frame.png
-  // 5. UI Sidebar: ui_sidebar.png
-  draw(balls) {
-    const ctx = this.ctx;
-    ctx.clearRect(0, 0, this.cssW, this.cssH);
+    // Common shadow material
+    const shadowMat = new BABYLON.StandardMaterial('shadowMat', this.scene);
+    const shadowTex = new BABYLON.Texture(`${ASSET_DIR}/shadow.png`, this.scene);
+    shadowTex.hasAlpha = true;
+    shadowMat.diffuseTexture = shadowTex;
+    shadowMat.emissiveTexture = shadowTex;
+    shadowMat.useAlphaFromDiffuseTexture = true;
+    shadowMat.transparencyMode = BABYLON.Material.MATERIAL_ALPHABLEND;
+    shadowMat.disableLighting = true;
+    shadowMat.backFaceCulling = false;
 
-    // Layer 1: Base Layer (felt.png)
-    this._drawLayer1Felt();
+    for (let i = 0; i <= 9; i++) {
+      // Shadow mesh (Layer 2)
+      const shadowMesh = BABYLON.MeshBuilder.CreatePlane(`shadow_${i}`, { size: 1 }, this.scene);
+      shadowMesh.rotation.x = Math.PI / 2;
+      shadowMesh.position.y = 0.4;
+      shadowMesh.material = shadowMat;
+      this.shadowMeshes[i] = shadowMesh;
 
-    // Layer 2: Shadows Layer (shadow.png under active ball coordinates)
-    this._drawLayer2Shadows(balls);
+      // Ball mesh (Layer 3)
+      const ballMesh = BABYLON.MeshBuilder.CreatePlane(`ball_${i}`, { size: 1 }, this.scene);
+      ballMesh.rotation.x = Math.PI / 2;
+      ballMesh.position.y = 1.0;
+      this.ballMeshes[i] = ballMesh;
 
-    // Layer 3: Balls Layer (ball_template.png tinted with numbers + aim graphic)
-    this._drawLayer3Balls(balls);
-    if (this.aim) this._drawAim(balls);
-
-    // Layer 4: Table Overlay (frame.png to mask felt edges & hide passing balls)
-    this._drawLayer4Frame();
-
-    // Layer 5: UI Sidebar (ui_sidebar.png docked vertically on right 20% column)
-    this._drawLayer5UISidebar();
-  }
-
-  _drawLayer1Felt() {
-    const ctx = this.ctx;
-    const px = this.tableRect.x + this.playOffset.x;
-    const py = this.tableRect.y + this.playOffset.y;
-    const pw = this.playW;
-    const ph = this.playH;
-
-    // Background fill for left 80% screen space
-    ctx.fillStyle = '#0b1220';
-    ctx.fillRect(0, 0, this.cssW * 0.8, this.cssH);
-
-    const felt = this.imgs.felt;
-    if (this.ready && felt && felt.complete && felt.naturalWidth) {
-      ctx.drawImage(felt, px, py, pw, ph);
-    } else {
-      this.drawTableFelt(px, py, pw, ph);
+      this.ballMaterials[i] = this._createBallMaterial(i);
+      ballMesh.material = this.ballMaterials[i];
     }
   }
 
-  _drawLayer2Shadows(balls) {
-    const ctx = this.ctx;
-    const rp = this.ballRadiusPx();
-    const shadow = this.imgs.shadow;
-    const shadowReady = this.ready && shadow && shadow.complete && shadow.naturalWidth;
-
-    const offsetX = rp * 0.25;
-    const offsetY = rp * 0.35;
-    const sw = rp * 2.4;
-    const sh = rp * 2.4;
-
-    for (const b of balls) {
-      if (b.pocketed) continue;
-      const p = this.toPx(b.x, b.y);
-      if (shadowReady) {
-        ctx.drawImage(shadow, p.x - sw / 2 + offsetX, p.y - sh / 2 + offsetY, sw, sh);
-      } else {
-        ctx.save();
-        ctx.fillStyle = 'rgba(0,0,0,0.4)';
-        ctx.beginPath();
-        ctx.ellipse(p.x + offsetX, p.y + offsetY, rp, rp * 0.6, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      }
-    }
-  }
-
-  _drawLayer3Balls(balls) {
-    const rp = this.ballRadiusPx();
-    for (const b of balls) {
-      if (b.pocketed) continue;
-      this._drawBallComposite(b, rp);
-    }
-  }
-
-  _drawBallComposite(b, rp) {
-    const ctx = this.ctx;
-    const p = this.toPx(b.x, b.y);
-    const size = Math.max(16, Math.round(rp * 2));
-    const cachedCanvas = this._getBallTextureCanvas(b.id, size);
-
-    if (cachedCanvas) {
-      ctx.drawImage(cachedCanvas, p.x - rp, p.y - rp, rp * 2, rp * 2);
-    } else {
-      const base = b.id === CUE_ID ? '#f7f7f0' : (BALL_COLORS[b.id] || '#fff');
-      ctx.fillStyle = base;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, rp, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  _getBallTextureCanvas(id, size) {
-    const cacheKey = `${id}_${size}`;
-    if (this._ballCache[cacheKey]) return this._ballCache[cacheKey];
-
+  _createBallMaterial(id) {
+    const size = 128;
     const canvas = document.createElement('canvas');
     canvas.width = size;
     canvas.height = size;
     const ctx = canvas.getContext('2d');
-
-    const template = this.imgs.ballTemplate;
-    const hasTemplate = this.ready && template && template.complete && template.naturalWidth;
-
     const radius = size / 2;
     const color = id === CUE_ID ? '#ffffff' : (BALL_COLORS[id] || '#ffffff');
 
@@ -238,10 +157,9 @@ export class Renderer {
       ctx.arc(radius, radius, radius, 0, Math.PI * 2);
       ctx.fillStyle = '#f7f7f0';
       ctx.fill();
-
-      if (hasTemplate) {
+      if (this.ballTemplateLoaded) {
         ctx.globalCompositeOperation = 'multiply';
-        ctx.drawImage(template, 0, 0, size, size);
+        ctx.drawImage(this.ballTemplateImg, 0, 0, size, size);
         ctx.globalCompositeOperation = 'source-over';
       }
     } else if (id === 9) {
@@ -258,12 +176,11 @@ export class Renderer {
       ctx.fillRect(0, size * 0.25, size, size * 0.5);
       ctx.restore();
 
-      if (hasTemplate) {
+      if (this.ballTemplateLoaded) {
         ctx.globalCompositeOperation = 'multiply';
-        ctx.drawImage(template, 0, 0, size, size);
+        ctx.drawImage(this.ballTemplateImg, 0, 0, size, size);
         ctx.globalCompositeOperation = 'source-over';
       }
-
       this._drawBallNumber(ctx, id, size);
     } else {
       ctx.beginPath();
@@ -271,17 +188,26 @@ export class Renderer {
       ctx.fillStyle = color;
       ctx.fill();
 
-      if (hasTemplate) {
+      if (this.ballTemplateLoaded) {
         ctx.globalCompositeOperation = 'multiply';
-        ctx.drawImage(template, 0, 0, size, size);
+        ctx.drawImage(this.ballTemplateImg, 0, 0, size, size);
         ctx.globalCompositeOperation = 'source-over';
       }
-
       this._drawBallNumber(ctx, id, size);
     }
 
-    this._ballCache[cacheKey] = canvas;
-    return canvas;
+    const dynTex = new BABYLON.Texture(canvas.toDataURL(), this.scene);
+    dynTex.hasAlpha = true;
+
+    const mat = new BABYLON.StandardMaterial(`ballMat_${id}`, this.scene);
+    mat.diffuseTexture = dynTex;
+    mat.emissiveTexture = dynTex;
+    mat.emissiveColor = new BABYLON.Color3(1, 1, 1);
+    mat.useAlphaFromDiffuseTexture = true;
+    mat.transparencyMode = BABYLON.Material.MATERIAL_ALPHABLEND;
+    mat.disableLighting = true;
+    mat.backFaceCulling = false;
+    return mat;
   }
 
   _drawBallNumber(ctx, id, size) {
@@ -313,161 +239,264 @@ export class Renderer {
     }
   }
 
-  _drawLayer4Frame() {
-    const ctx = this.ctx;
-    const tr = this.tableRect;
-    const frame = this.imgs.frame;
-    if (this.ready && frame && frame.complete && frame.naturalWidth) {
-      ctx.drawImage(frame, tr.x, tr.y, tr.w, tr.h);
-    } else {
-      this.drawBeveledRails(tr.x + this.playOffset.x, tr.y + this.playOffset.y, this.playW, this.playH, this.playOffset.x);
+  _rebuildBallMaterials() {
+    for (let i = 0; i <= 9; i++) {
+      this.ballMaterials[i] = this._createBallMaterial(i);
+      if (this.ballMeshes[i]) {
+        this.ballMeshes[i].material = this.ballMaterials[i];
+      }
     }
   }
 
-  _drawLayer5UISidebar() {
-    const ctx = this.ctx;
-    const sidebarX = this.cssW * 0.8;
-    const sidebarW = this.cssW * 0.2;
-    const sidebarH = this.cssH;
+  resize() {
+    const cssW = this.canvas.clientWidth || (window.innerWidth * 0.8);
+    const cssH = this.canvas.clientHeight || window.innerHeight;
+    const dpr = window.devicePixelRatio || 1;
+    this.cssW = cssW;
+    this.cssH = cssH;
 
-    const sidebarImg = this.imgs.uiSidebar;
-    if (this.ready && sidebarImg && sidebarImg.complete && sidebarImg.naturalWidth) {
-      ctx.drawImage(sidebarImg, sidebarX, 0, sidebarW, sidebarH);
-    } else {
-      ctx.fillStyle = '#0b1220';
-      ctx.fillRect(sidebarX, 0, sidebarW, sidebarH);
+    this.canvas.width = Math.round(cssW * dpr);
+    this.canvas.height = Math.round(cssH * dpr);
+
+    this.engine.resize();
+
+    // Configure top-down orthographic camera frustum matching viewport CSS pixels
+    this.camera.orthoLeft = -cssW / 2;
+    this.camera.orthoRight = cssW / 2;
+    this.camera.orthoTop = -cssH / 2;
+    this.camera.orthoBottom = cssH / 2;
+    this.camera.position.set(cssW / 2, 100, cssH / 2);
+    this.camera.setTarget(new BABYLON.Vector3(cssW / 2, 0, cssH / 2));
+
+    this._computeTableRect();
+    this._updatePlanesGeometry();
+  }
+
+  _computeTableRect() {
+    const W = TABLE.width; // 100 inches
+    const H = TABLE.height; // 50 inches (2:1 aspect ratio)
+    const rail = TABLE.railThickness; // 7.5 inches
+    const outerW = W + rail * 2; // 115
+    const outerH = H + rail * 2; // 65
+
+    const availW = this.cssW;
+    const availH = this.cssH;
+
+    const margin = Math.max(8, Math.min(availW, availH) * 0.025);
+    const maxW = availW - margin * 2;
+    const maxH = availH - margin * 2;
+
+    const scale = Math.min(maxW / outerW, maxH / outerH);
+    const drawW = outerW * scale;
+    const drawH = outerH * scale;
+
+    this.scale = scale;
+    this.tableRect = {
+      x: (availW - drawW) / 2,
+      y: (availH - drawH) / 2,
+      w: drawW,
+      h: drawH,
+    };
+    this.playOffset = { x: rail * scale, y: rail * scale };
+    this.playW = W * scale;
+    this.playH = H * scale;
+  }
+
+  _updatePlanesGeometry() {
+    // 1. Felt Plane (tight 2:1 rectangle surface)
+    const px = this.tableRect.x + this.playOffset.x;
+    const py = this.tableRect.y + this.playOffset.y;
+    this.feltPlane.scaling.set(this.playW, this.playH, 1);
+    this.feltPlane.position.set(px + this.playW / 2, 0, py + this.playH / 2);
+
+    // 2. Frame Plane (outer rail dimensions overlay)
+    this.framePlane.scaling.set(this.tableRect.w, this.tableRect.h, 1);
+    this.framePlane.position.set(this.tableRect.x + this.tableRect.w / 2, 2.0, this.tableRect.y + this.tableRect.h / 2);
+
+    // 3. Aim Overlay Plane
+    if (this.aimTexture) {
+      this.aimTexture.dispose();
     }
+    const texW = Math.max(1, Math.round(this.cssW));
+    const texH = Math.max(1, Math.round(this.cssH));
+    this.aimTexture = new BABYLON.DynamicTexture('aimTexture', { width: texW, height: texH }, this.scene, false);
+    this.aimTexture.hasAlpha = true;
+    this.aimMat.diffuseTexture = this.aimTexture;
+    this.aimMat.emissiveTexture = this.aimTexture;
+    this.aimMat.useAlphaFromDiffuseTexture = true;
+    this.aimMat.transparencyMode = BABYLON.Material.MATERIAL_ALPHABLEND;
+
+    this.aimPlane.scaling.set(this.cssW, this.cssH, 1);
+    this.aimPlane.position.set(this.cssW / 2, 1.5, this.cssH / 2);
+  }
+
+  toPx(tx, ty) {
+    return {
+      x: this.tableRect.x + this.playOffset.x + tx * this.scale,
+      y: this.tableRect.y + this.playOffset.y + ty * this.scale,
+    };
+  }
+
+  pxToIn(px, py) {
+    return {
+      x: (px - this.tableRect.x - this.playOffset.x) / this.scale,
+      y: (py - this.tableRect.y - this.playOffset.y) / this.scale,
+    };
+  }
+
+  ballRadiusPx() {
+    return TABLE.ballRadius * this.scale;
+  }
+
+  draw(balls) {
+    const rp = this.ballRadiusPx();
+
+    // Position active ball and shadow meshes
+    for (const b of balls) {
+      const ballMesh = this.ballMeshes[b.id];
+      const shadowMesh = this.shadowMeshes[b.id];
+      if (!ballMesh || !shadowMesh) continue;
+
+      if (b.pocketed) {
+        ballMesh.setEnabled(false);
+        shadowMesh.setEnabled(false);
+      } else {
+        ballMesh.setEnabled(true);
+        shadowMesh.setEnabled(true);
+
+        const p = this.toPx(b.x, b.y);
+
+        // Ball mesh
+        ballMesh.scaling.set(rp * 2, rp * 2, 1);
+        ballMesh.position.set(p.x, 1.0, p.y);
+
+        // Shadow mesh
+        const offsetX = rp * 0.25;
+        const offsetY = rp * 0.35;
+        const sw = rp * 2.4;
+        const sh = rp * 2.4;
+        shadowMesh.scaling.set(sw, sh, 1);
+        shadowMesh.position.set(p.x + offsetX, 0.4, p.y + offsetY);
+      }
+    }
+
+    // Render aim graphics overlay
+    this._drawAim(balls);
+
+    // Render Babylon scene
+    this.scene.render();
   }
 
   _drawAim(balls) {
-    const ctx = this.ctx;
-    const cue = balls.find((b) => b.id === CUE_ID && !b.pocketed);
-    if (!cue) return;
-    const rp = this.ballRadiusPx();
-    const p = this.toPx(cue.x, cue.y);
-    const ang = this.aim.angle;
-    const dir = { x: Math.cos(ang), y: Math.sin(ang) };
-    const ghost = this.aim.ghost;
-    const target = this.aim.target;
+    if (!this.aimTexture) return;
+    const ctx = this.aimTexture.getContext();
+    ctx.clearRect(0, 0, this.cssW, this.cssH);
 
-    ctx.save();
+    if (this.aim) {
+      const cue = balls.find((b) => b.id === CUE_ID && !b.pocketed);
+      if (cue) {
+        const rp = this.ballRadiusPx();
+        const p = this.toPx(cue.x, cue.y);
+        const ang = this.aim.angle;
+        const dir = { x: Math.cos(ang), y: Math.sin(ang) };
+        const ghost = this.aim.ghost;
+        const target = this.aim.target;
 
-    const stickLen = rp * 11;
-    const gap = rp * 1.15;
-    const sx = p.x - dir.x * gap;
-    const sy = p.y - dir.y * gap;
-    const bx = sx - dir.x * stickLen;
-    const by = sy - dir.y * stickLen;
-    const sg = ctx.createLinearGradient(sx, sy, bx, by);
-    sg.addColorStop(0, '#e8e2d0');
-    sg.addColorStop(0.1, '#c98a4a');
-    sg.addColorStop(1, '#5a2f18');
-    ctx.strokeStyle = sg;
-    ctx.lineWidth = rp * 0.5;
-    ctx.lineCap = 'round';
-    ctx.shadowColor = 'rgba(0,0,0,0.35)';
-    ctx.shadowBlur = 6;
-    ctx.shadowOffsetY = 3;
-    ctx.beginPath();
-    ctx.moveTo(sx, sy);
-    ctx.lineTo(bx, by);
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetY = 0;
+        ctx.save();
 
-    if (ghost) {
-      const gp = this.toPx(ghost.x, ghost.y);
-      ctx.setLineDash([7, 6]);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = 'rgba(255,255,255,0.85)';
-      ctx.beginPath();
-      ctx.moveTo(p.x + dir.x * rp, p.y + dir.y * rp);
-      ctx.lineTo(gp.x, gp.y);
-      ctx.stroke();
-
-      ctx.setLineDash([]);
-      ctx.lineWidth = 1.5;
-      ctx.strokeStyle = 'rgba(255,255,255,0.55)';
-      ctx.beginPath();
-      ctx.arc(gp.x, gp.y, rp, 0, Math.PI * 2);
-      ctx.stroke();
-
-      if (target) {
-        const nx = target.x - ghost.x;
-        const ny = target.y - ghost.y;
-        const nlen = Math.hypot(nx, ny) || 1;
-        const nxn = nx / nlen, nyn = ny / nlen;
-        const defLen = rp * 6;
-        ctx.setLineDash([4, 5]);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = 'rgba(120,255,170,0.85)';
-        const tp = this.toPx(target.x, target.y);
+        const stickLen = rp * 11;
+        const gap = rp * 1.15;
+        const sx = p.x - dir.x * gap;
+        const sy = p.y - dir.y * gap;
+        const bx = sx - dir.x * stickLen;
+        const by = sy - dir.y * stickLen;
+        const sg = ctx.createLinearGradient(sx, sy, bx, by);
+        sg.addColorStop(0, '#e8e2d0');
+        sg.addColorStop(0.1, '#c98a4a');
+        sg.addColorStop(1, '#5a2f18');
+        ctx.strokeStyle = sg;
+        ctx.lineWidth = rp * 0.5;
+        ctx.lineCap = 'round';
+        ctx.shadowColor = 'rgba(0,0,0,0.35)';
+        ctx.shadowBlur = 6;
+        ctx.shadowOffsetY = 3;
         ctx.beginPath();
-        ctx.moveTo(tp.x, tp.y);
-        ctx.lineTo(tp.x + nxn * defLen, tp.y + nyn * defLen);
+        ctx.moveTo(sx, sy);
+        ctx.lineTo(bx, by);
         ctx.stroke();
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
 
-        const dot = dir.x * nxn + dir.y * nyn;
-        let tx = dir.x - dot * nxn;
-        let ty = dir.y - dot * nyn;
-        const tlen = Math.hypot(tx, ty);
-        if (tlen > 0.08) {
-          tx /= tlen; ty /= tlen;
-          const carLen = rp * 5;
-          ctx.setLineDash([3, 4]);
-          ctx.strokeStyle = 'rgba(180,210,255,0.7)';
+        if (ghost) {
+          const gp = this.toPx(ghost.x, ghost.y);
+          ctx.setLineDash([7, 6]);
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = 'rgba(255,255,255,0.85)';
           ctx.beginPath();
-          ctx.moveTo(gp.x, gp.y);
-          ctx.lineTo(gp.x + tx * carLen, gp.y + ty * carLen);
+          ctx.moveTo(p.x + dir.x * rp, p.y + dir.y * rp);
+          ctx.lineTo(gp.x, gp.y);
+          ctx.stroke();
+
+          ctx.setLineDash([]);
+          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+          ctx.beginPath();
+          ctx.arc(gp.x, gp.y, rp, 0, Math.PI * 2);
+          ctx.stroke();
+
+          if (target) {
+            const nx = target.x - ghost.x;
+            const ny = target.y - ghost.y;
+            const nlen = Math.hypot(nx, ny) || 1;
+            const nxn = nx / nlen, nyn = ny / nlen;
+            const defLen = rp * 6;
+            ctx.setLineDash([4, 5]);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(120,255,170,0.85)';
+            const tp = this.toPx(target.x, target.y);
+            ctx.beginPath();
+            ctx.moveTo(tp.x, tp.y);
+            ctx.lineTo(tp.x + nxn * defLen, tp.y + nyn * defLen);
+            ctx.stroke();
+
+            const dot = dir.x * nxn + dir.y * nyn;
+            let tx = dir.x - dot * nxn;
+            let ty = dir.y - dot * nyn;
+            const tlen = Math.hypot(tx, ty);
+            if (tlen > 0.08) {
+              tx /= tlen; ty /= tlen;
+              const carLen = rp * 5;
+              ctx.setLineDash([3, 4]);
+              ctx.strokeStyle = 'rgba(180,210,255,0.7)';
+              ctx.beginPath();
+              ctx.moveTo(gp.x, gp.y);
+              ctx.lineTo(gp.x + tx * carLen, gp.y + ty * carLen);
+              ctx.stroke();
+            }
+          }
+        } else {
+          const lineLen = this.playW * 0.95;
+          ctx.setLineDash([7, 6]);
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+          ctx.beginPath();
+          ctx.moveTo(p.x + dir.x * rp, p.y + dir.y * rp);
+          ctx.lineTo(p.x + dir.x * lineLen, p.y + dir.y * lineLen);
           ctx.stroke();
         }
+
+        ctx.restore();
       }
-    } else {
-      const lineLen = this.playW * 0.95;
-      ctx.setLineDash([7, 6]);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-      ctx.beginPath();
-      ctx.moveTo(p.x + dir.x * rp, p.y + dir.y * rp);
-      ctx.lineTo(p.x + dir.x * lineLen, p.y + dir.y * lineLen);
-      ctx.stroke();
     }
 
-    ctx.restore();
+    this.aimTexture.update();
   }
 
   drawTableFelt(arg1, arg2, arg3, arg4, arg5) {
-    const ctx = (arg1 && arg1.fillRect) ? arg1 : this.ctx;
-    const x = (arg1 && arg1.fillRect) ? arg2 : arg1;
-    const y = (arg1 && arg1.fillRect) ? arg3 : arg2;
-    const width = (arg1 && arg1.fillRect) ? arg4 : arg3;
-    const height = (arg1 && arg1.fillRect) ? arg5 : arg4;
-
-    const centerX = x + width / 2;
-    const centerY = y + height / 2;
-    const outerRadius = Math.sqrt((width / 2) ** 2 + (height / 2) ** 2);
-
-    const gradient = ctx.createRadialGradient(
-      centerX, centerY, 50,
-      centerX, centerY, outerRadius
-    );
-    gradient.addColorStop(0, '#9e1a32');
-    gradient.addColorStop(0.6, '#5c0b1a');
-    gradient.addColorStop(1, '#1f0207');
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(x, y, width, height);
+    // Fallback compatibility method if called directly
   }
 
   drawBeveledRails(arg1, arg2, arg3, arg4, arg5, arg6) {
-    const ctx = (arg1 && arg1.fillRect) ? arg1 : this.ctx;
-    const tableX = (arg1 && arg1.fillRect) ? arg2 : arg1;
-    const tableY = (arg1 && arg1.fillRect) ? arg3 : arg2;
-    const tableWidth = (arg1 && arg1.fillRect) ? arg4 : arg3;
-    const tableHeight = (arg1 && arg1.fillRect) ? arg5 : arg4;
-    const railWidth = (arg1 && arg1.fillRect) ? arg6 : arg5;
-
-    ctx.fillStyle = '#2b1108';
-    ctx.fillRect(tableX - railWidth, tableY - railWidth, tableWidth + (railWidth * 2), tableHeight + (railWidth * 2));
+    // Fallback compatibility method if called directly
   }
 }
