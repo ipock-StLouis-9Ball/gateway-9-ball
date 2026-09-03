@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <!-- Soft drop shadow to create depth against the light gray border -->
+    <filter id="canvas-shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="15" dy="15" stdDeviation="25" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+
+    <!-- Radial gradient for the dramatic spotlight/vignette lighting effect -->
+    <radialGradient id="maroon-lighting" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" stop-color="#a44f59" />   <!-- Bright hot spot center -->
+      <stop offset="25%" stop-color="#7d343e" />  <!-- Mid-tone crimson -->
+      <stop offset="65%" stop-color="#3d1217" />  <!-- Dark burgundy falloff -->
+      <stop offset="100%" stop-color="#180406" /> <!-- Deep black-red corners -->
+    </radialGradient>
+
+    <!-- Repeating geometric weave pattern to simulate fabric/canvas grain -->
+    <pattern id="cloth-weave" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="2" height="2" fill="#000000" fill-opacity="0.15" />
+      <rect x="2" y="2" width="2" height="2" fill="#000000" fill-opacity="0.15" />
+      <rect x="2" y="0" width="2" height="2" fill="#ffffff" fill-opacity="0.04" />
+      <rect x="0" y="2" width="2" height="2" fill="#ffffff" fill-opacity="0.04" />
+    </pattern>
+
+    <!-- Fractal noise filter for natural, organic unevenness in the material -->
+    <filter id="organic-noise" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" result="noise"/>
+      <!-- Desaturate and lower opacity of the noise -->
+      <feColorMatrix type="matrix" values="0.3 0.6 0.1 0 0  0.3 0.6 0.1 0 0  0.3 0.6 0.1 0 0  0 0 0 0.07 0" in="noise" result="monochromeNoise"/>
+      <!-- Blend the noise into the graphic -->
+      <feBlend mode="multiply" in="SourceGraphic" in2="monochromeNoise"/>
+    </filter>
+  </defs>
+
+  <!-- Outer light gray wall/border -->
+  <rect width="100%" height="100%" fill="#cacad0" />
+
+  <!-- Main Canvas Group with Drop Shadow -->
+  <g filter="url(#canvas-shadow)">
+    <!-- 1. The base color and lighting gradient -->
+    <rect x="80" y="80" width="1760" height="920" fill="url(#maroon-lighting)" />
+    
+    <!-- 2. The fractal noise layer for uneven dye/lighting in the fabric -->
+    <rect x="80" y="80" width="1760" height="920" fill="url(#maroon-lighting)" filter="url(#organic-noise)" />
+    
+    <!-- 3. The sharp overlay pattern for the canvas/cloth thread texture -->
+    <rect x="80" y="80" width="1760" height="920" fill="url(#cloth-weave)" style="mix-blend-mode: multiply;" />
+  </g>
+</svg>
