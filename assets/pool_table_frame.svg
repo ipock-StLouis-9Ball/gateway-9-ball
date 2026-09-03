@@ -37,6 +37,91 @@
       <stop offset="100%" stop-color="#9e8f7a"/>
     </linearGradient>
 
+    <!-- ========================================== -->
+    <!-- ADDED: Heavy White Oak Procedural Texture  -->
+    <!-- Does not alter original table geometry.    -->
+    <!-- ========================================== -->
+
+    <!-- Long horizontal wood grain: top and bottom rails -->
+    <filter id="oak-grain-horizontal"
+            x="-10%" y="-30%" width="120%" height="160%"
+            color-interpolation-filters="sRGB">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="0.008 0.15"
+        numOctaves="3"
+        seed="29"
+        stitchTiles="stitch"
+        result="long-grain"/>
+
+      <feColorMatrix
+        in="long-grain"
+        type="matrix"
+        values="
+          0.23 0    0    0  0.17
+          0    0.12 0    0  0.07
+          0    0    0.05 0  0.02
+          0    0    0    0.52 0"
+        result="brown-grain"/>
+
+      <feBlend
+        in="SourceGraphic"
+        in2="brown-grain"
+        mode="multiply"
+        result="oak-grain-result"/>
+    </filter>
+
+    <!-- Long vertical wood grain: left and right end rails -->
+    <filter id="oak-grain-vertical"
+            x="-30%" y="-10%" width="160%" height="120%"
+            color-interpolation-filters="sRGB">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="0.15 0.008"
+        numOctaves="3"
+        seed="41"
+        stitchTiles="stitch"
+        result="long-grain"/>
+
+      <feColorMatrix
+        in="long-grain"
+        type="matrix"
+        values="
+          0.23 0    0    0  0.17
+          0    0.12 0    0  0.07
+          0    0    0.05 0  0.02
+          0    0    0    0.52 0"
+        result="brown-grain"/>
+
+      <feBlend
+        in="SourceGraphic"
+        in2="brown-grain"
+        mode="multiply"
+        result="oak-grain-result"/>
+    </filter>
+
+    <!-- Clear oil/varnish finish over horizontal rails -->
+    <linearGradient id="oak-clearcoat-horizontal"
+                    gradientUnits="userSpaceOnUse"
+                    x1="0" y1="30" x2="0" y2="100">
+      <stop offset="0%" stop-color="#fff7df" stop-opacity="0.30"/>
+      <stop offset="20%" stop-color="#ffffff" stop-opacity="0.07"/>
+      <stop offset="52%" stop-color="#6c4930" stop-opacity="0.08"/>
+      <stop offset="82%" stop-color="#ffecc1" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#2f1d10" stop-opacity="0.18"/>
+    </linearGradient>
+
+    <!-- Clear oil/varnish finish over vertical rails -->
+    <linearGradient id="oak-clearcoat-vertical"
+                    gradientUnits="userSpaceOnUse"
+                    x1="30" y1="0" x2="100" y2="0">
+      <stop offset="0%" stop-color="#fff7df" stop-opacity="0.30"/>
+      <stop offset="20%" stop-color="#ffffff" stop-opacity="0.07"/>
+      <stop offset="52%" stop-color="#6c4930" stop-opacity="0.08"/>
+      <stop offset="82%" stop-color="#ffecc1" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#2f1d10" stop-opacity="0.18"/>
+    </linearGradient>
+
     <!-- Polished 24k Gold Gradient (Corner Bezels) -->
     <linearGradient id="gold-24k" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#8a6104"/>
@@ -126,16 +211,113 @@
 
   <!-- ========================================== -->
   <!-- 2. WOOD FRAME (White Oak, Mitered Joints)  -->
+  <!-- Original geometry retained.                -->
+  <!-- Added texture overlays only.                -->
   <!-- ========================================== -->
   <g clip-path="url(#frame-cutout)">
     <!-- Top Rail -->
     <polygon points="0,0 1200,0 600,350 Z" fill="url(#oak-top)" />
+    <polygon points="0,0 1200,0 600,350 Z"
+             fill="url(#oak-top)"
+             filter="url(#oak-grain-horizontal)"
+             opacity="0.72" />
+    <polygon points="0,0 1200,0 600,350 Z"
+             fill="url(#oak-clearcoat-horizontal)"
+             opacity="0.42" />
+
     <!-- Bottom Rail -->
     <polygon points="0,700 1200,700 600,350 Z" fill="url(#oak-bottom)" />
+    <polygon points="0,700 1200,700 600,350 Z"
+             fill="url(#oak-bottom)"
+             filter="url(#oak-grain-horizontal)"
+             opacity="0.72" />
+    <polygon points="0,700 1200,700 600,350 Z"
+             fill="url(#oak-clearcoat-horizontal)"
+             opacity="0.42" />
+
     <!-- Left Rail -->
     <polygon points="0,0 0,700 600,350 Z" fill="url(#oak-left)" />
+    <polygon points="0,0 0,700 600,350 Z"
+             fill="url(#oak-left)"
+             filter="url(#oak-grain-vertical)"
+             opacity="0.72" />
+    <polygon points="0,0 0,700 600,350 Z"
+             fill="url(#oak-clearcoat-vertical)"
+             opacity="0.42" />
+
     <!-- Right Rail -->
     <polygon points="1200,0 1200,700 600,350 Z" fill="url(#oak-right)" />
+    <polygon points="1200,0 1200,700 600,350 Z"
+             fill="url(#oak-right)"
+             filter="url(#oak-grain-vertical)"
+             opacity="0.72" />
+    <polygon points="1200,0 1200,700 600,350 Z"
+             fill="url(#oak-clearcoat-vertical)"
+             opacity="0.42" />
+  </g>
+
+  <!-- ========================================== -->
+  <!-- ADDED: visible cathedral grain figure      -->
+  <!-- Sits on frame only; clipped from playfield. -->
+  <!-- ========================================== -->
+  <g clip-path="url(#frame-cutout)"
+     fill="none"
+     stroke-linecap="round"
+     pointer-events="none">
+
+    <!-- Top and bottom horizontal oak grain -->
+    <g stroke="#5c3a21" stroke-width="2.2" opacity="0.24">
+      <path d="M 135,52
+               C 250,23 346,88 460,53
+               S 670,19 785,53
+               S 968,86 1082,48" />
+
+      <path d="M 130,72
+               C 260,39 365,102 483,70
+               S 705,35 828,70
+               S 1008,102 1136,68" />
+
+      <path d="M 135,648
+               C 250,677 346,612 460,647
+               S 670,681 785,647
+               S 968,614 1082,652" />
+
+      <path d="M 130,628
+               C 260,661 365,598 483,630
+               S 705,665 828,630
+               S 1008,598 1136,632" />
+    </g>
+
+    <!-- Left and right vertical oak grain -->
+    <g stroke="#5c3a21" stroke-width="2.2" opacity="0.24">
+      <path d="M 52,126
+               C 22,218 88,287 51,382
+               S 19,546 55,626" />
+
+      <path d="M 73,105
+               C 41,202 101,302 66,402
+               S 37,548 72,649" />
+
+      <path d="M 1148,126
+               C 1178,218 1112,287 1149,382
+               S 1181,546 1145,626" />
+
+      <path d="M 1127,105
+               C 1159,202 1099,302 1134,402
+               S 1163,548 1128,649" />
+    </g>
+
+    <!-- White-oak medullary ray glints -->
+    <g stroke="#fff0cb" stroke-width="1" opacity="0.20">
+      <path d="M 155,41 L 360,41" />
+      <path d="M 744,63 L 978,63" />
+      <path d="M 220,659 L 430,659" />
+      <path d="M 754,638 L 1015,638" />
+      <path d="M 40,150 L 40,292" />
+      <path d="M 61,409 L 61,548" />
+      <path d="M 1160,150 L 1160,292" />
+      <path d="M 1139,409 L 1139,548" />
+    </g>
   </g>
 
   <!-- Cushion Backdraft lip (Simulating K-55 12-15 degree slant to slate) -->
@@ -160,6 +342,7 @@
       <path d="M 100,135 L 100,565" /> <!-- Left -->
       <path d="M 1100,135 L 1100,565" /> <!-- Right -->
     </g>
+
     <!-- Hot Core Lines -->
     <g stroke="#ffb3bc" stroke-width="1.5" stroke-linecap="round" opacity="0.95">
       <path d="M 135,100 L 572,100" /> 
@@ -183,6 +366,7 @@
     <use href="#ruby" x="725" y="70" />
     <use href="#ruby" x="850" y="70" />
     <use href="#ruby" x="975" y="70" />
+
     <!-- Bottom Rail -->
     <use href="#ruby" x="225" y="630" />
     <use href="#ruby" x="350" y="630" />
@@ -190,10 +374,12 @@
     <use href="#ruby" x="725" y="630" />
     <use href="#ruby" x="850" y="630" />
     <use href="#ruby" x="975" y="630" />
+
     <!-- Left Rail -->
     <use href="#ruby" x="70" y="225" />
     <use href="#ruby" x="70" y="350" />
     <use href="#ruby" x="70" y="475" />
+
     <!-- Right Rail -->
     <use href="#ruby" x="1130" y="225" />
     <use href="#ruby" x="1130" y="350" />
@@ -203,11 +389,12 @@
   <!-- ========================================== -->
   <!-- 5. METAL BEZELS (Hugging outer frame, leaving holes open) -->
   <!-- ========================================== -->
+
   <!-- 24K GOLD Corner Bezels -->
   <g id="gold-corners" fill="url(#gold-24k)" stroke="#594400" stroke-width="1.5">
     <!-- Top-Left Gold Corner -->
     <path d="M 20,120 L 20,50 A 30 30 0 0 1 50,20 L 120,20 L 120,40 A 50 50 0 0 0 40,120 Z" />
-    <path d="M 23,115 L 23,55 A 25 25 0 0 1 55,23 L 115,23" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.3"/> <!-- 3D Rim Highlight -->
+    <path d="M 23,115 L 23,55 A 25 25 0 0 1 55,23 L 115,23" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
 
     <!-- Top-Right Gold Corner -->
     <path d="M 1180,120 L 1180,50 A 30 30 0 0 0 1150,20 L 1080,20 L 1080,40 A 50 50 0 0 1 1160,120 Z" />
@@ -227,11 +414,10 @@
     <!-- Top-Center Silver Bezel -->
     <!-- Hugs the rail width, arches U-shape perfectly around the pocket hole -->
     <path d="M 530,20 L 670,20 L 670,40 L 638,40 A 38 38 0 0 0 562,40 L 530,40 Z" />
-    <path d="M 533,23 L 667,23" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/> <!-- Edge reflection -->
+    <path d="M 533,23 L 667,23" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
 
     <!-- Bottom-Center Silver Bezel -->
     <path d="M 530,680 L 670,680 L 670,660 L 638,660 A 38 38 0 0 1 562,660 L 530,660 Z" />
     <path d="M 533,677 L 667,677" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
   </g>
-
 </svg>
