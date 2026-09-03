@@ -1,222 +1,237 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" width="100%" height="100%">
   <defs>
-    <!-- White Oak Wood Gradients for 3D Rail Texture -->
-    <linearGradient id="white-oak-top" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#ab9e87" />
-      <stop offset="25%" stop-color="#e8dfcc" />
-      <stop offset="50%" stop-color="#f7f3e8" />
-      <stop offset="75%" stop-color="#e8dfcc" />
-      <stop offset="100%" stop-color="#6e6350" />
+    <!-- Playing Surface / Table Geometry Scale: 10 units = 1 inch -->
+    <!-- Playfield: 1000 x 500 (100" x 50") -->
+    <!-- Footprint: 1140 x 640 (114" x 64") -->
+    
+    <!-- White Oak Wood Gradients (Mitered 4-way grain) -->
+    <linearGradient id="oak-top" gradientUnits="userSpaceOnUse" x1="0" y1="30" x2="0" y2="100">
+      <stop offset="0%" stop-color="#bdae97"/>
+      <stop offset="15%" stop-color="#e8decc"/>
+      <stop offset="50%" stop-color="#d4c5af"/>
+      <stop offset="85%" stop-color="#c6b69e"/>
+      <stop offset="100%" stop-color="#9e8f7a"/>
     </linearGradient>
 
-    <linearGradient id="white-oak-bottom" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#6e6350" />
-      <stop offset="25%" stop-color="#e8dfcc" />
-      <stop offset="50%" stop-color="#f7f3e8" />
-      <stop offset="75%" stop-color="#e8dfcc" />
-      <stop offset="100%" stop-color="#ab9e87" />
+    <linearGradient id="oak-bottom" gradientUnits="userSpaceOnUse" x1="0" y1="670" x2="0" y2="600">
+      <stop offset="0%" stop-color="#bdae97"/>
+      <stop offset="15%" stop-color="#e8decc"/>
+      <stop offset="50%" stop-color="#d4c5af"/>
+      <stop offset="85%" stop-color="#c6b69e"/>
+      <stop offset="100%" stop-color="#9e8f7a"/>
     </linearGradient>
 
-    <linearGradient id="white-oak-left" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#ab9e87" />
-      <stop offset="25%" stop-color="#e8dfcc" />
-      <stop offset="50%" stop-color="#f7f3e8" />
-      <stop offset="75%" stop-color="#e8dfcc" />
-      <stop offset="100%" stop-color="#6e6350" />
+    <linearGradient id="oak-left" gradientUnits="userSpaceOnUse" x1="30" y1="0" x2="100" y2="0">
+      <stop offset="0%" stop-color="#bdae97"/>
+      <stop offset="15%" stop-color="#e8decc"/>
+      <stop offset="50%" stop-color="#d4c5af"/>
+      <stop offset="85%" stop-color="#c6b69e"/>
+      <stop offset="100%" stop-color="#9e8f7a"/>
     </linearGradient>
 
-    <linearGradient id="white-oak-right" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#6e6350" />
-      <stop offset="25%" stop-color="#e8dfcc" />
-      <stop offset="50%" stop-color="#f7f3e8" />
-      <stop offset="75%" stop-color="#e8dfcc" />
-      <stop offset="100%" stop-color="#ab9e87" />
+    <linearGradient id="oak-right" gradientUnits="userSpaceOnUse" x1="1170" y1="0" x2="1100" y2="0">
+      <stop offset="0%" stop-color="#bdae97"/>
+      <stop offset="15%" stop-color="#e8decc"/>
+      <stop offset="50%" stop-color="#d4c5af"/>
+      <stop offset="85%" stop-color="#c6b69e"/>
+      <stop offset="100%" stop-color="#9e8f7a"/>
     </linearGradient>
 
-    <!-- HIGH-SHINE POLISHED SILVER GRADIENT (Outer Plates & Rail Caps) -->
-    <linearGradient id="polished-silver-bezel" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#737e8c" />
-      <stop offset="12%" stop-color="#cfd6df" />
-      <stop offset="28%" stop-color="#9ba5b5" />
-      <stop offset="42%" stop-color="#ffffff" />
-      <stop offset="55%" stop-color="#f8fafd" />
-      <stop offset="70%" stop-color="#5a6370" />
-      <stop offset="88%" stop-color="#e3e8ee" />
-      <stop offset="100%" stop-color="#2a3038" />
+    <!-- Polished 24k Gold Gradient (Corner Bezels) -->
+    <linearGradient id="gold-24k" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8a6104"/>
+      <stop offset="25%" stop-color="#ffcc00"/>
+      <stop offset="45%" stop-color="#fff4b3"/>
+      <stop offset="65%" stop-color="#d4af37"/>
+      <stop offset="90%" stop-color="#f8e076"/>
+      <stop offset="100%" stop-color="#5c4000"/>
     </linearGradient>
 
-    <!-- 24 KARAT SHINY POLISHED GOLD GRADIENT (Inner Pockets) -->
-    <linearGradient id="polished-gold-24k" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#61460b" />
-      <stop offset="15%" stop-color="#e6b73c" />
-      <stop offset="35%" stop-color="#ffffff" />
-      <stop offset="60%" stop-color="#ffd700" />
-      <stop offset="100%" stop-color="#3d2b02" />
+    <!-- Polished Silver Gradient (Side Bezels) -->
+    <linearGradient id="silver-polished" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4a5054"/>
+      <stop offset="20%" stop-color="#e2e8f0"/>
+      <stop offset="45%" stop-color="#8c97a3"/>
+      <stop offset="60%" stop-color="#ffffff"/>
+      <stop offset="85%" stop-color="#a4b0be"/>
+      <stop offset="100%" stop-color="#2d3339"/>
     </linearGradient>
 
-    <!-- GEMSTONE RADIAL GRADIENT FOR FACETED RUBIES -->
-    <radialGradient id="ruby-gem" cx="35%" cy="35%" r="65%">
-      <stop offset="0%" stop-color="#ff6b81" />
-      <stop offset="30%" stop-color="#ff1e43" />
-      <stop offset="75%" stop-color="#b3001b" />
-      <stop offset="100%" stop-color="#52000a" />
+    <!-- Ruby Gem Radial Gradient -->
+    <radialGradient id="ruby-grad" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#ff4d6d"/>
+      <stop offset="40%" stop-color="#d90022"/>
+      <stop offset="80%" stop-color="#730012"/>
+      <stop offset="100%" stop-color="#330008"/>
     </radialGradient>
 
-    <!-- Inner Cushion Bumper St. Louis Cardinals Red Neon Glow Filter -->
-    <filter id="red-neon-filter" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="11" result="blur-wide" />
-      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur-med" />
-      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur-sharp" />
-      <feComponentTransfer in="blur-wide" result="glow-boosted">
-        <feFuncA type="linear" slope="2.6"/>
-      </feComponentTransfer>
+    <!-- Neon Light Filters -->
+    <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <!-- Wide bleeding red haze over the transparent playfield -->
+      <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="blur1" />
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur2" />
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur3" />
       <feMerge>
-        <feMergeNode in="glow-boosted" />
-        <feMergeNode in="blur-med" />
-        <feMergeNode in="blur-sharp" />
+        <feMergeNode in="blur1" />
+        <feMergeNode in="blur2" />
+        <feMergeNode in="blur3" />
         <feMergeNode in="SourceGraphic" />
       </feMerge>
     </filter>
 
-    <!-- 6600K Kelvin Daylight Outer Chassis Neon Glow Filter -->
-    <filter id="kelvin-chassis-filter" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="blur-wide" />
-      <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur-med" />
-      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur-sharp" />
-      <feComponentTransfer in="blur-wide" result="glow-boosted">
-        <feFuncA type="linear" slope="2.2"/>
-      </feComponentTransfer>
-      <feMerge>
-        <feMergeNode in="glow-boosted" />
-        <feMergeNode in="blur-med" />
-        <feMergeNode in="blur-sharp" />
-        <feMergeNode in="SourceGraphic" />
-      </feMerge>
+    <filter id="inner-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000" flood-opacity="0.8" />
     </filter>
+
+    <!-- Ruby Pattern Def (Replaces Diamonds) -->
+    <g id="ruby">
+      <!-- 24k Gold Bezel Rim around the gem -->
+      <polygon points="0,-7.5 7.5,0 0,7.5 -7.5,0" fill="#222" stroke="url(#gold-24k)" stroke-width="1.5" />
+      <!-- Faceted Ruby Base -->
+      <polygon points="0,-6.5 6.5,0 0,6.5 -6.5,0" fill="url(#ruby-grad)" />
+      <!-- Inner Crown Facet -->
+      <polygon points="0,-3.5 3.5,0 0,3.5 -3.5,0" fill="none" stroke="#ffcccc" stroke-width="0.5" opacity="0.6"/>
+      <!-- Specular Highlight (The glint) -->
+      <circle cx="-1.5" cy="-2.5" r="1" fill="#ffffff" opacity="0.9" />
+    </g>
+
+    <!-- Master Clip Path to enforce perfect playfield transparency & pocket cuts -->
+    <clipPath id="frame-cutout">
+      <path d="
+        M 30,30 L 1170,30 L 1170,670 L 30,670 Z
+        M 132,100
+        L 575,100 L 583,82 A 22 22 0 0 1 617,82 L 625,100
+        L 1068,100 L 1092,82 A 28 28 0 0 1 1118,108 L 1100,132
+        L 1100,568 L 1118,592 A 28 28 0 0 1 1092,618 L 1068,600
+        L 625,600 L 617,618 A 22 22 0 0 1 583,618 L 575,600
+        L 132,600 L 108,618 A 28 28 0 0 1 82,592 L 100,568
+        L 100,132 L 82,108 A 28 28 0 0 1 108,82 Z"
+        clip-rule="evenodd" />
+    </clipPath>
   </defs>
 
-  <!-- MASTER TRANSPARENCY MASK & CHASSIS INTERIOR FIELD -->
-  <path fill-rule="evenodd" fill="#4d4436" d="
-    M 100,100 L 1500,100 L 1500,800 L 100,800 Z 
-    M 180,240 
-    A 60,60 0 0,1 240,180 
-    L 750,180 
-    A 50,50 0 0,0 850,180 
-    L 1360,180 
-    A 60,60 0 0,1 1420,240 
-    L 1420,660 
-    A 60,60 0 0,1 1360,720 
-    L 850,720 
-    A 50,50 0 0,0 750,720 
-    L 240,720 
-    A 60,60 0 0,1 180,660 Z" />
-
-  <!-- 6600K KELVIN DAYLIGHT EXTERIOR CHASSIS UNDERGLOW -->
-  <g fill="none" stroke="#ebf3ff" stroke-width="5" filter="url(#kelvin-chassis-filter)" opacity="0.9">
-    <rect x="98" y="98" width="1404" height="704" rx="42" stroke="#adcfff" stroke-width="6" />
-    <rect x="100" y="100" width="1400" height="700" rx="40" />
+  <!-- ========================================== -->
+  <!-- 1. POCKET DROPS (The deep caves)           -->
+  <!-- ========================================== -->
+  <g id="pocket-caves" fill="#050508" filter="url(#inner-shadow)">
+    <!-- Corner Pockets (1"-2.25" shelf depth implied by circle offset) -->
+    <circle cx="75" cy="75" r="32" />
+    <circle cx="1125" cy="75" r="32" />
+    <circle cx="75" cy="625" r="32" />
+    <circle cx="1125" cy="625" r="32" />
+    <!-- Side Pockets (Almost no shelf, centered closer to playfield) -->
+    <circle cx="600" cy="70" r="34" />
+    <circle cx="600" cy="630" r="34" />
   </g>
 
-  <!-- 3D WHITE OAK WOOD RAILS LAYOUT -->
-  <path fill="url(#white-oak-top)" d="M 180,100 L 775,100 L 750,180 L 240,180 A 60,60 0 0,0 180,240 L 100,160 C 100,120 120,100 180,100 Z" />
-  <path fill="url(#white-oak-top)" d="M 825,100 L 1420,100 C 1480,100 1500,120 1500,160 L 1420,240 A 60,60 0 0,0 1360,180 L 850,180 Z" />
-  <path fill="url(#white-oak-bottom)" d="M 100,740 L 180,660 A 60,60 0 0,0 240,720 L 750,720 L 775,800 L 180,800 C 120,800 100,780 100,740 Z" />
-  <path fill="url(#white-oak-bottom)" d="M 850,720 L 1360,720 A 60,60 0 0,0 1420,660 L 1500,740 C 1500,780 1480,800 1420,800 L 825,800 Z" />
-  <path fill="url(#white-oak-left)" d="M 100,160 L 180,240 L 180,660 L 100,740 Z" />
-  <path fill="url(#white-oak-right)" d="M 1420,240 L 1500,160 L 1500,740 L 1420,660 Z" />
-
-  <!-- RUBY GEMSTONE DIAMOND SIGHTS -->
-  <g fill="url(#ruby-gem)" stroke="#3b1116" stroke-width="1.2">
-    <polygon points="135,300 140,306 135,312 130,306" />
-    <polygon points="135,450 140,456 135,462 130,456" />
-    <polygon points="135,600 140,606 135,612 130,606" />
-    <polygon points="1465,300 1470,306 1465,312 1460,306" />
-    <polygon points="1465,450 1470,456 1465,462 1460,456" />
-    <polygon points="1465,600 1470,606 1465,612 1460,606" />
-    <polygon points="320,135 326,140 332,135 326,130" />
-    <polygon points="460,135 466,140 472,135 466,130" />
-    <polygon points="600,135 606,140 612,135 606,130" />
-    <polygon points="1000,135 1006,140 1012,135 1006,130" />
-    <polygon points="1140,135 1146,140 1152,135 1146,130" />
-    <polygon points="1280,135 1286,140 1292,135 1286,130" />
-    <polygon points="320,765 326,770 332,765 326,760" />
-    <polygon points="460,765 466,770 472,765 466,760" />
-    <polygon points="600,765 606,770 612,765 606,760" />
-    <polygon points="1000,765 1006,770 1012,765 1006,760" />
-    <polygon points="1140,765 1146,770 1152,765 1146,760" />
-    <polygon points="1280,765 1286,770 1292,765 1286,760" />
+  <!-- ========================================== -->
+  <!-- 2. WOOD FRAME (White Oak, Mitered Joints)  -->
+  <!-- ========================================== -->
+  <g clip-path="url(#frame-cutout)">
+    <!-- Top Rail -->
+    <polygon points="0,0 1200,0 600,350 Z" fill="url(#oak-top)" />
+    <!-- Bottom Rail -->
+    <polygon points="0,700 1200,700 600,350 Z" fill="url(#oak-bottom)" />
+    <!-- Left Rail -->
+    <polygon points="0,0 0,700 600,350 Z" fill="url(#oak-left)" />
+    <!-- Right Rail -->
+    <polygon points="1200,0 1200,700 600,350 Z" fill="url(#oak-right)" />
   </g>
 
-  <!-- TWO-PIECE METALLIC POCKETS ACCENTS (ROTATED 180° PER POCKET) -->
-  <g fill="url(#polished-silver-bezel)" stroke="#ffffff" stroke-width="0.5">
+  <!-- Cushion Backdraft lip (Simulating K-55 12-15 degree slant to slate) -->
+  <path d="M 132,100 L 575,100 L 583,82 A 22 22 0 0 1 617,82 L 625,100
+           L 1068,100 L 1092,82 A 28 28 0 0 1 1118,108 L 1100,132
+           L 1100,568 L 1118,592 A 28 28 0 0 1 1092,618 L 1068,600
+           L 625,600 L 617,618 A 22 22 0 0 1 583,618 L 575,600
+           L 132,600 L 108,618 A 28 28 0 0 1 82,592 L 100,568
+           L 100,132 L 82,108 A 28 28 0 0 1 108,82 Z"
+        fill="none" stroke="#605442" stroke-width="1.5" />
 
-    <!-- TOP LEFT (rotate 180° around approx pocket center 160,135) -->
-    <path d="M 100,160 
-             C 100,125 130,105 180,105 
-             L 215,135 
-             A 45,45 0 0 1 155,205 
-             Z"
-          transform="rotate(180,160,135)" />
-
-    <!-- TOP RIGHT (center ~1440,135) -->
-    <path d="M 1420,100 
-             C 1470,100 1500,125 1500,160 
-             L 1470,205 
-             A 45,45 0 0 1 1395,135 
-             Z"
-          transform="rotate(180,1440,135)" />
-
-    <!-- BOTTOM LEFT (center ~160,765) -->
-    <path d="M 100,740 
-             C 100,775 130,800 180,800 
-             L 215,770 
-             A 45,45 0 0 1 155,695 
-             Z"
-          transform="rotate(180,160,765)" />
-
-    <!-- BOTTOM RIGHT (center ~1440,765) -->
-    <path d="M 1420,800 
-             C 1470,800 1500,775 1500,740 
-             L 1470,695 
-             A 45,45 0 0 1 1395,770 
-             Z"
-          transform="rotate(180,1440,765)" />
-
-    <!-- TOP SIDE (center ~800,135) -->
-    <path d="M 765,100 
-             L 835,100 
-             L 860,135 
-             A 40,40 0 0 1 740,135 
-             Z"
-          transform="rotate(180,800,135)" />
-
-    <!-- BOTTOM SIDE (center ~800,765) -->
-    <path d="M 765,800 
-             L 835,800 
-             L 860,765 
-             A 40,40 0 0 0 740,765 
-             Z"
-          transform="rotate(180,800,765)" />
-
+  <!-- ========================================== -->
+  <!-- 3. NEON RED LIGHTING (Underneath Cushions) -->
+  <!-- ========================================== -->
+  <g id="neon-glow-layer">
+    <!-- Base Red Haze -->
+    <g stroke="#ff0022" stroke-width="4.5" stroke-linecap="round" filter="url(#neon-glow)">
+      <path d="M 135,100 L 572,100" /> <!-- Top Left -->
+      <path d="M 628,100 L 1065,100" /> <!-- Top Right -->
+      <path d="M 135,600 L 572,600" /> <!-- Bottom Left -->
+      <path d="M 628,600 L 1065,600" /> <!-- Bottom Right -->
+      <path d="M 100,135 L 100,565" /> <!-- Left -->
+      <path d="M 1100,135 L 1100,565" /> <!-- Right -->
+    </g>
+    <!-- Hot Core Lines -->
+    <g stroke="#ffb3bc" stroke-width="1.5" stroke-linecap="round" opacity="0.95">
+      <path d="M 135,100 L 572,100" /> 
+      <path d="M 628,100 L 1065,100" /> 
+      <path d="M 135,600 L 572,600" /> 
+      <path d="M 628,600 L 1065,600" /> 
+      <path d="M 100,135 L 100,565" /> 
+      <path d="M 1100,135 L 1100,565" /> 
+    </g>
   </g>
 
-  <!-- Inner Pockets Cores: 24k Shiny Gold (unchanged) -->
-  <g fill="url(#polished-gold-24k)" stroke="#ffffff" stroke-width="0.3">
-    <path d="M 125,205 A 50,50 0 0,1 205,125 L 200,120 A 45,45 0 0,0 120,200 Z" />
-    <path d="M 1395,125 A 50,50 0 0,1 1475,205 L 1480,200 A 45,45 0 0,0 1400,120 Z" />
-    <path d="M 125,695 A 50,50 0 0,1 205,775 L 200,780 A 45,45 0 0,0 120,700 Z" />
-    <path d="M 1395,775 A 50,50 0 0,1 1475,695 L 1480,700 A 45,45 0 0,0 1400,780 Z" />
-    <path d="M 755,135 A 45,45 0 0,0 845,135 L 840,130 A 40,40 0 0,1 760,130 Z" />
-    <path d="M 755,765 A 45,45 0 0,1 845,765 L 840,770 A 40,40 0 0,0 760,770 Z" />
+  <!-- ========================================== -->
+  <!-- 4. RUBY INLAYS (18 total, exactly 12.5" spacing, 3" back) -->
+  <!-- ========================================== -->
+  <!-- Track coords: Top/Bottom Y = 70 & 630. Left/Right X = 70 & 1130 -->
+  <g id="ruby-inlays">
+    <!-- Top Rail -->
+    <use href="#ruby" x="225" y="70" />
+    <use href="#ruby" x="350" y="70" />
+    <use href="#ruby" x="475" y="70" />
+    <use href="#ruby" x="725" y="70" />
+    <use href="#ruby" x="850" y="70" />
+    <use href="#ruby" x="975" y="70" />
+    <!-- Bottom Rail -->
+    <use href="#ruby" x="225" y="630" />
+    <use href="#ruby" x="350" y="630" />
+    <use href="#ruby" x="475" y="630" />
+    <use href="#ruby" x="725" y="630" />
+    <use href="#ruby" x="850" y="630" />
+    <use href="#ruby" x="975" y="630" />
+    <!-- Left Rail -->
+    <use href="#ruby" x="70" y="225" />
+    <use href="#ruby" x="70" y="350" />
+    <use href="#ruby" x="70" y="475" />
+    <!-- Right Rail -->
+    <use href="#ruby" x="1130" y="225" />
+    <use href="#ruby" x="1130" y="350" />
+    <use href="#ruby" x="1130" y="475" />
   </g>
 
-  <!-- HIGH-INTENSITY INNER CUSHION ST. LOUIS CARDINALS RED NEON LIGHTS -->
-  <g fill="none" stroke="#C41E3A" stroke-width="4.5" filter="url(#red-neon-filter)">
-    <path d="M 240,180 L 750,180" />
-    <path d="M 850,180 L 1360,180" />
-    <path d="M 1420,240 L 1420,660" />
-    <path d="M 1360,720 L 850,720" />
-    <path d="M 750,720 L 240,720" />
-    <path d="M 180,660 L 180,240" />
+  <!-- ========================================== -->
+  <!-- 5. METAL BEZELS (Hugging outer frame, leaving holes open) -->
+  <!-- ========================================== -->
+  <!-- 24K GOLD Corner Bezels -->
+  <g id="gold-corners" fill="url(#gold-24k)" stroke="#594400" stroke-width="1.5">
+    <!-- Top-Left Gold Corner -->
+    <path d="M 20,120 L 20,50 A 30 30 0 0 1 50,20 L 120,20 L 120,40 A 50 50 0 0 0 40,120 Z" />
+    <path d="M 23,115 L 23,55 A 25 25 0 0 1 55,23 L 115,23" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.3"/> <!-- 3D Rim Highlight -->
+
+    <!-- Top-Right Gold Corner -->
+    <path d="M 1180,120 L 1180,50 A 30 30 0 0 0 1150,20 L 1080,20 L 1080,40 A 50 50 0 0 1 1160,120 Z" />
+    <path d="M 1177,115 L 1177,55 A 25 25 0 0 0 1145,23 L 1085,23" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
+
+    <!-- Bottom-Left Gold Corner -->
+    <path d="M 20,580 L 20,650 A 30 30 0 0 0 50,680 L 120,680 L 120,660 A 50 50 0 0 1 40,580 Z" />
+    <path d="M 23,585 L 23,645 A 25 25 0 0 0 55,677 L 115,677" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
+
+    <!-- Bottom-Right Gold Corner -->
+    <path d="M 1180,580 L 1180,650 A 30 30 0 0 1 1150,680 L 1080,680 L 1080,660 A 50 50 0 0 0 1160,580 Z" />
+    <path d="M 1177,585 L 1177,645 A 25 25 0 0 1 1145,677 L 1085,677" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
   </g>
+
+  <!-- POLISHED SILVER Side Bezels -->
+  <g id="silver-sides" fill="url(#silver-polished)" stroke="#1a1c1f" stroke-width="1.5">
+    <!-- Top-Center Silver Bezel -->
+    <!-- Hugs the rail width, arches U-shape perfectly around the pocket hole -->
+    <path d="M 530,20 L 670,20 L 670,40 L 638,40 A 38 38 0 0 0 562,40 L 530,40 Z" />
+    <path d="M 533,23 L 667,23" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/> <!-- Edge reflection -->
+
+    <!-- Bottom-Center Silver Bezel -->
+    <path d="M 530,680 L 670,680 L 670,660 L 638,660 A 38 38 0 0 1 562,660 L 530,660 Z" />
+    <path d="M 533,677 L 667,677" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+  </g>
+
 </svg>
