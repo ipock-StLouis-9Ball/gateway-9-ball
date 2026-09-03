@@ -147,50 +147,56 @@
     <polygon points="1280,765 1286,770 1292,765 1286,760" />
   </g>
 
-  <!-- TWO-PIECE METALLIC POCKETS ACCENTS (FIXED GEOMETRY: B2 + S2) -->
+  <!-- TWO-PIECE METALLIC POCKETS ACCENTS (ROTATED 180° PER POCKET) -->
   <g fill="url(#polished-silver-bezel)" stroke="#ffffff" stroke-width="0.5">
 
-    <!-- TOP LEFT (medium dome, seam-only, no pocket overlap) -->
+    <!-- TOP LEFT (rotate 180° around approx pocket center 160,135) -->
     <path d="M 100,160 
              C 100,125 130,105 180,105 
              L 215,135 
              A 45,45 0 0 1 155,205 
-             Z" />
+             Z"
+          transform="rotate(180,160,135)" />
 
-    <!-- TOP RIGHT -->
+    <!-- TOP RIGHT (center ~1440,135) -->
     <path d="M 1420,100 
              C 1470,100 1500,125 1500,160 
              L 1470,205 
              A 45,45 0 0 1 1395,135 
-             Z" />
+             Z"
+          transform="rotate(180,1440,135)" />
 
-    <!-- BOTTOM LEFT -->
+    <!-- BOTTOM LEFT (center ~160,765) -->
     <path d="M 100,740 
              C 100,775 130,800 180,800 
              L 215,770 
              A 45,45 0 0 1 155,695 
-             Z" />
+             Z"
+          transform="rotate(180,160,765)" />
 
-    <!-- BOTTOM RIGHT -->
+    <!-- BOTTOM RIGHT (center ~1440,765) -->
     <path d="M 1420,800 
              C 1470,800 1500,775 1500,740 
              L 1470,695 
              A 45,45 0 0 1 1395,770 
-             Z" />
+             Z"
+          transform="rotate(180,1440,765)" />
 
-    <!-- TOP SIDE -->
+    <!-- TOP SIDE (center ~800,135) -->
     <path d="M 765,100 
              L 835,100 
              L 860,135 
              A 40,40 0 0 1 740,135 
-             Z" />
+             Z"
+          transform="rotate(180,800,135)" />
 
-    <!-- BOTTOM SIDE -->
+    <!-- BOTTOM SIDE (center ~800,765) -->
     <path d="M 765,800 
              L 835,800 
              L 860,765 
              A 40,40 0 0 0 740,765 
-             Z" />
+             Z"
+          transform="rotate(180,800,765)" />
 
   </g>
 
