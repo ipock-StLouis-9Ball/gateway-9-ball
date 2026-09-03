@@ -1,11 +1,11 @@
 // ============================================================================
 // renderer.js — Orthographic Babylon.js Pool Table Renderer Engine.
 // Enforces hardcoded 80vw viewport layout and 2:1 ratio plane layers:
-// 1. Base Felt Plane: './assets/felt.svg' (2:1 playing surface)
+// 1. Base Felt Plane: './assets/felt.png' (2:1 playing surface)
 // 2. Shadows Plane Layer: './assets/shadow.svg' under active balls
 // 3. Balls Plane Layer: Composite textured ball meshes with numbers & templates
 // 4. Aim Overlay Plane Layer: Guide lines & cue stick graphic
-// 5. Upper Rail Plane: './assets/frame.svg' layered over table with alpha blending
+// 5. Upper Rail Plane: './assets/pool_table_frame.svg' layered over table with alpha blending
 // ============================================================================
 
 import { TABLE, BALL_COLORS } from './config.js';
@@ -63,9 +63,9 @@ export class Renderer {
     };
     this.ballTemplateImg.onerror = (e) => {
       this.ballTemplateLoaded = false;
-      console.error('[Renderer] Failed to load ball template image:', `${ASSET_DIR}/ball_template.svg`, e);
+      console.error('[Renderer] Failed to load ball template image:', `${ASSET_DIR}/ball_template.png`, e);
     };
-    this.ballTemplateImg.src = `${ASSET_DIR}/ball_template.svg`;
+    this.ballTemplateImg.src = `${ASSET_DIR}/ball_template.png`;
 
     this._initBabylon();
     this.resize();
@@ -112,7 +112,7 @@ export class Renderer {
     this.feltPlane.position.y = 0;
 
     const feltMat = new BABYLON.StandardMaterial('feltMat', this.scene);
-    const feltTex = loadTexture(`${ASSET_DIR}/felt.svg`, this.scene);
+    const feltTex = loadTexture(`${ASSET_DIR}/felt.png`, this.scene);
     feltMat.diffuseTexture = feltTex;
     feltMat.emissiveTexture = feltTex;
     feltMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
@@ -324,9 +324,9 @@ export class Renderer {
   _computeTableRect() {
     const W = TABLE.width; // 100 inches
     const H = TABLE.height; // 50 inches (2:1 aspect ratio)
-    const rail = TABLE.railThickness; // 7.5 inches
-    const outerW = W + rail * 2; // 115
-    const outerH = H + rail * 2; // 65
+    // pool_table_frame.svg viewBox is 1200 x 700 with playfield cutout 1000 x 500 (from 100,100 to 1100,600).
+    const outerW = W * (1200 / 1000); // 120 inches
+    const outerH = H * (700 / 500);   // 70 inches
 
     const availW = this.cssW;
     const availH = this.cssH;
@@ -346,7 +346,7 @@ export class Renderer {
       w: drawW,
       h: drawH,
     };
-    this.playOffset = { x: rail * scale, y: rail * scale };
+    this.playOffset = { x: 10 * scale, y: 10 * scale };
     this.playW = W * scale;
     this.playH = H * scale;
   }
@@ -358,9 +358,9 @@ export class Renderer {
     this.feltPlane.scaling.set(this.playW, this.playH, 1);
     this.feltPlane.position.set(px + this.playW / 2, 0, py + this.playH / 2);
 
-    // 2. Frame Plane (outer rail dimensions overlay, viewBox 1600x900 with 1240x540 inner cutout)
-    const frameW = this.playW * (1600 / 1240);
-    const frameH = this.playH * (900 / 540);
+    // 2. Frame Plane (outer rail dimensions overlay, viewBox 1200x700 with 1000x500 inner cutout)
+    const frameW = this.playW * (1200 / 1000);
+    const frameH = this.playH * (700 / 500);
     this.framePlane.scaling.set(frameW, frameH, 1);
     this.framePlane.position.set(px + this.playW / 2, 2.0, py + this.playH / 2);
 
