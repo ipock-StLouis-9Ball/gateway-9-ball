@@ -75,7 +75,7 @@ export function createRack() {
 }
 
 // Map power [0..1] to cue-ball launch speed (inches/sec).
-const MAX_SPEED = 115;
+const MAX_SPEED = 80;
 export function speedForPower(power) {
   return Math.max(0, Math.min(1, power)) * MAX_SPEED;
 }

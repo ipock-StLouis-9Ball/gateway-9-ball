@@ -1,5 +1,5 @@
 // ============================================================================
-// app.js — Screen routing, store/wallet UI, game HUD controls, bootstrap.
+// app.js — Screen routing, store/wallet UI, SVG sidebar HUD controls, bootstrap.
 // ============================================================================
 
 import { State, Wallet, Store } from './state.js';
@@ -96,7 +96,6 @@ function refreshStore() {
     const equipped = Store.isEquipped(storeTab, item.id);
     const div = document.createElement('div');
     div.className = 'store-item';
-    // swatch preview
     let swatch = '';
     if (storeTab === 'tables') swatch = `<div class="swatch" style="background:${TABLE_COLORS[item.id].felt}"></div>`;
     else if (storeTab === 'cues') swatch = `<div class="swatch" style="background:linear-gradient(90deg,${CUE_STICKS[item.id].tip},${CUE_STICKS[item.id].shaft})"></div>`;
@@ -142,7 +141,6 @@ function refreshWallet() {
     row.className = 'hist-row';
     let right;
     if (h.type === 'Deposit') {
-      // Fee is a checkout cost paid externally; full amount is credited.
       right = `credit ${fmt(h.amount)} · fee DB$${h.fee.toFixed(2)} → ${fmt(h.balanceAfter)}`;
     } else if (h.type === 'Withdraw') {
       right = `${fmt(h.amount)} − fee DB$${h.fee.toFixed(2)} → ${fmt(h.balanceAfter)}`;
@@ -171,7 +169,6 @@ let renderer = null;
 
 function startGame(opts) {
   show('game');
-  // Apply owned cosmetics to renderer settings.
   const settings = { ...State.settings };
   const canvas = document.getElementById('game-canvas');
   renderer = new Renderer(canvas, settings);
@@ -190,15 +187,14 @@ function startGame(opts) {
     },
   });
 
-  // Players
-  document.getElementById('p1-name').textContent = State.profile.name;
-  document.getElementById('p1-avatar').textContent = State.profile.avatar;
-  document.getElementById('p2-name').textContent = State.opponent.name;
-  document.getElementById('p2-avatar').textContent = State.opponent.avatar;
-  document.getElementById('match-info').textContent = opts.practice ? 'Practice' : `Best of ${ECONOMY.bestOf} · Pot DB$${opts.match.pot.toFixed(2)}`;
+  // SVG Sidebar Player Names
+  const p1Name = document.getElementById('svg-p1-name');
+  if (p1Name) p1Name.textContent = State.profile.name.toUpperCase();
+  const p2Name = document.getElementById('svg-p2-name');
+  if (p2Name) p2Name.textContent = State.opponent.name.toUpperCase();
+
   document.getElementById('match-modal').classList.add('hidden');
 
-  // Resize after layout is visible.
   requestAnimationFrame(() => {
     renderer.resize();
     game.start();
@@ -209,74 +205,90 @@ function startGame(opts) {
   bindGameControls();
 }
 
-function setFoulBadge(card, n) {
-  let badge = card.querySelector('.foul-badge');
-  if (n <= 0) { if (badge) badge.remove(); return; }
-  if (!badge) { badge = document.createElement('div'); badge.className = 'foul-badge'; card.appendChild(badge); }
-  badge.textContent = `Fouls ${n}/3`;
-}
-
 function updateHud(hud) {
-  document.getElementById('p1-score').textContent = hud.match ? hud.match.racksWon[0] : '–';
-  document.getElementById('p2-score').textContent = hud.match ? hud.match.racksWon[1] : '–';
-  document.querySelector('.player-card.p1').classList.toggle('active', hud.currentPlayer === 0);
-  document.querySelector('.player-card.p2').classList.toggle('active', hud.currentPlayer === 1);
-  const t = document.getElementById('shot-timer');
-  t.textContent = hud.shotTimer;
-  t.parentElement.classList.toggle('warn', hud.shotTimer <= 8);
-  // Power fill and handle at rest unless actively dragging
+  const p1Score = document.getElementById('svg-p1-score');
+  if (p1Score) p1Score.textContent = hud.match ? hud.match.racksWon[0] : '0';
+  const p2Score = document.getElementById('svg-p2-score');
+  if (p2Score) p2Score.textContent = hud.match ? hud.match.racksWon[1] : '0';
+
+  const p1Bg = document.getElementById('svg-p1-bg');
+  const p2Bg = document.getElementById('svg-p2-bg');
+  if (p1Bg) p1Bg.classList.toggle('player-active', hud.currentPlayer === 0);
+  if (p2Bg) p2Bg.classList.toggle('player-active', hud.currentPlayer === 1);
+
+  const timerText = document.getElementById('svg-timer');
+  if (timerText) {
+    const sec = Math.max(0, Math.floor(hud.shotTimer));
+    timerText.textContent = `00:${sec < 10 ? '0' : ''}${sec}`;
+  }
+
+  const timerArc = document.getElementById('svg-timer-arc');
+  if (timerArc) {
+    const totalDash = 301.59;
+    const frac = Math.max(0, Math.min(1, hud.shotTimer / 45));
+    timerArc.style.strokeDashoffset = (totalDash * (1 - frac)).toString();
+    timerArc.setAttribute('stroke', hud.shotTimer <= 8 ? '#ff2e4e' : '#00f3ff');
+  }
+
   if (!cueCharging) {
     updatePowerUI(0);
   }
+
   const banner = document.getElementById('msg-banner');
   if (hud.message) { banner.textContent = hud.message; banner.classList.remove('hidden'); }
   else banner.classList.add('hidden');
-  // Push-out pill: only after a legal break, on your turn, while aiming.
+
   const pushBtn = document.getElementById('pushout-btn');
-  pushBtn.classList.toggle('hidden', !hud.pushOutAvailable);
-  pushBtn.disabled = !(hud.state === 'AIMING' && hud.currentPlayer === 0);
-  if (!hud.pushOutAvailable) pushOutMode = false;
-  pushBtn.classList.toggle('active', pushOutMode);
-  // Push-out decision prompt (you are the chooser).
+  if (pushBtn) {
+    pushBtn.classList.toggle('hidden', !hud.pushOutAvailable);
+    pushBtn.disabled = !(hud.state === 'AIMING' && hud.currentPlayer === 0);
+    if (!hud.pushOutAvailable) pushOutMode = false;
+    pushBtn.classList.toggle('active', pushOutMode);
+  }
+
   const pd = document.getElementById('push-decision');
-  pd.classList.toggle('hidden', !hud.pendingPushDecision);
-  // Consecutive-foul badges.
-  const p1 = document.querySelector('.player-card.p1');
-  const p2 = document.querySelector('.player-card.p2');
-  setFoulBadge(p1, hud.fouls ? hud.fouls[0] : 0);
-  setFoulBadge(p2, hud.fouls ? hud.fouls[1] : 0);
-  // English dot
-  const dot = document.getElementById('eb-dot');
-  dot.style.left = (50 + hud.english.x * 40) + '%';
-  dot.style.top = (50 - hud.english.y * 40) + '%';
+  if (pd) pd.classList.toggle('hidden', !hud.pendingPushDecision);
+
+  // Spin dot inside SVG spin controller
+  const spinDot = document.getElementById('svg-spin-dot-group');
+  if (spinDot) {
+    const dx = hud.english.x * 28;
+    const dy = -hud.english.y * 28;
+    spinDot.setAttribute('transform', `translate(${300 + dx}, ${495 + dy})`);
+  }
 }
 
 // ---------- Game controls ----------
-let cueCharging = false;     // true while the player is pulling the power meter
-let cueStartY = 0;          // pointer Y at pull start
-let pushOutMode = false;   // when true, the next release fires a push-out
+let cueCharging = false;
+let cueStartY = 0;
+let pushOutMode = false;
 
 function updatePowerUI(powerFrac) {
-  const fill = document.getElementById('cue-power-fill');
-  const handle = document.getElementById('cue-power-handle');
   const p = Math.max(0, Math.min(1, powerFrac));
-  const pct = (p * 100) + '%';
-  if (fill) fill.style.height = pct;
-  if (handle) handle.style.bottom = pct;
+  const cueStick = document.getElementById('cue-stick');
+  const powerFill = document.getElementById('svg-power-fill');
+
+  // Pull cue stick down in SVG coordinates (0 to 180px shift)
+  if (cueStick) {
+    cueStick.setAttribute('transform', `translate(1, ${p * 180})`);
+  }
+  // Fill power bar overlay upward
+  if (powerFill) {
+    const fillH = p * 600;
+    powerFill.setAttribute('y', (755 - fillH).toString());
+    powerFill.setAttribute('height', fillH.toString());
+  }
 }
 
 function bindGameControls() {
-  // --- Solid vertical power bar pull-and-release mechanic ---
-  // Drag DOWN from initial point (or tap & drag anywhere along track) to charge power.
-  const track = document.getElementById('cue-stick-track');
+  const leftPanel = document.getElementById('left-panel');
 
   const chargeFromEvent = (e) => {
     if (!game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
-    const rect = track.getBoundingClientRect();
-    const maxPull = rect.height * 0.75; // drag range mapping to 100%
+    const rect = leftPanel.getBoundingClientRect();
+    const maxPull = rect.height * 0.45;
     const dy = Math.max(0, (e.clientY - cueStartY));
     let frac = Math.max(0, Math.min(1, dy / maxPull));
-    // Magnetic snap to 25%, 50%, 75% markers
     for (const m of [0.25, 0.5, 0.75]) {
       if (Math.abs(frac - m) < 0.035) frac = m;
     }
@@ -284,91 +296,97 @@ function bindGameControls() {
     updatePowerUI(frac);
   };
 
-  track.addEventListener('pointerdown', (e) => {
-    if (!game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
-    cueCharging = true;
-    cueStartY = e.clientY;
-    track.setPointerCapture(e.pointerId);
-    chargeFromEvent(e);
-  });
+  if (leftPanel) {
+    leftPanel.addEventListener('pointerdown', (e) => {
+      if (!game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
+      cueCharging = true;
+      cueStartY = e.clientY;
+      leftPanel.setPointerCapture(e.pointerId);
+      chargeFromEvent(e);
+    });
 
-  track.addEventListener('pointermove', (e) => {
-    if (cueCharging) chargeFromEvent(e);
-  });
+    leftPanel.addEventListener('pointermove', (e) => {
+      if (cueCharging) chargeFromEvent(e);
+    });
 
-  const releaseCue = () => {
-    if (!cueCharging) return;
-    cueCharging = false;
-    const firedPower = game.power;
-    if (firedPower >= 0.10 && game.state === 'AIMING' && game.currentPlayer === 0) {
-      if (pushOutMode) { pushOutMode = false; game.pushOut(); }
-      else game.shoot();
-    }
-    updatePowerUI(0);
-  };
+    const releaseCue = () => {
+      if (!cueCharging) return;
+      cueCharging = false;
+      const firedPower = game.power;
+      if (firedPower >= 0.10 && game.state === 'AIMING' && game.currentPlayer === 0) {
+        if (pushOutMode) { pushOutMode = false; game.pushOut(); }
+        else game.shoot();
+      }
+      updatePowerUI(0);
+    };
 
-  track.addEventListener('pointerup', releaseCue);
-  track.addEventListener('pointercancel', releaseCue);
+    leftPanel.addEventListener('pointerup', releaseCue);
+    leftPanel.addEventListener('pointercancel', releaseCue);
+  }
 
-  // Push-out toggle pill: arms the next release as a push-out (after legal break).
-  document.getElementById('pushout-btn').addEventListener('click', () => {
-    if (!game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
-    if (!game.pushOutAvailable) return;
-    pushOutMode = !pushOutMode;
-    document.getElementById('pushout-btn').classList.toggle('active', pushOutMode);
-  });
-  // Push-out decision: take or pass back
-  document.getElementById('pd-take').addEventListener('click', () => game && game.takePush());
-  document.getElementById('pd-pass').addEventListener('click', () => game && game.passPush());
+  // Spin controller inside SVG
+  const spinCtrl = document.getElementById('spin-controller');
+  if (spinCtrl) {
+    const setSpinFromEvent = (e) => {
+      const rect = spinCtrl.getBoundingClientRect();
+      const cx = e.clientX - rect.left - rect.width / 2;
+      const cy = e.clientY - rect.top - rect.height / 2;
+      const ex = Math.max(-1, Math.min(1, cx / (rect.width * 0.35)));
+      const ey = Math.max(-1, Math.min(1, -cy / (rect.height * 0.35)));
+      if (game) game.setEnglish(ex, ey);
+    };
 
-  // English popover
-  const pop = document.getElementById('english-pop');
-  const epBall = document.querySelector('.ep-ball');
-  document.getElementById('english-btn').addEventListener('click', (e) => { e.stopPropagation(); pop.classList.toggle('hidden'); });
-  document.addEventListener('click', (e) => { if (!pop.contains(e.target) && e.target.id !== 'english-btn') pop.classList.add('hidden'); });
-  const setEnglishFromEvent = (e) => {
-    const rect = epBall.getBoundingClientRect();
-    const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left - rect.width / 2;
-    const cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top - rect.height / 2;
-    const ex = Math.max(-1, Math.min(1, cx / (rect.width / 2)));
-    const ey = Math.max(-1, Math.min(1, -cy / (rect.height / 2)));
-    if (game) game.setEnglish(ex, ey);
-    document.getElementById('ep-dot').style.left = (50 + ex * 40) + '%';
-    document.getElementById('ep-dot').style.top = (50 - ey * 40) + '%';
-  };
-  epBall.addEventListener('pointerdown', (e) => { setEnglishFromEvent(e); epBall.setPointerCapture(e.pointerId); });
-  epBall.addEventListener('pointermove', (e) => { if (e.buttons) setEnglishFromEvent(e); });
-  document.getElementById('ep-clear').addEventListener('click', () => { if (game) game.setEnglish(0, 0); });
+    spinCtrl.addEventListener('pointerdown', (e) => {
+      setSpinFromEvent(e);
+      spinCtrl.setPointerCapture(e.pointerId);
+    });
+    spinCtrl.addEventListener('pointermove', (e) => {
+      if (e.buttons) setSpinFromEvent(e);
+    });
+  }
+
+  const pushBtn = document.getElementById('pushout-btn');
+  if (pushBtn) {
+    pushBtn.addEventListener('click', () => {
+      if (!game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
+      if (!game.pushOutAvailable) return;
+      pushOutMode = !pushOutMode;
+      pushBtn.classList.toggle('active', pushOutMode);
+    });
+  }
+
+  document.getElementById('pd-take')?.addEventListener('click', () => game && game.takePush());
+  document.getElementById('pd-pass')?.addEventListener('click', () => game && game.passPush());
 
   // Canvas aiming + ball-in-hand placement
   const canvas = document.getElementById('game-canvas');
-  canvas.addEventListener('pointerdown', (e) => {
-    if (!game) return;
-    const rect = canvas.getBoundingClientRect();
-    const px = e.clientX - rect.left;
-    const py = e.clientY - rect.top;
-    if (game.state === 'BALL_IN_HAND') {
-      const inP = renderer.pxToIn(px, py);
-      game.placeCueBall(inP.x, inP.y);
-    } else {
-      game.setAimFromPoint(px, py);
-    }
-  });
-  canvas.addEventListener('pointermove', (e) => {
-    if (!game || game.state !== 'AIMING') return;
-    if (!e.buttons) return;
-    const rect = canvas.getBoundingClientRect();
-    game.setAimFromPoint(e.clientX - rect.left, e.clientY - rect.top);
-  });
+  if (canvas) {
+    canvas.addEventListener('pointerdown', (e) => {
+      if (!game) return;
+      const rect = canvas.getBoundingClientRect();
+      const px = e.clientX - rect.left;
+      const py = e.clientY - rect.top;
+      if (game.state === 'BALL_IN_HAND') {
+        const inP = renderer.pxToIn(px, py);
+        game.placeCueBall(inP.x, inP.y);
+      } else {
+        game.setAimFromPoint(px, py);
+      }
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!game || game.state !== 'AIMING') return;
+      if (!e.buttons) return;
+      const rect = canvas.getBoundingClientRect();
+      game.setAimFromPoint(e.clientX - rect.left, e.clientY - rect.top);
+    });
+  }
 
-  // Game menu -> back to menu (abandon match)
-  document.getElementById('game-menu').addEventListener('click', () => {
+  document.getElementById('game-menu')?.addEventListener('click', () => {
     if (game) game.stop();
     document.getElementById('match-modal').classList.add('hidden');
     show('menu');
   });
 
-  // Match modal buttons (rematch / menu) — data-goto already wired, but handle rematch
   document.querySelectorAll('#match-modal [data-goto]').forEach((b) => {
     b.addEventListener('click', () => {
       document.getElementById('match-modal').classList.add('hidden');
@@ -377,17 +395,16 @@ function bindGameControls() {
   });
 }
 
-// ---------- Helpers ----------
 function fmt(n) {
   return 'DB$' + (Math.round(n * 100) / 100).toFixed(2);
 }
 function alertMsg(msg) {
   const banner = document.getElementById('msg-banner');
+  if (!banner) return;
   banner.textContent = msg;
   banner.classList.remove('hidden');
   setTimeout(() => banner.classList.add('hidden'), 2500);
 }
 
-// ---------- Init ----------
 window.addEventListener('resize', () => { if (renderer) renderer.resize(); });
 show('menu');

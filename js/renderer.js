@@ -49,7 +49,7 @@ export class Renderer {
       return img;
     };
 
-    this.feltImg = loadImg(`${ASSET_DIR}/felt.png`);
+    this.feltImg = loadImg(`${ASSET_DIR}/flet.svg`);
     this.frameImg = loadImg(`${ASSET_DIR}/pool_table_frame.svg`);
     this.shadowImg = loadImg(`${ASSET_DIR}/shadow.svg`);
     this.cushionShadowImg = loadImg(`${ASSET_DIR}/cushion-shadow.svg`);
@@ -137,7 +137,13 @@ export class Renderer {
 
     // 1. Felt playing surface
     if (this.feltImg && this.feltImg.complete && this.feltImg.naturalWidth > 0) {
-      ctx.drawImage(this.feltImg, px, py, this.playW, this.playH);
+      // flet.svg has viewBox 1920x1080 with felt rect x=80..1840 (w=1760) & y=80..1000 (h=920).
+      // Scale flet.svg so the inner felt rect aligns exactly with px, py, playW, playH.
+      const svgW = this.playW * (1920 / 1760);
+      const svgH = this.playH * (1080 / 920);
+      const svgX = px - this.playW * (80 / 1760);
+      const svgY = py - this.playH * (80 / 920);
+      ctx.drawImage(this.feltImg, svgX, svgY, svgW, svgH);
     } else {
       ctx.fillStyle = '#6b1f2b'; // maroon felt fallback
       ctx.fillRect(px, py, this.playW, this.playH);
@@ -284,7 +290,17 @@ export class Renderer {
       ctx.arc(gp.x, gp.y, rp, 0, Math.PI * 2);
       ctx.stroke();
 
-      if (target) {
+      if (this.aim.isCushion && this.aim.reflectedDir) {
+        const rdir = this.aim.reflectedDir;
+        const bounceLen = rp * 7;
+        ctx.setLineDash([4, 5]);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(120,255,170,0.85)';
+        ctx.beginPath();
+        ctx.moveTo(gp.x, gp.y);
+        ctx.lineTo(gp.x + rdir.x * bounceLen, gp.y + rdir.y * bounceLen);
+        ctx.stroke();
+      } else if (target) {
         const nx = target.x - ghost.x;
         const ny = target.y - ghost.y;
         const nlen = Math.hypot(nx, ny) || 1;
@@ -314,15 +330,6 @@ export class Renderer {
           ctx.stroke();
         }
       }
-    } else {
-      const lineLen = this.playW * 0.95;
-      ctx.setLineDash([7, 6]);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-      ctx.beginPath();
-      ctx.moveTo(p.x + dir.x * rp, p.y + dir.y * rp);
-      ctx.lineTo(p.x + dir.x * lineLen, p.y + dir.y * lineLen);
-      ctx.stroke();
     }
 
     ctx.restore();
