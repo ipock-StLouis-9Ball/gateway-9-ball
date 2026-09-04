@@ -125,7 +125,14 @@ export class Game {
     if (!cue) { this.renderer.aim = null; return; }
     const r = TABLE.ballRadius;
     const ghost = this._ghostBall(cue, this.aimAngle, r);
-    this.renderer.aim = { angle: this.aimAngle, power: this.power, ghost: ghost ? ghost.pos : null, target: ghost ? ghost.target : null };
+    this.renderer.aim = {
+      angle: this.aimAngle,
+      power: this.power,
+      ghost: ghost ? ghost.pos : null,
+      target: ghost ? ghost.target : null,
+      isCushion: ghost ? ghost.isCushion : false,
+      reflectedDir: ghost ? ghost.reflectedDir : null,
+    };
   }
 
   _ghostBall(cue, angle, r) {
@@ -133,6 +140,10 @@ export class Game {
     const dy = Math.sin(angle);
     let bestT = Infinity;
     let target = null;
+    let isCushion = false;
+    let cushionNormal = null;
+
+    // Ball-ball collision ray
     for (const b of this.balls) {
       if (b.pocketed || b.id === CUE_ID) continue;
       const ex = b.x - cue.x;
@@ -142,10 +153,84 @@ export class Game {
       const disc = proj * proj - (ex * ex + ey * ey - (2 * r) * (2 * r));
       if (disc < 0) continue;
       const t = proj - Math.sqrt(disc);
-      if (t > 0 && t < bestT) { bestT = t; target = b; }
+      if (t > 0 && t < bestT) {
+        bestT = t;
+        target = b;
+        isCushion = false;
+      }
     }
+
+    // Cushion bounds check (where ball center stops)
+    if (dx < 0) {
+      const t = (r - cue.x) / dx;
+      if (t > 0 && t < bestT) {
+        const hitY = cue.y + dy * t;
+        if (hitY >= 0 && hitY <= TABLE.height) {
+          bestT = t;
+          target = null;
+          isCushion = true;
+          cushionNormal = { x: 1, y: 0 };
+        }
+      }
+    }
+    if (dx > 0) {
+      const t = (TABLE.width - r - cue.x) / dx;
+      if (t > 0 && t < bestT) {
+        const hitY = cue.y + dy * t;
+        if (hitY >= 0 && hitY <= TABLE.height) {
+          bestT = t;
+          target = null;
+          isCushion = true;
+          cushionNormal = { x: -1, y: 0 };
+        }
+      }
+    }
+    if (dy < 0) {
+      const t = (r - cue.y) / dy;
+      if (t > 0 && t < bestT) {
+        const hitX = cue.x + dx * t;
+        if (hitX >= 0 && hitX <= TABLE.width) {
+          bestT = t;
+          target = null;
+          isCushion = true;
+          cushionNormal = { x: 0, y: 1 };
+        }
+      }
+    }
+    if (dy > 0) {
+      const t = (TABLE.height - r - cue.y) / dy;
+      if (t > 0 && t < bestT) {
+        const hitX = cue.x + dx * t;
+        if (hitX >= 0 && hitX <= TABLE.width) {
+          bestT = t;
+          target = null;
+          isCushion = true;
+          cushionNormal = { x: 0, y: -1 };
+        }
+      }
+    }
+
     if (bestT === Infinity) return null;
-    return { pos: { x: cue.x + dx * bestT, y: cue.y + dy * bestT }, target: { x: target.x, y: target.y } };
+
+    const ghostPos = { x: cue.x + dx * bestT, y: cue.y + dy * bestT };
+
+    if (isCushion && cushionNormal) {
+      const dot = dx * cushionNormal.x + dy * cushionNormal.y;
+      const refX = dx - 2 * dot * cushionNormal.x;
+      const refY = dy - 2 * dot * cushionNormal.y;
+      return {
+        pos: ghostPos,
+        target: null,
+        isCushion: true,
+        reflectedDir: { x: refX, y: refY },
+      };
+    }
+
+    return {
+      pos: ghostPos,
+      target: { x: target.x, y: target.y },
+      isCushion: false,
+    };
   }
 
   // --- Shot execution (async: resolver may be remote) ---

@@ -4,20 +4,20 @@
 // pocket mouth gaps, rolling friction, and pocket capture.
 //
 // Pure & deterministic: given the same inputs it produces the same result.
-// This module is the boundary that later moves behind a Cloud Run endpoint.
+// Exact alignment to pool_table_frame.svg pocket cutouts and cushion bevels.
 // ============================================================================
 
 import { TABLE } from './config.js';
 
-// Pocket centers (corners + side). x in [0,W], y in [0,H].
+// Pocket centers snapped to pool_table_frame.svg pocket cutouts (in table inches [0..100, 0..50]).
 export function pocketCenters(W = TABLE.width, H = TABLE.height) {
   return [
-    { x: 0, y: 0 }, // top-left
-    { x: W / 2, y: 0 }, // top-middle
-    { x: W, y: 0 }, // top-right
-    { x: 0, y: H }, // bottom-left
-    { x: W / 2, y: H }, // bottom-middle
-    { x: W, y: H }, // bottom-right
+    { x: -2.5, y: -2.5 },  // top-left
+    { x: W / 2, y: -3.0 }, // top-middle
+    { x: W + 2.5, y: -2.5 },// top-right
+    { x: -2.5, y: H + 2.5 },// bottom-left
+    { x: W / 2, y: H + 3.0 },// bottom-middle
+    { x: W + 2.5, y: H + 2.5 },// bottom-right
   ];
 }
 
@@ -28,14 +28,13 @@ function inMouth(pos, gaps) {
   return false;
 }
 
-// Precompute mouth gaps (half-width) for each wall.
-const MW = TABLE.pocketRadius * 0.92; // mouth half-width
+// Precompute mouth gaps matching pool_table_frame.svg cushion cutouts
 function wallGaps(W, H) {
   return {
-    left: [[0, MW], [H - MW, H]], // y gaps
-    right: [[0, MW], [H - MW, H]],
-    top: [[0, MW], [W / 2 - MW, W / 2 + MW], [W - MW, W]], // x gaps
-    bottom: [[0, MW], [W / 2 - MW, W / 2 + MW], [W - MW, W]],
+    left: [[0, 3.2], [H - 3.2, H]],
+    right: [[0, 3.2], [H - 3.2, H]],
+    top: [[0, 3.2], [W / 2 - 2.5, W / 2 + 2.5], [W - 3.2, W]],
+    bottom: [[0, 3.2], [W / 2 - 2.5, W / 2 + 2.5], [W - 3.2, W]],
   };
 }
 
@@ -46,7 +45,7 @@ export class Physics {
     this.r = TABLE.ballRadius;
     this.gaps = wallGaps(W, H);
     this.pockets = pocketCenters(W, H);
-    this.captureR = TABLE.pocketRadius * 0.82;
+    this.captureR = TABLE.pocketRadius * 0.95;
     this.captureR2 = this.captureR * this.captureR;
   }
 
@@ -76,9 +75,7 @@ export class Physics {
         b.vx = 0;
         b.vy = 0;
       }
-      // spin: cue ball english — modest curve. Angular damping wears spin
-      // off exponentially over distance so backspin/topspin/side fade naturally;
-      // cleared near rest so the shot always resolves (no perpetual drift).
+      // spin: cue ball english — modest curve.
       if (b.englishX || b.englishY) {
         const damp = Math.exp(-TABLE.spinDamping * dt);
         b.englishX *= damp;
@@ -94,8 +91,7 @@ export class Physics {
       }
     }
 
-    // Cushion reflections (with pocket mouth gaps). Emits 'rail' events so the
-    // rules engine can enforce the post-contact rail requirement.
+    // Cushion reflections (with pocket mouth gaps).
     for (const b of moving) {
       const r = this.r;
       // left wall
@@ -128,7 +124,7 @@ export class Physics {
       }
     }
 
-    // Ball-ball collisions (O(n^2), n<=10)
+    // Ball-ball collisions
     for (let i = 0; i < moving.length; i++) {
       for (let j = i + 1; j < moving.length; j++) {
         this._resolveBallPair(moving[i], moving[j], events);
@@ -161,7 +157,6 @@ export class Physics {
     const dist = Math.hypot(dx, dy);
     const minDist = this.r * 2;
     if (dist === 0 || dist >= minDist) return;
-    // separate
     const nx = dx / dist;
     const ny = dy / dist;
     const overlap = minDist - dist;
@@ -169,13 +164,12 @@ export class Physics {
     a.y -= ny * overlap * 0.5;
     b.x += nx * overlap * 0.5;
     b.y += ny * overlap * 0.5;
-    // relative velocity along normal
     const rvx = b.vx - a.vx;
     const rvy = b.vy - a.vy;
     const velAlongNormal = rvx * nx + rvy * ny;
-    if (velAlongNormal > 0) return; // separating
+    if (velAlongNormal > 0) return;
     const e = TABLE.ballRestitution;
-    const j = (-(1 + e) * velAlongNormal) / 2; // equal mass
+    const j = (-(1 + e) * velAlongNormal) / 2;
     const ix = j * nx;
     const iy = j * ny;
     a.vx -= ix;
@@ -185,14 +179,11 @@ export class Physics {
     events.push({ type: 'hit', a: a.id, b: b.id, speed: Math.abs(velAlongNormal) });
   }
 
-  // Are all balls at rest?
   atRest(balls) {
     return balls.every((b) => b.pocketed || (b.vx === 0 && b.vy === 0));
   }
 }
 
-// Set cue-ball english (spin) offsets in [-1,1]. englishX = side spin,
-// englishY = draw/follow. Stored on the ball; physics applies mild curve.
 export function setEnglish(cue, ex, ey) {
   cue.englishX = ex;
   cue.englishY = ey;

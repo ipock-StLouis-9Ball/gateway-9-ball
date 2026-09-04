@@ -85,16 +85,20 @@
     .ui-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-weight: bold; fill: #94a7bd; letter-spacing: 1.5px; font-size: 11px; }
     .recess-well { fill: url(#recess-bg); stroke: #12181e; stroke-width: 2; }
     .avatar-icon { fill: #72849c; }
+    .player-active { stroke: #e8b75a !important; stroke-width: 3 !important; }
   </style>
 
   <!-- ================= LEFT PANEL: POWER METER & CUE ================= -->
-  <g id="left-panel">
+  <g id="left-panel" style="cursor: pointer; touch-action: none;">
     <!-- Base Panel -->
     <rect x="20" y="25" width="160" height="750" rx="16" class="panel" />
     
     <!-- Recessed Slot for Cue -->
-    <rect x="38" y="45" width="44" height="710" rx="22" class="recess-well" />
+    <rect id="svg-power-track" x="38" y="45" width="44" height="710" rx="22" class="recess-well" />
     <rect x="38" y="45" width="44" height="710" rx="22" fill="url(#inner-shadow-vert)" pointer-events="none" />
+
+    <!-- Power Fill Overlay -->
+    <rect id="svg-power-fill" x="38" y="755" width="44" height="0" rx="22" fill="#00d8f6" opacity="0.4" pointer-events="none" />
 
     <!-- Pool Cue Stick -->
     <g id="cue-stick" transform="translate(1, 0)">
@@ -118,29 +122,25 @@
     </g>
 
     <!-- Power Meter Track & Neon Labels -->
-    <g id="power-scale" transform="translate(-4, 0)">
+    <g id="power-scale" transform="translate(-4, 0)" pointer-events="none">
       <!-- Vertical Glowing Line -->
       <line x1="124" y1="110" x2="124" y2="710" stroke="#00d8f6" stroke-width="2.5" stroke-linecap="round" filter="url(#neon-glow)" />
       
       <!-- 25% -->
-      <line x1="124" y1="110" x2="132" y2="110" stroke="#00d8f6" stroke-width="2.5" filter="url(#neon-glow)" />
-      <text x="138" y="114" class="neon-text" font-size="12">25%</text>
+      <line x1="124" y1="560" x2="132" y2="560" stroke="#00d8f6" stroke-width="2.5" filter="url(#neon-glow)" />
+      <text x="138" y="564" class="neon-text" font-size="12">25%</text>
 
       <!-- 50% -->
-      <line x1="124" y1="260" x2="132" y2="260" stroke="#00d8f6" stroke-width="2.5" filter="url(#neon-glow)" />
-      <text x="138" y="264" class="neon-text" font-size="12">50%</text>
+      <line x1="124" y1="410" x2="132" y2="410" stroke="#00d8f6" stroke-width="2.5" filter="url(#neon-glow)" />
+      <text x="138" y="414" class="neon-text" font-size="12">50%</text>
 
       <!-- 75% -->
-      <line x1="124" y1="410" x2="132" y2="410" stroke="#00d8f6" stroke-width="2.5" filter="url(#neon-glow)" />
-      <text x="138" y="414" class="neon-text" font-size="12">75%</text>
-
-      <!-- 75% (Duplicate matching the image layout) -->
-      <line x1="124" y1="560" x2="132" y2="560" stroke="#00d8f6" stroke-width="2.5" filter="url(#neon-glow)" />
-      <text x="138" y="564" class="neon-text" font-size="12">75%</text>
+      <line x1="124" y1="260" x2="132" y2="260" stroke="#00d8f6" stroke-width="2.5" filter="url(#neon-glow)" />
+      <text x="138" y="264" class="neon-text" font-size="12">75%</text>
 
       <!-- 100% -->
-      <line x1="124" y1="710" x2="132" y2="710" stroke="#00d8f6" stroke-width="2.5" filter="url(#neon-glow)" />
-      <text x="138" y="714" class="neon-text" font-size="12">100%</text>
+      <line x1="124" y1="110" x2="132" y2="110" stroke="#00d8f6" stroke-width="2.5" filter="url(#neon-glow)" />
+      <text x="138" y="114" class="neon-text" font-size="12">100%</text>
     </g>
   </g>
 
@@ -151,7 +151,7 @@
 
     <!-- ================= PLAYER 1 ================= -->
     <g id="player-1" transform="translate(0, 5)">
-      <rect x="257" y="45" width="86" height="86" rx="10" class="recess-well" />
+      <rect id="svg-p1-bg" x="257" y="45" width="86" height="86" rx="10" class="recess-well" />
       <rect x="261" y="49" width="78" height="78" rx="8" fill="#1d2632" stroke="#2d3947" stroke-width="1" />
       
       <g transform="translate(265, 52)">
@@ -160,7 +160,8 @@
       </g>
 
       <rect x="245" y="145" width="110" height="24" rx="5" class="label-box" />
-      <text x="300" y="161" text-anchor="middle" class="ui-text">PLAYER 1</text>
+      <text id="svg-p1-name" x="300" y="161" text-anchor="middle" class="ui-text">PLAYER 1</text>
+      <text id="svg-p1-score" x="300" y="120" text-anchor="middle" class="neon-text" font-size="20">0</text>
     </g>
 
     <!-- ================= TIMER CIRCLE ================= -->
@@ -172,19 +173,19 @@
       <circle cx="300" cy="335" r="48" fill="none" stroke="#103e4d" stroke-width="4.5" />
       
       <!-- Active Neon Arc -->
-      <circle cx="300" cy="335" r="48" fill="none" stroke="#00f3ff" stroke-width="4.5" 
-              stroke-dasharray="226 301" stroke-dashoffset="0" stroke-linecap="round" filter="url(#neon-glow)" />
+      <circle id="svg-timer-arc" cx="300" cy="335" r="48" fill="none" stroke="#00f3ff" stroke-width="4.5"
+              stroke-dasharray="301.59" stroke-dashoffset="0" stroke-linecap="round" filter="url(#neon-glow)" />
 
-      <text x="300" y="345" text-anchor="middle" class="neon-text" font-size="28" letter-spacing="1">00:45</text>
+      <text id="svg-timer" x="300" y="345" text-anchor="middle" class="neon-text" font-size="28" letter-spacing="1">00:45</text>
     </g>
 
     <!-- ================= SPIN CONTROLLER ================= -->
-    <g id="spin-controller" transform="translate(0, 12)">
+    <g id="spin-controller" transform="translate(0, 12)" style="cursor: crosshair; touch-action: none;">
       <circle cx="300" cy="495" r="58" class="recess-well" />
       <circle cx="300" cy="495" r="50" fill="#10151c" />
 
       <!-- Arrows -->
-      <g fill="#4d5c6e">
+      <g fill="#4d5c6e" pointer-events="none">
         <polygon points="300,443 295,451 305,451" />
         <polygon points="300,547 295,539 305,539" />
         <polygon points="248,495 256,490 256,500" />
@@ -195,14 +196,16 @@
       <circle cx="300" cy="495" r="34" fill="url(#cueball-shading)" />
       <circle cx="300" cy="495" r="34" fill="none" stroke="#64748b" stroke-width="0.5" stroke-opacity="0.5" />
 
-      <!-- Spin Contact Point -->
-      <circle cx="300" cy="495" r="4" fill="#ef4444" />
-      <circle cx="300" cy="495" r="1.5" fill="#fca5a5" opacity="0.8" />
+      <!-- Spin Contact Point Group -->
+      <g id="svg-spin-dot-group" transform="translate(300, 495)">
+        <circle id="svg-spin-dot" cx="0" cy="0" r="4" fill="#ef4444" />
+        <circle cx="0" cy="0" r="1.5" fill="#fca5a5" opacity="0.8" />
+      </g>
     </g>
 
     <!-- ================= PLAYER 2 ================= -->
     <g id="player-2" transform="translate(0, 15)">
-      <rect x="257" y="585" width="86" height="86" rx="10" class="recess-well" />
+      <rect id="svg-p2-bg" x="257" y="585" width="86" height="86" rx="10" class="recess-well" />
       <rect x="261" y="589" width="78" height="78" rx="8" fill="#1d2632" stroke="#2d3947" stroke-width="1" />
       
       <g transform="translate(265, 592)">
@@ -211,7 +214,8 @@
       </g>
 
       <rect x="245" y="685" width="110" height="24" rx="5" class="label-box" />
-      <text x="300" y="701" text-anchor="middle" class="ui-text">PLAYER 2</text>
+      <text id="svg-p2-name" x="300" y="701" text-anchor="middle" class="ui-text">PLAYER 2</text>
+      <text id="svg-p2-score" x="300" y="660" text-anchor="middle" class="neon-text" font-size="20">0</text>
     </g>
   </g>
 </svg>

@@ -40,13 +40,13 @@ export const TABLE = {
   width: 100, // playfield width (long axis), inches
   height: 50, // playfield height (short axis), inches
   railThickness: 7.5,
-  ballRadius: 1.125, // 2.25" diameter regulation ball
-  pocketRadius: 2.4, // pocket mouth capture radius
+  ballRadius: 1.35, // scaled up ball radius (2.7" diameter) for proper proportions
+  pocketRadius: 2.8, // pocket mouth capture radius
   cushionRestitution: 0.85, // K-66 rubber: ~85% energy retained off rail
   ballRestitution: 0.88, // ball-ball: ~88% energy retained
-  friction: 2.3, // rolling deceleration (inches/sec^2) — felt cloth drag
-  spinDamping: 1.6, // english/spin wears off exponentially over distance
-  stopThreshold: 1.0, // below this speed, ball stops
+  friction: 12.5, // increased rolling friction (inches/sec^2) so balls decelerate naturally
+  spinDamping: 2.5, // english/spin wears off exponentially over distance
+  stopThreshold: 0.8, // below this speed, ball stops
 };
 
 // Standard 9-ball colors (1-9). Cue ball is white.
