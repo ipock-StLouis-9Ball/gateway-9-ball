@@ -1,48 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+<svg xmlns="http://w3.org" viewBox="0 0 1920 1080" width="100%" height="100%">
   <defs>
-    <!-- Soft drop shadow to create depth against the light gray border -->
-    <filter id="canvas-shadow" x="-5%" y="-5%" width="110%" height="110%">
-      <feDropShadow dx="15" dy="15" stdDeviation="25" flood-color="#000000" flood-opacity="0.6"/>
+    <!-- Vignette Shadowing for Pocket Cavity depth -->
+    <filter id="pocket-depth" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.85"/>
     </filter>
 
-    <!-- Radial gradient for the dramatic spotlight/vignette lighting effect -->
     <radialGradient id="maroon-lighting" cx="50%" cy="50%" r="75%">
-      <stop offset="0%" stop-color="#a44f59" />   <!-- Bright hot spot center -->
-      <stop offset="25%" stop-color="#7d343e" />  <!-- Mid-tone crimson -->
-      <stop offset="65%" stop-color="#3d1217" />  <!-- Dark burgundy falloff -->
-      <stop offset="100%" stop-color="#180406" /> <!-- Deep black-red corners -->
+      <stop offset="0%" stop-color="#a44f59" />
+      <stop offset="25%" stop-color="#7d343e" />
+      <stop offset="65%" stop-color="#3d1217" />
+      <stop offset="100%" stop-color="#180406" />
     </radialGradient>
 
-    <!-- Repeating geometric weave pattern to simulate fabric/canvas grain -->
     <pattern id="cloth-weave" width="4" height="4" patternUnits="userSpaceOnUse">
       <rect x="0" y="0" width="2" height="2" fill="#000000" fill-opacity="0.15" />
       <rect x="2" y="2" width="2" height="2" fill="#000000" fill-opacity="0.15" />
-      <rect x="2" y="0" width="2" height="2" fill="#ffffff" fill-opacity="0.04" />
-      <rect x="0" y="2" width="2" height="2" fill="#ffffff" fill-opacity="0.04" />
     </pattern>
-
-    <!-- Fractal noise filter for natural, organic unevenness in the material -->
-    <filter id="organic-noise" x="0" y="0" width="100%" height="100%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" result="noise"/>
-      <!-- Desaturate and lower opacity of the noise -->
-      <feColorMatrix type="matrix" values="0.3 0.6 0.1 0 0  0.3 0.6 0.1 0 0  0.3 0.6 0.1 0 0  0 0 0 0.07 0" in="noise" result="monochromeNoise"/>
-      <!-- Blend the noise into the graphic -->
-      <feBlend mode="multiply" in="SourceGraphic" in2="monochromeNoise"/>
-    </filter>
   </defs>
 
-  <!-- Outer light gray wall/border -->
-  <rect width="100%" height="100%" fill="#cacad0" />
-
-  <!-- Main Canvas Group with Drop Shadow -->
-  <g filter="url(#canvas-shadow)">
-    <!-- 1. The base color and lighting gradient -->
-    <rect x="80" y="80" width="1760" height="920" fill="url(#maroon-lighting)" />
-    
-    <!-- 2. The fractal noise layer for uneven dye/lighting in the fabric -->
-    <rect x="80" y="80" width="1760" height="920" fill="url(#maroon-lighting)" filter="url(#organic-noise)" />
-    
-    <!-- 3. The sharp overlay pattern for the canvas/cloth thread texture -->
-    <rect x="80" y="80" width="1760" height="920" fill="url(#cloth-weave)" style="mix-blend-mode: multiply;" />
+  <!-- Ground Layer: Deep Black Pocket Void Wells -->
+  <g id="black-pocket-wells" fill="#0b0304" filter="url(#pocket-depth)">
+    <circle cx="80" cy="80" r="42" />
+    <circle cx="1840" cy="80" r="42" />
+    <circle cx="80" cy="1000" r="42" />
+    <circle cx="1840" cy="1000" r="42" />
+    <circle cx="960" cy="70" r="44" />
+    <circle cx="960" cy="1010" r="44" />
   </g>
+
+  <!-- 🛠️ FIXED MAIN FELT BED: Rect boundary with pocket holes subtracted procedurally -->
+  <path d="M 40,40 L 1880,40 L 1880,1040 L 40,1040 Z 
+           M 80,80 A 42,42 0 1,0 139,121 L 139,121 Z
+           M 1840,80 A 42,42 0 1,0 1881,121 L 1881,121 Z
+           M 80,1000 A 42,42 0 1,0 139,959 L 139,959 Z
+           M 1840,1000 A 42,42 0 1,0 1881,959 L 1881,959 Z
+           M 960,70 A 44,44 0 1,0 1004,70 L 1004,70 Z
+           M 960,1010 A 44,44 0 1,0 1004,1010 L 1004,1010 Z" 
+        fill="url(#maroon-lighting)" fill-rule="evenodd" />
+
+  <!-- Textured overlay following identical cutout matrix -->
+  <path d="M 40,40 L 1880,40 L 1880,1040 L 40,1040 Z 
+           M 80,80 A 42,42 0 1,0 139,121 M 1840,80 A 42,42 0 1,0 1881,121
+           M 80,1000 A 42,42 0 1,0 139,959 M 1840,1000 A 42,42 0 1,0 1881,959
+           M 960,70 A 44,44 0 1,0 1004,70 M 960,1010 A 44,44 0 1,0 1004,1010" 
+        fill="url(#cloth-weave)" fill-rule="evenodd" style="mix-blend-mode: multiply;" />
 </svg>
