@@ -77,9 +77,9 @@ export class Renderer {
   _computeTableRect() {
     const W = TABLE.width; // 100 inches
     const H = TABLE.height; // 50 inches (2:1 aspect ratio)
-    // pool_table_frame.svg viewBox is 1200 x 700 with playfield cutout 1000 x 500 (from 100,100 to 1100,600).
-    const outerW = W * (1200 / 1000); // 120 inches
-    const outerH = H * (700 / 500);   // 70 inches
+    // pool_table_frame.svg viewBox is 6400 x 3600 with playfield cutout 4000 x 2000 (x: 1200..5200, y: 1000..2600).
+    const outerW = W * (6400 / 4000); // 160 inches
+    const outerH = H * (3600 / 2000); // 90 inches
 
     const availW = this.cssW;
     const availH = this.cssH;
@@ -99,8 +99,8 @@ export class Renderer {
       w: drawFrameW,
       h: drawFrameH,
     };
-    // Playing area is offset by 10 inches relative to frame top-left
-    this.playOffset = { x: 10 * scale, y: 10 * scale };
+    // Playing area is offset by 30 inches (1200 / 4000 * 100 = 30) relative to frame top-left in table units
+    this.playOffset = { x: (1200 / 40) * scale, y: (1000 / 40) * scale };
     this.playW = W * scale;
     this.playH = H * scale;
   }

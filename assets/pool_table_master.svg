@@ -1,0 +1,182 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" width="100%" height="100%">
+  <defs>
+    <!-- Lighting Gradients for Felt Bed -->
+    <radialGradient id="felt-lighting" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#9a3040" />
+      <stop offset="35%" stop-color="#721f2b" />
+      <stop offset="70%" stop-color="#461019" />
+      <stop offset="100%" stop-color="#1d0408" />
+    </radialGradient>
+
+    <!-- Cloth Weave Texture Pattern -->
+    <pattern id="cloth-weave-pattern" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="2" height="2" fill="#000000" fill-opacity="0.18" />
+      <rect x="2" y="2" width="2" height="2" fill="#000000" fill-opacity="0.18" />
+    </pattern>
+
+    <!-- Wood Grain for Rails -->
+    <pattern id="oak-wood-grain" width="120" height="700" patternUnits="userSpaceOnUse">
+      <path d="M 0,50 Q 30,20 60,60 T 120,40 M 0,180 Q 40,210 80,170 T 120,190 M 0,350 Q 30,320 70,360 T 120,340 M 0,520 Q 50,550 90,500 T 120,530" fill="none" stroke="#685542" stroke-width="1.2" opacity="0.35" />
+    </pattern>
+
+    <!-- Wood Rail Base Gradient -->
+    <linearGradient id="rail-wood-base" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ab9680" />
+      <stop offset="25%" stop-color="#cca885" />
+      <stop offset="50%" stop-color="#9e856e" />
+      <stop offset="75%" stop-color="#c4a27f" />
+      <stop offset="100%" stop-color="#8a725c" />
+    </linearGradient>
+
+    <!-- Metallic Gold Corner Trim Gradient -->
+    <linearGradient id="gold-corner" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff2a8" />
+      <stop offset="25%" stop-color="#d4af37" />
+      <stop offset="50%" stop-color="#aa820a" />
+      <stop offset="75%" stop-color="#f5d061" />
+      <stop offset="100%" stop-color="#6e5000" />
+    </linearGradient>
+
+    <!-- Chrome/Silver Side Bezel Gradient -->
+    <linearGradient id="silver-bezel" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e6ecf2" />
+      <stop offset="30%" stop-color="#929ca6" />
+      <stop offset="50%" stop-color="#ffffff" />
+      <stop offset="70%" stop-color="#555d66" />
+      <stop offset="100%" stop-color="#24292e" />
+    </linearGradient>
+
+    <!-- Neon Rail Glow Filter -->
+    <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur-wide" />
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur-sharp" />
+      <feMerge>
+        <feMergeNode in="blur-wide" />
+        <feMergeNode in="blur-sharp" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Shadow for Pocket Cavity depth -->
+    <filter id="pocket-depth-shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.9" />
+    </filter>
+
+    <!-- Ruby Diamond Inlay Marker -->
+    <g id="ruby-diamond-inlay">
+      <polygon points="0,-6 5,0 0,6 -5,0" fill="#cc1122" stroke="#ffe0a0" stroke-width="0.8" />
+      <polygon points="0,-3 2.5,0 0,3 -2.5,0" fill="#ff6677" opacity="0.6" />
+    </g>
+
+    <!-- Cushion Backdraft Inner Shadow -->
+    <linearGradient id="cushion-shadow-top" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="cushion-shadow-bottom" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="cushion-shadow-left" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="cushion-shadow-right" x1="100%" y1="0%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <!-- LAYER 1: Table Base & Wood Frame Rails -->
+  <!-- Outer Frame Box: (0,0) to (1200,700) -->
+  <rect x="0" y="0" width="1200" height="700" fill="url(#rail-wood-base)" rx="12" ry="12" />
+  <rect x="0" y="0" width="1200" height="700" fill="url(#oak-wood-grain)" rx="12" ry="12" />
+
+  <!-- Wood Miter Rail Division Lines -->
+  <path d="M 0,0 L 100,100 M 1200,0 L 1100,100 M 1200,700 L 1100,600 M 0,700 L 100,600" stroke="#5a4838" stroke-width="2" opacity="0.6" />
+
+  <!-- LAYER 2: Deep Dark Pocket Wells -->
+  <g id="master-pocket-wells" fill="#050102" filter="url(#pocket-depth-shadow)">
+    <!-- Corner Pockets (R=36) -->
+    <circle cx="100" cy="100" r="36" />
+    <circle cx="1100" cy="100" r="36" />
+    <circle cx="100" cy="600" r="36" />
+    <circle cx="1100" cy="600" r="36" />
+    <!-- Side Pockets (R=34) -->
+    <circle cx="600" cy="92" r="34" />
+    <circle cx="600" cy="608" r="34" />
+  </g>
+
+  <!-- LAYER 3: Maroon Felt Playing Surface with Pocket Cutouts -->
+  <!-- Felt boundary rect (100,100) to (1100,600), minus pocket circles -->
+  <path d="M 100,100 L 1100,100 L 1100,600 L 100,600 Z
+           M 64,100 A 36,36 0 1,0 136,100 A 36,36 0 1,0 64,100 Z
+           M 1064,100 A 36,36 0 1,0 1136,100 A 36,36 0 1,0 1064,100 Z
+           M 64,600 A 36,36 0 1,0 136,600 A 36,36 0 1,0 64,600 Z
+           M 1064,600 A 36,36 0 1,0 1136,600 A 36,36 0 1,0 1064,600 Z
+           M 566,92 A 34,34 0 1,0 634,92 A 34,34 0 1,0 566,92 Z
+           M 566,608 A 34,34 0 1,0 634,608 A 34,34 0 1,0 566,608 Z"
+        fill="url(#felt-lighting)" fill-rule="evenodd" />
+
+  <!-- Felt Weave Texture Overlay -->
+  <path d="M 100,100 L 1100,100 L 1100,600 L 100,600 Z
+           M 64,100 A 36,36 0 1,0 136,100 A 36,36 0 1,0 64,100 Z
+           M 1064,100 A 36,36 0 1,0 1136,100 A 36,36 0 1,0 1064,100 Z
+           M 64,600 A 36,36 0 1,0 136,600 A 36,36 0 1,0 64,600 Z
+           M 1064,600 A 36,36 0 1,0 1136,600 A 36,36 0 1,0 1064,600 Z
+           M 566,92 A 34,34 0 1,0 634,92 A 34,34 0 1,0 566,92 Z
+           M 566,608 A 34,34 0 1,0 634,608 A 34,34 0 1,0 566,608 Z"
+        fill="url(#cloth-weave-pattern)" fill-rule="evenodd" style="mix-blend-mode: multiply;" />
+
+  <!-- LAYER 4: Cushion Shadow Backdraft (Inner bevel gradient) -->
+  <rect x="100" y="100" width="1000" height="20" fill="url(#cushion-shadow-top)" />
+  <rect x="100" y="580" width="1000" height="20" fill="url(#cushion-shadow-bottom)" />
+  <rect x="100" y="100" width="20" height="500" fill="url(#cushion-shadow-left)" />
+  <rect x="1080" y="100" width="20" height="500" fill="url(#cushion-shadow-right)" />
+
+  <!-- LAYER 5: Red Neon Glow Trim Lines along inner cushion rail edges -->
+  <path d="M 136,101 L 566,101 M 634,101 L 1064,101 M 1099,136 L 1099,564 M 634,599 L 1064,599 M 136,599 L 566,599 M 101,136 L 101,564"
+        stroke="#ff2244" stroke-width="2.5" stroke-linecap="round" filter="url(#neon-glow)" fill="none" />
+
+  <!-- LAYER 6: Inlaid Diamond Sights (Ruby Diamonds along rails) -->
+  <!-- Top Rail (y=50): 6 diamonds -->
+  <use href="#ruby-diamond-inlay" x="225" y="50" />
+  <use href="#ruby-diamond-inlay" x="350" y="50" />
+  <use href="#ruby-diamond-inlay" x="475" y="50" />
+  <use href="#ruby-diamond-inlay" x="725" y="50" />
+  <use href="#ruby-diamond-inlay" x="850" y="50" />
+  <use href="#ruby-diamond-inlay" x="975" y="50" />
+
+  <!-- Bottom Rail (y=650): 6 diamonds -->
+  <use href="#ruby-diamond-inlay" x="225" y="650" />
+  <use href="#ruby-diamond-inlay" x="350" y="650" />
+  <use href="#ruby-diamond-inlay" x="475" y="650" />
+  <use href="#ruby-diamond-inlay" x="725" y="650" />
+  <use href="#ruby-diamond-inlay" x="850" y="650" />
+  <use href="#ruby-diamond-inlay" x="975" y="650" />
+
+  <!-- Left Rail (x=50): 3 diamonds -->
+  <use href="#ruby-diamond-inlay" x="50" y="225" />
+  <use href="#ruby-diamond-inlay" x="50" y="350" />
+  <use href="#ruby-diamond-inlay" x="50" y="475" />
+
+  <!-- Right Rail (x=1150): 3 diamonds -->
+  <use href="#ruby-diamond-inlay" x="1150" y="225" />
+  <use href="#ruby-diamond-inlay" x="1150" y="350" />
+  <use href="#ruby-diamond-inlay" x="1150" y="475" />
+
+  <!-- LAYER 7: Metal Pocket Corner & Side Hardware Bezels -->
+  <!-- Top-Left Corner Gold Cap -->
+  <path d="M 0,30 C 0,10 10,0 30,0 L 90,0 A 36,36 0 0,0 0,90 Z" fill="url(#gold-corner)" stroke="#fff" stroke-width="0.5" />
+  <!-- Top-Right Corner Gold Cap -->
+  <path d="M 1170,0 C 1190,0 1200,10 1200,30 L 1200,90 A 36,36 0 0,0 1110,0 Z" fill="url(#gold-corner)" stroke="#fff" stroke-width="0.5" />
+  <!-- Bottom-Left Corner Gold Cap -->
+  <path d="M 0,610 A 36,36 0 0,0 90,700 L 30,700 C 10,700 0,690 0,670 Z" fill="url(#gold-corner)" stroke="#fff" stroke-width="0.5" />
+  <!-- Bottom-Right Corner Gold Cap -->
+  <path d="M 1110,700 A 36,36 0 0,0 1200,610 L 1200,670 C 1200,690 1190,700 1170,700 Z" fill="url(#gold-corner)" stroke="#fff" stroke-width="0.5" />
+
+  <!-- Top-Center Side Silver Pocket Hardware -->
+  <path d="M 550,0 L 650,0 L 634,92 A 34,34 0 0,0 566,92 Z" fill="url(#silver-bezel)" stroke="#fff" stroke-width="0.5" />
+  <!-- Bottom-Center Side Silver Pocket Hardware -->
+  <path d="M 550,700 L 650,700 L 634,608 A 34,34 0 0,0 566,608 Z" fill="url(#silver-bezel)" stroke="#fff" stroke-width="0.5" />
+</svg>
