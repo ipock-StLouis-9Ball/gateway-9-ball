@@ -1,9 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
   <defs>
-    <!-- Deep Drop Shadow for Pocket Cavities -->
-    <filter id="pocket-shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.9" />
+    <!-- Vignette Shadowing for Pocket Cavity depth -->
+    <filter id="pocket-depth" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.85" />
     </filter>
+
+    <!-- Original Convex Vortex Pocket Lighting Engine -->
+    <radialGradient id="maroon-lighting" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" stop-color="#a44f59" />
+      <stop offset="25%" stop-color="#7d343e" />
+      <stop offset="65%" stop-color="#3d1217" />
+      <stop offset="100%" stop-color="#180406" />
+    </radialGradient>
 
     <!-- Flat Technical Weave Pattern -->
     <pattern id="cloth-weave" width="4" height="4" patternUnits="userSpaceOnUse">
@@ -12,21 +20,18 @@
     </pattern>
   </defs>
 
-  <!-- Ground Layer: Deep Black Pocket Void Wells (Stretched out to the absolute transparency boundaries) -->
-  <g id="black-pocket-wells" fill="#0a0203" filter="url(#pocket-shadow)">
-    <!-- Top & Bottom Corners: Centers aligned to the expanded 50px / 1870px / 1030px canvas limits -->
+  <!-- Ground Layer: Deep Black Pocket Void Wells -->
+  <g id="black-pocket-wells" fill="#0b0304" filter="url(#pocket-depth)">
     <circle cx="50" cy="50" r="50" />
     <circle cx="1870" cy="50" r="50" />
     <circle cx="50" cy="1030" r="50" />
     <circle cx="1870" cy="1030" r="50" />
-    
-    <!-- Top & Bottom Side Pockets: Aligned to the absolute vertical transparency limits -->
     <circle cx="960" cy="50" r="50" />
     <circle cx="960" cy="1030" r="50" />
   </g>
 
-  <!-- Main Felt Layer: Cardinals Red stretched to the outer transparency edges with exact corner cuts -->
-  <path d="M 50,50 L 1870,50 L 1870,1030 L 50,1030 Z
+  <!-- Main Felt Layer: Flat Cardinals Red (Hex #C41E3A) with Subtractive Hole Cuts -->
+  <path d="M 2,2 L 1918,2 L 1918,1078 L 2,1078 Z
            M 0,50 A 50,50 0 1,0 100,50 A 50,50 0 1,0 0,50 Z
            M 1820,50 A 50,50 0 1,0 1920,50 A 50,50 0 1,0 1820,50 Z
            M 0,1030 A 50,50 0 1,0 100,1030 A 50,50 0 1,0 0,1030 Z
@@ -35,8 +40,8 @@
            M 910,1030 A 50,50 0 1,0 1010,1030 A 50,50 0 1,0 910,1030 Z"
         fill="#c41e3a" fill-rule="evenodd" />
 
-  <!-- Textured Overlay Layer: Identical Geometry mirroring the stretched cuts -->
-  <path d="M 50,50 L 1870,50 L 1870,1030 L 50,1030 Z
+  <!-- Textured Overlay Layer: Flat Cloth Weave Following Identical Bounds -->
+  <path d="M 2,2 L 1918,2 L 1918,1078 L 2,1078 Z
            M 0,50 A 50,50 0 1,0 100,50 A 50,50 0 1,0 0,50 Z
            M 1820,50 A 50,50 0 1,0 1920,50 A 50,50 0 1,0 1820,50 Z
            M 0,1030 A 50,50 0 1,0 100,1030 A 50,50 0 1,0 0,1030 Z
@@ -44,4 +49,14 @@
            M 910,50 A 50,50 0 1,0 1010,50 A 50,50 0 1,0 910,50 Z
            M 910,1030 A 50,50 0 1,0 1010,1030 A 50,50 0 1,0 910,1030 Z"
         fill="url(#cloth-weave)" fill-rule="evenodd" />
+
+  <!-- The Pocket Throats: Restoring the original convex shading explicitly over the hole edges -->
+  <g id="vortex-throats">
+    <circle cx="50" cy="50" r="50" fill="url(#maroon-lighting)" />
+    <circle cx="1870" cy="50" r="50" fill="url(#maroon-lighting)" />
+    <circle cx="50" cy="1030" r="50" fill="url(#maroon-lighting)" />
+    <circle cx="1870" cy="1030" r="50" fill="url(#maroon-lighting)" />
+    <circle cx="960" cy="50" r="50" fill="url(#maroon-lighting)" />
+    <circle cx="960" cy="1030" r="50" fill="url(#maroon-lighting)" />
+  </g>
 </svg>
