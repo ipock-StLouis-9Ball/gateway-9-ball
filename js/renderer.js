@@ -84,7 +84,7 @@ export class Renderer {
     const availW = this.cssW;
     const availH = this.cssH;
 
-    const margin = Math.max(8, Math.min(availW, availH) * 0.025);
+    const margin = Math.max(2, Math.min(availW, availH) * 0.005);
     const maxW = availW - margin * 2;
     const maxH = availH - margin * 2;
 
