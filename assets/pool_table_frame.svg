@@ -1,155 +1,172 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" width="100%" height="100%">
   <defs>
-    <linearGradient id="white-oak-top" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#ab9e87" />
-      <stop offset="25%" stop-color="#e8dfcc" />
-      <stop offset="50%" stop-color="#f7f3e8" />
-      <stop offset="75%" stop-color="#e8dfcc" />
-      <stop offset="100%" stop-color="#6e6350" />
-    </linearGradient>
-
-    <linearGradient id="white-oak-bottom" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#6e6350" />
-      <stop offset="25%" stop-color="#e8dfcc" />
-      <stop offset="50%" stop-color="#f7f3e8" />
-      <stop offset="75%" stop-color="#e8dfcc" />
-      <stop offset="100%" stop-color="#ab9e87" />
-    </linearGradient>
-
-    <linearGradient id="white-oak-left" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#ab9e87" />
-      <stop offset="25%" stop-color="#e8dfcc" />
-      <stop offset="50%" stop-color="#f7f3e8" />
-      <stop offset="75%" stop-color="#e8dfcc" />
-      <stop offset="100%" stop-color="#6e6350" />
-    </linearGradient>
-
-    <linearGradient id="white-oak-right" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#6e6350" />
-      <stop offset="25%" stop-color="#e8dfcc" />
-      <stop offset="50%" stop-color="#f7f3e8" />
-      <stop offset="75%" stop-color="#e8dfcc" />
-      <stop offset="100%" stop-color="#ab9e87" />
-    </linearGradient>
-
-    <linearGradient id="polished-silver-bezel" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#5a6370" />
-      <stop offset="15%" stop-color="#cfd6df" />
-      <stop offset="35%" stop-color="#9ba5b5" />
-      <stop offset="50%" stop-color="#ffffff" />
-      <stop offset="65%" stop-color="#f8fafd" />
-      <stop offset="85%" stop-color="#e3e8ee" />
-      <stop offset="100%" stop-color="#2a3038" />
-    </linearGradient>
-
-    <linearGradient id="polished-gold-24k" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#4a3507" />
-      <stop offset="20%" stop-color="#e6b73c" />
-      <stop offset="40%" stop-color="#ffffff" />
-      <stop offset="65%" stop-color="#ffd700" />
-      <stop offset="85%" stop-color="#fff2a3" />
-      <stop offset="100%" stop-color="#261b02" />
-    </linearGradient>
-
-    <radialGradient id="ruby-gem" cx="35%" cy="35%" r="65%">
-      <stop offset="0%" stop-color="#ff6b81" />
-      <stop offset="30%" stop-color="#ff1e43" />
-      <stop offset="75%" stop-color="#b3001b" />
-      <stop offset="100%" stop-color="#52000a" />
+    <!-- Blond Sand Vignette -->
+    <radialGradient id="sandVignette" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#f3e4c2" />
+      <stop offset="50%" stop-color="#e4d1a5" />
+      <stop offset="85%" stop-color="#d1bc8a" />
+      <stop offset="100%" stop-color="#b9a16f" />
     </radialGradient>
 
-    <filter id="red-neon-filter" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="11" result="blur-wide" />
-      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur-med" />
-      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur-sharp" />
-      <feComponentTransfer in="blur-wide" result="glow-boosted">
-        <feFuncA type="linear" slope="2.6"/>
-      </feComponentTransfer>
-      <feMerge>
-        <feMergeNode in="glow-boosted" />
-        <feMergeNode in="blur-med" />
-        <feMergeNode in="blur-sharp" />
-        <feMergeNode in="SourceGraphic" />
-      </feMerge>
+    <!-- Cloth / Sand Grain -->
+    <filter id="clothGrain" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" result="noise" />
+      <feColorMatrix type="matrix"
+        values="1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 0.05 0" />
+      <feBlend mode="multiply" in="SourceGraphic" result="blend" />
     </filter>
 
-    <filter id="kelvin-chassis-filter" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="blur-wide" />
-      <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur-med" />
-      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur-sharp" />
-      <feComponentTransfer in="blur-wide" result="glow-boosted">
-        <feFuncA type="linear" slope="2.2"/>
-      </feComponentTransfer>
+    <!-- Oak Rail Gradient -->
+    <linearGradient id="oakRail" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e8dfcc" />
+      <stop offset="50%" stop-color="#d8c9a8" />
+      <stop offset="100%" stop-color="#b79f7a" />
+    </linearGradient>
+
+    <!-- Metal Bezel -->
+    <radialGradient id="metalBezel" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="40%" stop-color="#d9d9d9" />
+      <stop offset="80%" stop-color="#a0a0a0" />
+      <stop offset="100%" stop-color="#707070" />
+    </radialGradient>
+
+    <!-- Ruby Diamond -->
+    <radialGradient id="rubyDiamond" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ff4b5c" />
+      <stop offset="40%" stop-color="#d02035" />
+      <stop offset="80%" stop-color="#8b0f22" />
+      <stop offset="100%" stop-color="#4b0713" />
+    </radialGradient>
+
+    <!-- Neon Glow Filter -->
+    <filter id="neonRed">
+      <feGaussianBlur stdDeviation="6" result="blur1" />
+      <feGaussianBlur stdDeviation="12" in="blur1" result="blur2" />
+      <feColorMatrix in="blur2" type="matrix"
+        values="1 0 0 0 0
+                0 0 0 0 0
+                0 0 0 0 0
+                0 0 0 0.9 0" result="glow" />
       <feMerge>
-        <feMergeNode in="glow-boosted" />
-        <feMergeNode in="blur-med" />
-        <feMergeNode in="blur-sharp" />
-        <feMergeNode in="SourceGraphic" />
+        <feMergeNode in="glow" />
       </feMerge>
     </filter>
   </defs>
 
-  <path fill-rule="evenodd" fill="#4d4436" d="M 100,100 L 1500,100 L 1500,800 L 100,800 Z M 180,240 A 60,60 0 0,1 240,180 L 750,180 A 50,50 0 0,0 850,180 L 1360,180 A 60,60 0 0,1 1420,240 L 1420,660 A 60,60 0 0,1 1360,720 L 850,720 A 50,50 0 0,0 750,720 L 240,720 A 60,60 0 0,1 180,660 Z" />
-
-  <g fill="none" stroke="#ebf3ff" stroke-width="5" filter="url(#kelvin-chassis-filter)" opacity="0.9">
-    <rect x="98" y="98" width="1404" height="704" rx="42" stroke="#adcfff" stroke-width="6" />
-    <rect x="100" y="100" width="1400" height="700" rx="40" />
+  <!-- SURFACE LAYER -->
+  <g id="surface">
+    <!-- Blond Sand Base -->
+    <rect width="1000" height="500" fill="url(#sandVignette)" />
+    <!-- Grain Overlay -->
+    <rect width="1000" height="500" fill="#000"
+          filter="url(#clothGrain)"
+          opacity="0.6"
+          style="mix-blend-mode: overlay;" />
   </g>
 
-  <path fill="url(#white-oak-top)" d="M 180,100 L 775,100 L 750,180 L 240,180 A 60,60 0 0,0 180,240 L 100,160 C 100,120 120,100 180,100 Z" />
-  <path fill="url(#white-oak-top)" d="M 825,100 L 1420,100 C 1480,100 1500,120 1500,160 L 1420,240 A 60,60 0 0,0 1360,180 L 850,180 Z" />
-  <path fill="url(#white-oak-bottom)" d="M 100,740 L 180,660 A 60,60 0 0,0 240,720 L 750,720 L 775,800 L 180,800 C 120,800 100,780 100,740 Z" />
-  <path fill="url(#white-oak-bottom)" d="M 850,720 L 1360,720 A 60,60 0 0,0 1420,660 L 1500,740 C 1500,780 1480,800 1420,800 L 825,800 Z" />
-  <path fill="url(#white-oak-left)" d="M 100,160 L 180,240 L 180,660 L 100,740 Z" />
-  <path fill="url(#white-oak-right)" d="M 1420,240 L 1500,160 L 1500,740 L 1420,660 Z" />
+  <!-- FRAME LAYER -->
+  <g id="frame">
 
-  <g fill="url(#ruby-gem)" stroke="#3b1116" stroke-width="1.2">
-    <polygon points="135,300 140,306 135,312 130,306" />
-    <polygon points="135,450 140,456 135,462 130,456" />
-    <polygon points="135,600 140,606 135,612 130,606" />
-    <polygon points="1465,300 1470,306 1465,312 1460,306" />
-    <polygon points="1465,450 1470,456 1465,462 1460,456" />
-    <polygon points="1465,600 1470,606 1465,612 1460,606" />
-    <polygon points="320,135 326,140 332,135 326,130" />
-    <polygon points="460,135 466,140 472,135 466,130" />
-    <polygon points="600,135 606,140 612,135 606,130" />
-    <polygon points="1000,135 1006,140 1012,135 1006,130" />
-    <polygon points="1140,135 1146,140 1152,135 1146,130" />
-    <polygon points="1280,135 1286,140 1292,135 1286,130" />
-    <polygon points="320,765 326,770 332,765 326,760" />
-    <polygon points="460,765 466,770 472,765 466,760" />
-    <polygon points="600,765 606,770 612,765 606,760" />
-    <polygon points="1000,765 1006,770 1012,765 1006,760" />
-    <polygon points="1140,765 1146,770 1152,765 1146,760" />
-    <polygon points="1280,765 1286,770 1292,765 1286,760" />
-  </g>
+    <!-- Outer Oak Rails -->
+    <!-- Top rail -->
+    <rect x="0" y="0" width="1000" height="60" fill="url(#oakRail)" />
+    <!-- Bottom rail -->
+    <rect x="0" y="440" width="1000" height="60" fill="url(#oakRail)" />
+    <!-- Left rail -->
+    <rect x="0" y="60" width="60" height="380" fill="url(#oakRail)" />
+    <!-- Right rail -->
+    <rect x="940" y="60" width="60" height="380" fill="url(#oakRail)" />
 
-  <!-- FIXED POLISHED SILVER METALLIC OUTER PLATES -->
-  <g fill="url(#polished-silver-bezel)" stroke="#2a3038" stroke-width="0.75">
-    <path d="M 100,160 C 100,120 120,100 180,100 L 240,180 A 60,60 0 0,0 180,240 Z" />
-    <path d="M 1420,100 L 1480,100 C 1500,120 1500,160 1500,160 L 1420,240 A 60,60 0 0,0 1360,180 Z" />
-    <path d="M 100,740 L 180,660 A 60,60 0 0,0 240,720 L 180,800 C 120,800 100,780 100,740 Z" />
-    <path d="M 1360,720 A 60,60 0 0,0 1420,660 L 1500,740 C 1500,780 1480,800 1420,800 L 850,800 L 850,720 Z" />
-    <path d="M 750,180 A 50,50 0 0,0 850,180 L 825,100 L 775,100 Z" />
-    <path d="M 850,720 A 50,50 0 0,0 750,720 L 775,800 L 825,800 Z" />
-  </g>
+    <!-- Playfield opening (visual reference only) -->
+    <!-- Inner rectangle: 60px inset from each side -->
+    <!-- (You can remove this if you want only the surface showing) -->
+    <!-- <rect x="60" y="60" width="880" height="380" fill="none" stroke="#000" stroke-width="0.5" /> -->
 
-  <!-- FIXED 24K SHINY GOLD INNER HOLLOW BASKETS -->
-  <g fill="url(#polished-gold-24k)" stroke="#4a3507" stroke-width="0.5">
-    <path d="M 180,240 A 60,60 0 0,1 240,180 L 230,170 A 70,70 0 0,0 170,230 Z" />
-    <path d="M 1360,180 A 60,60 0 0,1 1420,240 L 1430,230 A 70,70 0 0,0 1370,170 Z" />
-    <path d="M 240,720 A 60,60 0 0,1 180,660 L 170,670 A 70,70 0 0,0 230,730 Z" />
-    <path d="M 1420,660 A 60,60 0 0,1 1360,720 L 1370,730 A 70,70 0 0,0 1430,670 Z" />
-    <path d="M 750,180 A 50,50 0 0,0 850,180 L 845,170 A 60,60 0 0,1 755,170 Z" />
-    <path d="M 850,720 A 50,50 0 0,0 750,720 L 755,730 A 60,60 0 0,1 845,730 Z" />
-  </g>
+    <!-- Pocket Centers (aligned to frame) -->
+    <!-- Corner pockets -->
+    <g id="pockets">
+      <circle cx="60" cy="60" r="50" fill="none" />
+      <circle cx="940" cy="60" r="50" fill="none" />
+      <circle cx="60" cy="440" r="50" fill="none" />
+      <circle cx="940" cy="440" r="50" fill="none" />
+      <!-- Side pockets -->
+      <circle cx="500" cy="60" r="50" fill="none" />
+      <circle cx="500" cy="440" r="50" fill="none" />
+    </g>
 
-  <g fill="none" stroke="#C41E3A" stroke-width="4.5" filter="url(#red-neon-filter)">
-    <path d="M 240,180 L 750,180" />
-    <path d="M 850,180 L 1360,180" />
-    <path d="M 1420,240 L 1420,660" />
-    <path d="M 1360,720 L 850,720" />
-    <path d="M 750,720 L 240,720" />
-    <path d="M 180,660 L 180,240" />
+    <!-- Metal Bezels -->
+    <g id="bezels">
+      <circle cx="60" cy="60" r="50" fill="url(#metalBezel)" />
+      <circle cx="940" cy="60" r="50" fill="url(#metalBezel)" />
+      <circle cx="60" cy="440" r="50" fill="url(#metalBezel)" />
+      <circle cx="940" cy="440" r="50" fill="url(#metalBezel)" />
+      <circle cx="500" cy="60" r="50" fill="url(#metalBezel)" />
+      <circle cx="500" cy="440" r="50" fill="url(#metalBezel)" />
+    </g>
+
+    <!-- Bumper Cushions (straight, stopping at pocket tips) -->
+    <g id="cushions" fill="#2b2b2b">
+      <!-- Top cushions: left, center, right -->
+      <!-- Left top cushion: from left inner rail to left side pocket tip -->
+      <rect x="60" y="60" width="190" height="20" />
+      <!-- Center top cushion: between side pocket tips -->
+      <rect x="310" y="60" width="380" height="20" />
+      <!-- Right top cushion -->
+      <rect x="730" y="60" width="190" height="20" />
+
+      <!-- Bottom cushions -->
+      <rect x="60" y="420" width="190" height="20" />
+      <rect x="310" y="420" width="380" height="20" />
+      <rect x="730" y="420" width="190" height="20" />
+
+      <!-- Left vertical cushions -->
+      <rect x="60" y="110" width="20" height="140" />
+      <rect x="60" y="250" width="20" height="140" />
+
+      <!-- Right vertical cushions -->
+      <rect x="920" y="110" width="20" height="140" />
+      <rect x="920" y="250" width="20" height="140" />
+    </g>
+
+    <!-- Cardinals Red Neon Glow (under cushions, inner perimeter) -->
+    <g id="neon">
+      <rect x="80" y="80" width="840" height="340"
+            fill="#C41E3A"
+            filter="url(#neonRed)"
+            opacity="0.9" />
+    </g>
+
+    <!-- Ruby Diamond Inlays (18 total) -->
+    <g id="diamonds" fill="url(#rubyDiamond)" stroke="#4b0713" stroke-width="1.2">
+      <!-- Top rail: 6 diamonds -->
+      <rect x="180" y="30" width="12" height="12" transform="rotate(45 186 36)" />
+      <rect x="260" y="30" width="12" height="12" transform="rotate(45 266 36)" />
+      <rect x="340" y="30" width="12" height="12" transform="rotate(45 346 36)" />
+      <rect x="660" y="30" width="12" height="12" transform="rotate(45 666 36)" />
+      <rect x="740" y="30" width="12" height="12" transform="rotate(45 746 36)" />
+      <rect x="820" y="30" width="12" height="12" transform="rotate(45 826 36)" />
+
+      <!-- Bottom rail: 6 diamonds -->
+      <rect x="180" y="458" width="12" height="12" transform="rotate(45 186 464)" />
+      <rect x="260" y="458" width="12" height="12" transform="rotate(45 266 464)" />
+      <rect x="340" y="458" width="12" height="12" transform="rotate(45 346 464)" />
+      <rect x="660" y="458" width="12" height="12" transform="rotate(45 666 464)" />
+      <rect x="740" y="458" width="12" height="12" transform="rotate(45 746 464)" />
+      <rect x="820" y="458" width="12" height="12" transform="rotate(45 826 464)" />
+
+      <!-- Left rail: 3 diamonds -->
+      <rect x="30" y="150" width="12" height="12" transform="rotate(45 36 156)" />
+      <rect x="30" y="250" width="12" height="12" transform="rotate(45 36 256)" />
+      <rect x="30" y="350" width="12" height="12" transform="rotate(45 36 356)" />
+
+      <!-- Right rail: 3 diamonds -->
+      <rect x="958" y="150" width="12" height="12" transform="rotate(45 964 156)" />
+      <rect x="958" y="250" width="12" height="12" transform="rotate(45 964 256)" />
+      <rect x="958" y="350" width="12" height="12" transform="rotate(45 964 356)" />
+    </g>
   </g>
 </svg>
