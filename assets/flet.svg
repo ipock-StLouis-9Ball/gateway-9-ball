@@ -12,35 +12,36 @@
     </pattern>
   </defs>
 
-  <!-- Ground Layer: Deep Black Pocket Void Wells (Outward-Shifted) -->
+  <!-- Ground Layer: Deep Black Pocket Void Wells (Stretched out to the absolute transparency boundaries) -->
   <g id="black-pocket-wells" fill="#0a0203" filter="url(#pocket-shadow)">
-    <!-- Corners shifted diagonally outward by 10px from the 100px boundary -->
-    <circle cx="90" cy="90" r="50" />
-    <circle cx="1830" cy="90" r="50" />
-    <circle cx="90" cy="990" r="50" />
-    <circle cx="1830" cy="990" r="50" />
-    <!-- Side pockets shifted vertically outward by 10px -->
-    <circle cx="960" cy="90" r="50" />
-    <circle cx="960" cy="990" r="50" />
+    <!-- Top & Bottom Corners: Centers aligned to the expanded 50px / 1870px / 1030px canvas limits -->
+    <circle cx="50" cy="50" r="50" />
+    <circle cx="1870" cy="50" r="50" />
+    <circle cx="50" cy="1030" r="50" />
+    <circle cx="1870" cy="1030" r="50" />
+    
+    <!-- Top & Bottom Side Pockets: Aligned to the absolute vertical transparency limits -->
+    <circle cx="960" cy="50" r="50" />
+    <circle cx="960" cy="1030" r="50" />
   </g>
 
-  <!-- Main Felt Layer: Flat Cardinals Red (Hex #C41E3A) with Evenodd Pocket Cutouts -->
-  <path d="M 100,100 L 1820,100 L 1820,980 L 100,980 Z
-           M 40,90 A 50,50 0 1,0 140,90 A 50,50 0 1,0 40,90 Z
-           M 1780,90 A 50,50 0 1,0 1880,90 A 50,50 0 1,0 1780,90 Z
-           M 40,990 A 50,50 0 1,0 140,990 A 50,50 0 1,0 40,990 Z
-           M 1780,990 A 50,50 0 1,0 1880,990 A 50,50 0 1,0 1780,990 Z
-           M 910,90 A 50,50 0 1,0 1010,90 A 50,50 0 1,0 910,90 Z
-           M 910,990 A 50,50 0 1,0 1010,990 A 50,50 0 1,0 910,990 Z"
+  <!-- Main Felt Layer: Cardinals Red stretched to the outer transparency edges with exact corner cuts -->
+  <path d="M 50,50 L 1870,50 L 1870,1030 L 50,1030 Z
+           M 0,50 A 50,50 0 1,0 100,50 A 50,50 0 1,0 0,50 Z
+           M 1820,50 A 50,50 0 1,0 1920,50 A 50,50 0 1,0 1820,50 Z
+           M 0,1030 A 50,50 0 1,0 100,1030 A 50,50 0 1,0 0,1030 Z
+           M 1820,1030 A 50,50 0 1,0 1920,1030 A 50,50 0 1,0 1820,1030 Z
+           M 910,50 A 50,50 0 1,0 1010,50 A 50,50 0 1,0 910,50 Z
+           M 910,1030 A 50,50 0 1,0 1010,1030 A 50,50 0 1,0 910,1030 Z"
         fill="#c41e3a" fill-rule="evenodd" />
 
-  <!-- Textured Overlay Layer: Identical Geometry applying Flat Cloth Weave -->
-  <path d="M 100,100 L 1820,100 L 1820,980 L 100,980 Z
-           M 40,90 A 50,50 0 1,0 140,90 A 50,50 0 1,0 40,90 Z
-           M 1780,90 A 50,50 0 1,0 1880,90 A 50,50 0 1,0 1780,90 Z
-           M 40,990 A 50,50 0 1,0 140,990 A 50,50 0 1,0 40,990 Z
-           M 1780,990 A 50,50 0 1,0 1880,990 A 50,50 0 1,0 1780,990 Z
-           M 910,90 A 50,50 0 1,0 1010,90 A 50,50 0 1,0 910,90 Z
-           M 910,990 A 50,50 0 1,0 1010,990 A 50,50 0 1,0 910,990 Z"
+  <!-- Textured Overlay Layer: Identical Geometry mirroring the stretched cuts -->
+  <path d="M 50,50 L 1870,50 L 1870,1030 L 50,1030 Z
+           M 0,50 A 50,50 0 1,0 100,50 A 50,50 0 1,0 0,50 Z
+           M 1820,50 A 50,50 0 1,0 1920,50 A 50,50 0 1,0 1820,50 Z
+           M 0,1030 A 50,50 0 1,0 100,1030 A 50,50 0 1,0 0,1030 Z
+           M 1820,1030 A 50,50 0 1,0 1920,1030 A 50,50 0 1,0 1820,1030 Z
+           M 910,50 A 50,50 0 1,0 1010,50 A 50,50 0 1,0 910,50 Z
+           M 910,1030 A 50,50 0 1,0 1010,1030 A 50,50 0 1,0 910,1030 Z"
         fill="url(#cloth-weave)" fill-rule="evenodd" />
 </svg>
