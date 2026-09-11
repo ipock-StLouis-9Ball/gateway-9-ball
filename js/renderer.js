@@ -49,7 +49,7 @@ export class Renderer {
       return img;
     };
 
-    this.feltImg = loadImg(`${ASSET_DIR}/flet.svg`);
+    this.feltImg = loadImg(`${ASSET_DIR}/felt.svg`);
     this.frameImg = loadImg(`${ASSET_DIR}/pool_table_frame.svg`);
     this.shadowImg = loadImg(`${ASSET_DIR}/shadow.svg`);
     this.cushionShadowImg = loadImg(`${ASSET_DIR}/cushion-shadow.svg`);
@@ -77,9 +77,9 @@ export class Renderer {
   _computeTableRect() {
     const W = TABLE.width; // 100 inches
     const H = TABLE.height; // 50 inches (2:1 aspect ratio)
-    // pool_table_frame.svg viewBox is 6400 x 3600 with playfield cutout 4000 x 2000 (x: 1200..5200, y: 1000..2600).
+    // pool_table_frame.svg viewBox is 6400 x 3600 with playfield cutout 4000 x 2000 (from 1200,1000 to 5200,2600).
     const outerW = W * (6400 / 4000); // 160 inches
-    const outerH = H * (3600 / 2000); // 90 inches
+    const outerH = H * (3600 / 2000);   // 90 inches
 
     const availW = this.cssW;
     const availH = this.cssH;
@@ -99,8 +99,8 @@ export class Renderer {
       w: drawFrameW,
       h: drawFrameH,
     };
-    // Playing area is offset by 30 inches (1200 / 4000 * 100 = 30) relative to frame top-left in table units
-    this.playOffset = { x: (1200 / 40) * scale, y: (1000 / 40) * scale };
+    // Playing area cutout starts at x=1200, y=1000 out of 4000x2000 playfield dimensions -> 30% W, 25% H offset
+    this.playOffset = { x: (1200 / 4000) * W * scale, y: (1000 / 2000) * H * scale };
     this.playW = W * scale;
     this.playH = H * scale;
   }
