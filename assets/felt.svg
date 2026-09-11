@@ -1,31 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500">
+
+  <!-- Blond Sand Cloth -->
   <defs>
-    <!-- Blond Sand Vignette -->
-    <radialGradient id="feltVignette" cx="50%" cy="50%" r="70%">
-      <stop offset="0%" stop-color="#f3e4c2" />
-      <stop offset="50%" stop-color="#e4d3ad" />
-      <stop offset="85%" stop-color="#d2c093" />
-      <stop offset="100%" stop-color="#b8a377" />
+    <radialGradient id="cloth" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#f3e4c2"/>
+      <stop offset="50%" stop-color="#e4d1a5"/>
+      <stop offset="85%" stop-color="#d1bc8a"/>
+      <stop offset="100%" stop-color="#b9a16f"/>
     </radialGradient>
 
-    <!-- Cloth / Sand Grain -->
-    <filter id="clothGrain" x="0%" y="0%" width="100%" height="100%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" result="noise" />
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" result="noise"/>
       <feColorMatrix type="matrix"
         values="1 0 0 0 0
                 0 1 0 0 0
                 0 0 1 0 0
-                0 0 0 0.05 0" />
-      <feBlend mode="multiply" in="SourceGraphic" result="blend" />
+                0 0 0 0.05 0"/>
+      <feBlend mode="multiply" in="SourceGraphic" result="blend"/>
     </filter>
   </defs>
 
-  <!-- Blond Sand Base -->
-  <rect width="1000" height="500" fill="url(#feltVignette)" />
+  <!-- Cloth with BIG slate/felt holes -->
+  <path fill="url(#cloth)" filter="url(#grain)" fill-rule="evenodd"
+    d="
+      M0 0 H1000 V500 H0 Z
 
-  <!-- Grain Overlay -->
-  <rect width="1000" height="500" fill="#000"
-        filter="url(#clothGrain)"
-        opacity="0.4"
-        style="mix-blend-mode: overlay;" />
+      M60 60 m-50 0 a50 50 0 1 0 100 0 a50 50 0 1 0 -100 0
+      M940 60 m-50 0 a50 50 0 1 0 100 0 a50 50 0 1 0 -100 0
+
+      M60 440 m-50 0 a50 50 0 1 0 100 0 a50 50 0 1 0 -100 0
+      M940 440 m-50 0 a50 50 0 1 0 100 0 a50 50 0 1 0 -100 0
+
+      M500 60 m-50 0 a50 50 0 1 0 100 0 a50 50 0 1 0 -100 0
+      M500 440 m-50 0 a50 50 0 1 0 100 0 a50 50 0 1 0 -100 0
+    "
+  />
+
 </svg>
