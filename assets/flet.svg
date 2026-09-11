@@ -5,7 +5,6 @@
       <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.85" />
     </filter>
 
-    <!-- Original Convex Vortex Pocket Lighting Engine -->
     <radialGradient id="maroon-lighting" cx="50%" cy="50%" r="75%">
       <stop offset="0%" stop-color="#a44f59" />
       <stop offset="25%" stop-color="#7d343e" />
@@ -13,50 +12,39 @@
       <stop offset="100%" stop-color="#180406" />
     </radialGradient>
 
-    <!-- Flat Technical Weave Pattern -->
     <pattern id="cloth-weave" width="4" height="4" patternUnits="userSpaceOnUse">
-      <rect x="0" y="0" width="2" height="2" fill="#000000" fill-opacity="0.12" />
-      <rect x="2" y="2" width="2" height="2" fill="#000000" fill-opacity="0.12" />
+      <rect x="0" y="0" width="2" height="2" fill="#000000" fill-opacity="0.15" />
+      <rect x="2" y="2" width="2" height="2" fill="#000000" fill-opacity="0.15" />
     </pattern>
   </defs>
 
   <!-- Ground Layer: Deep Black Pocket Void Wells -->
   <g id="black-pocket-wells" fill="#0b0304" filter="url(#pocket-depth)">
-    <circle cx="50" cy="50" r="50" />
-    <circle cx="1870" cy="50" r="50" />
-    <circle cx="50" cy="1030" r="50" />
-    <circle cx="1870" cy="1030" r="50" />
-    <circle cx="960" cy="50" r="50" />
-    <circle cx="960" cy="1030" r="50" />
+    <circle cx="40" cy="40" r="48" />
+    <circle cx="1880" cy="40" r="48" />
+    <circle cx="40" cy="1040" r="48" />
+    <circle cx="1880" cy="1040" r="48" />
+    <circle cx="960" cy="40" r="50" />
+    <circle cx="960" cy="1040" r="50" />
   </g>
 
-  <!-- Main Felt Layer: Flat Cardinals Red (Hex #C41E3A) with Subtractive Hole Cuts -->
-  <path d="M 2,2 L 1918,2 L 1918,1078 L 2,1078 Z
-           M 0,50 A 50,50 0 1,0 100,50 A 50,50 0 1,0 0,50 Z
-           M 1820,50 A 50,50 0 1,0 1920,50 A 50,50 0 1,0 1820,50 Z
-           M 0,1030 A 50,50 0 1,0 100,1030 A 50,50 0 1,0 0,1030 Z
-           M 1820,1030 A 50,50 0 1,0 1920,1030 A 50,50 0 1,0 1820,1030 Z
-           M 910,50 A 50,50 0 1,0 1010,50 A 50,50 0 1,0 910,50 Z
-           M 910,1030 A 50,50 0 1,0 1010,1030 A 50,50 0 1,0 910,1030 Z"
-        fill="#c41e3a" fill-rule="evenodd" />
+  <!-- FIXED MAIN FELT BED: Rect boundary with pocket holes subtracted procedurally -->
+  <path d="M 40,40 L 1880,40 L 1880,1040 L 40,1040 Z
+           M -8,40 A 48,48 0 1,0 88,40 A 48,48 0 1,0 -8,40 Z
+           M 1832,40 A 48,48 0 1,0 1928,40 A 48,48 0 1,0 1832,40 Z
+           M -8,1040 A 48,48 0 1,0 88,1040 A 48,48 0 1,0 -8,1040 Z
+           M 1832,1040 A 48,48 0 1,0 1928,1040 A 48,48 0 1,0 1832,1040 Z
+           M 910,40 A 50,50 0 1,0 1010,40 A 50,50 0 1,0 910,40 Z
+           M 910,1040 A 50,50 0 1,0 1010,1040 A 50,50 0 1,0 910,1040 Z"
+        fill="#C41E3A" fill-rule="evenodd" />
 
-  <!-- Textured Overlay Layer: Flat Cloth Weave Following Identical Bounds -->
-  <path d="M 2,2 L 1918,2 L 1918,1078 L 2,1078 Z
-           M 0,50 A 50,50 0 1,0 100,50 A 50,50 0 1,0 0,50 Z
-           M 1820,50 A 50,50 0 1,0 1920,50 A 50,50 0 1,0 1820,50 Z
-           M 0,1030 A 50,50 0 1,0 100,1030 A 50,50 0 1,0 0,1030 Z
-           M 1820,1030 A 50,50 0 1,0 1920,1030 A 50,50 0 1,0 1820,1030 Z
-           M 910,50 A 50,50 0 1,0 1010,50 A 50,50 0 1,0 910,50 Z
-           M 910,1030 A 50,50 0 1,0 1010,1030 A 50,50 0 1,0 910,1030 Z"
-        fill="url(#cloth-weave)" fill-rule="evenodd" />
-
-  <!-- The Pocket Throats: Restoring the original convex shading explicitly over the hole edges -->
-  <g id="vortex-throats">
-    <circle cx="50" cy="50" r="50" fill="url(#maroon-lighting)" />
-    <circle cx="1870" cy="50" r="50" fill="url(#maroon-lighting)" />
-    <circle cx="50" cy="1030" r="50" fill="url(#maroon-lighting)" />
-    <circle cx="1870" cy="1030" r="50" fill="url(#maroon-lighting)" />
-    <circle cx="960" cy="50" r="50" fill="url(#maroon-lighting)" />
-    <circle cx="960" cy="1030" r="50" fill="url(#maroon-lighting)" />
-  </g>
+  <!-- Textured overlay following identical cutout matrix -->
+  <path d="M 40,40 L 1880,40 L 1880,1040 L 40,1040 Z
+           M -8,40 A 48,48 0 1,0 88,40 A 48,48 0 1,0 -8,40 Z
+           M 1832,40 A 48,48 0 1,0 1928,40 A 48,48 0 1,0 1832,40 Z
+           M -8,1040 A 48,48 0 1,0 88,1040 A 48,48 0 1,0 -8,1040 Z
+           M 1832,1040 A 48,48 0 1,0 1928,1040 A 48,48 0 1,0 1832,1040 Z
+           M 910,40 A 50,50 0 1,0 1010,40 A 50,50 0 1,0 910,40 Z
+           M 910,1040 A 50,50 0 1,0 1010,1040 A 50,50 0 1,0 910,1040 Z"
+        fill="url(#cloth-weave)" fill-rule="evenodd" style="mix-blend-mode: multiply;" />
 </svg>
