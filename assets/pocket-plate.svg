@@ -12,10 +12,7 @@
       <stop offset="50%" stop-color="#ffffff" stop-opacity="0" />
     </linearGradient>
   </defs>
-  <!-- Brass ring: Outer R=240, Inner R=150 -->
   <path d="M 256,16 A 240,240 0 1 0 256,496 A 240,240 0 1 0 256,16 Z M 256,106 A 150,150 0 1 1 256,406 A 150,150 0 1 1 256,106 Z" fill="url(#brassGrad)" fill-rule="evenodd" />
-  <!-- Inner bevel shadow -->
   <circle cx="256" cy="256" r="150" fill="none" stroke="#1a1207" stroke-width="6" opacity="0.8" />
-  <!-- Outer bevel highlight -->
   <circle cx="256" cy="256" r="238" fill="none" stroke="url(#metalHighlight)" stroke-width="4" />
 </svg>

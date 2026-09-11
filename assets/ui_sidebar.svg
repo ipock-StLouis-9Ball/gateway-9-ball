@@ -16,10 +16,7 @@
       <stop offset="100%" stop-color="#000000" stop-opacity="0" />
     </radialGradient>
   </defs>
-  <!-- Background -->
   <rect width="200" height="1000" fill="url(#bgGrad)" />
-  <!-- Subtle Glow -->
   <rect width="200" height="1000" fill="url(#sideGlow)" />
-  <!-- Left Metallic Gold Accent Border -->
   <rect x="0" y="0" width="3" height="1000" fill="url(#goldBorder)" />
 </svg>

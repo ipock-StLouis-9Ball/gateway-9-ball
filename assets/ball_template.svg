@@ -12,8 +12,6 @@
       <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
     </radialGradient>
   </defs>
-  <!-- Ball Sphere Circle -->
   <circle cx="128" cy="128" r="120" fill="url(#sphereShade)" />
-  <!-- Glossy Specular Highlight -->
   <ellipse cx="90" cy="80" rx="55" ry="32" fill="url(#specularGlow)" transform="rotate(-20 90 80)" />
 </svg>
