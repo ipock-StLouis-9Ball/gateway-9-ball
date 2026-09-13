@@ -6,6 +6,7 @@ import { State, Wallet, Store } from './state.js';
 import { Renderer } from './renderer.js';
 import { Game } from './game.js';
 import { ECONOMY, STORE_ITEMS, TABLE_COLORS, BALL_SKINS, CUE_STICKS } from './config.js';
+import { initRapier } from './rapierPhysics.js';
 
 // ---------- Screen routing ----------
 const screens = ['menu', 'lobby', 'store', 'wallet', 'game'];
@@ -167,7 +168,9 @@ document.getElementById('wd-btn').addEventListener('click', () => {
 let game = null;
 let renderer = null;
 
-function startGame(opts) {
+async function startGame(opts) {
+  await initRapier();
+
   show('game');
   const settings = { ...State.settings };
   const canvas = document.getElementById('game-canvas');
@@ -186,6 +189,8 @@ function startGame(opts) {
       refreshMenu();
     },
   });
+
+  await game.asyncInit();
 
   // SVG Sidebar Player Names
   const p1Name = document.getElementById('svg-p1-name');
@@ -405,6 +410,9 @@ function alertMsg(msg) {
   banner.classList.remove('hidden');
   setTimeout(() => banner.classList.add('hidden'), 2500);
 }
+
+// Pre-initialize Rapier on boot
+initRapier().catch(console.error);
 
 window.addEventListener('resize', () => { if (renderer) renderer.resize(); });
 show('menu');

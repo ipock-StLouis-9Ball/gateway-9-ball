@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@dimforge/rapier2d-compat": "^0.20.0"
+  }
+}

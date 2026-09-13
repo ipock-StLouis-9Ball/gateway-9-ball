@@ -11,6 +11,7 @@
     "serve": "node dist/index.js"
   },
   "dependencies": {
+    "@dimforge/rapier2d-compat": "^0.20.0",
     "compression": "^1.7.4",
     "express": "^4.19.2",
     "tsx": "^4.19.2"
