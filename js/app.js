@@ -2,11 +2,121 @@
 // app.js — Screen routing, store/wallet UI, SVG sidebar HUD controls, bootstrap.
 // ============================================================================
 
-import { State, Wallet, Store } from './state.js';
+import { State, Wallet, Store, Auth } from './state.js';
 import { Renderer } from './renderer.js';
 import { Game } from './game.js';
 import { ECONOMY, STORE_ITEMS, TABLE_COLORS, BALL_SKINS, CUE_STICKS } from './config.js';
 import { initRapier } from './rapierPhysics.js';
+
+// ---------- Profile Modal State ----------
+let selectedAvatarChoice = 'JP'; // preset or base64 string
+
+function openProfileModal(isEditMode = false) {
+  const modal = document.getElementById('profile-modal');
+  const title = document.getElementById('pm-title');
+  const usernameInput = document.getElementById('pm-username');
+  const cancelBtn = document.getElementById('pm-cancel');
+  const errEl = document.getElementById('pm-error');
+
+  errEl.classList.add('hidden');
+  errEl.textContent = '';
+
+  if (isEditMode) {
+    title.textContent = 'Edit Profile';
+    cancelBtn.classList.remove('hidden');
+    usernameInput.value = State.profile.name;
+    selectedAvatarChoice = State.profile.avatar || 'JP';
+  } else {
+    title.textContent = 'Register Profile';
+    cancelBtn.classList.add('hidden');
+    usernameInput.value = '';
+    selectedAvatarChoice = 'JP';
+  }
+
+  updateProfileModalPreview();
+  modal.classList.remove('hidden');
+}
+
+function updateProfileModalPreview() {
+  const preview = document.getElementById('pm-avatar-preview');
+  if (selectedAvatarChoice && selectedAvatarChoice.startsWith('data:image/')) {
+    preview.textContent = '';
+    preview.style.backgroundImage = `url(${selectedAvatarChoice})`;
+  } else {
+    preview.style.backgroundImage = 'none';
+    preview.textContent = selectedAvatarChoice || 'JP';
+  }
+
+  // Update chip active status
+  document.querySelectorAll('.avatar-chip').forEach((chip) => {
+    chip.classList.toggle('active', chip.dataset.avatar === selectedAvatarChoice);
+  });
+}
+
+function bindProfileModalEvents() {
+  document.getElementById('profile-btn')?.addEventListener('click', () => openProfileModal(true));
+  document.getElementById('pm-cancel')?.addEventListener('click', () => {
+    document.getElementById('profile-modal').classList.add('hidden');
+  });
+
+  document.querySelectorAll('.avatar-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      selectedAvatarChoice = chip.dataset.avatar;
+      updateProfileModalPreview();
+    });
+  });
+
+  const fileInput = document.getElementById('pm-file-input');
+  fileInput?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      const errEl = document.getElementById('pm-error');
+      errEl.textContent = 'Image size must be under 2MB';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      selectedAvatarChoice = evt.target?.result;
+      updateProfileModalPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById('pm-save')?.addEventListener('click', async () => {
+    const username = document.getElementById('pm-username').value.trim();
+    const errEl = document.getElementById('pm-error');
+    if (!username) {
+      errEl.textContent = 'Username is required';
+      errEl.classList.remove('hidden');
+      return;
+    }
+
+    const saveBtn = document.getElementById('pm-save');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+
+    let res;
+    if (State.token) {
+      res = await Auth.updateProfile(username, selectedAvatarChoice);
+    } else {
+      res = await Auth.register(username, selectedAvatarChoice);
+    }
+
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save Profile';
+
+    if (!res.ok) {
+      errEl.textContent = res.error || 'Failed to save profile';
+      errEl.classList.remove('hidden');
+      return;
+    }
+
+    document.getElementById('profile-modal').classList.add('hidden');
+    refreshMenu();
+  });
+}
 
 // ---------- Screen routing ----------
 const screens = ['menu', 'lobby', 'store', 'wallet', 'game'];
@@ -30,6 +140,20 @@ document.querySelectorAll('[data-goto]').forEach((el) => {
 // ---------- Menu ----------
 function refreshMenu() {
   document.getElementById('menu-balance').textContent = fmt(Wallet.balance());
+  document.getElementById('menu-username').textContent = State.profile.name;
+
+  const menuAvatar = document.getElementById('menu-avatar-preview');
+  if (menuAvatar) {
+    if (State.profile.avatar && State.profile.avatar.startsWith('data:image/')) {
+      menuAvatar.textContent = '';
+      menuAvatar.style.backgroundImage = `url(${State.profile.avatar})`;
+    } else {
+      menuAvatar.style.backgroundImage = 'none';
+      menuAvatar.textContent = State.profile.avatar || 'JP';
+    }
+  }
+
+  updateSidebarProfile();
 }
 document.getElementById('menu-add').addEventListener('click', () => show('wallet'));
 
@@ -40,7 +164,6 @@ function refreshLobby() {
   grid.innerHTML = '';
   ECONOMY.potTiers.forEach((pot) => {
     const buyIn = ECONOMY.buyInForPot(pot);
-    const rake = ECONOMY.rakeForPot(pot);
     const card = document.createElement('div');
     card.className = 'tier-card';
     card.innerHTML = `<div class="tc-pot">DB$${pot}</div><div class="tc-buyin">DB$${buyIn.toFixed(2)} entry</div>`;
@@ -70,11 +193,22 @@ function updateLobbySummary() {
   btn.disabled = !aff;
   btn.textContent = aff ? 'Find Match' : 'Insufficient balance';
 }
-document.getElementById('find-match').addEventListener('click', () => {
+document.getElementById('find-match').addEventListener('click', async () => {
   const pot = selectedTier;
   const buyIn = ECONOMY.buyInForPot(pot);
   if (!Wallet.canAfford(buyIn)) return;
-  Wallet.charge(buyIn);
+
+  const btn = document.getElementById('find-match');
+  btn.disabled = true;
+  btn.textContent = 'Charging entry...';
+
+  const res = await Wallet.charge(buyIn, `Wager Match Pot DB$${pot}`);
+  if (!res.ok) {
+    alertMsg(res.error || 'Buy-in failed');
+    updateLobbySummary();
+    return;
+  }
+
   startGame({
     match: {
       pot, buyIn, rake: ECONOMY.rakeForPot(pot),
@@ -106,11 +240,11 @@ function refreshStore() {
     else if (owned) { btnLabel = 'Equip'; btnClass = 'owned'; }
     else { btnLabel = `Buy DB$${item.price}`; btnClass = ''; }
     div.innerHTML = `${swatch}<div class="si-name">${item.name}</div><div class="si-price">${item.price ? 'DB$' + item.price.toFixed(2) : 'Free'}</div><button class="si-btn ${btnClass}">${btnLabel}</button>`;
-    div.querySelector('.si-btn').addEventListener('click', () => {
+    div.querySelector('.si-btn').addEventListener('click', async () => {
       if (equipped) return;
       if (owned) { Store.equip(storeTab, item.id); }
       else {
-        const r = Store.buy(storeTab, item.id);
+        const r = await Store.buy(storeTab, item.id);
         if (!r.ok) { alertMsg(r.error); return; }
       }
       refreshStore();
@@ -130,7 +264,13 @@ function refreshWallet() {
     const b = document.createElement('button');
     b.className = 'dep-btn';
     b.innerHTML = `<span class="dep-amt">+ DB$${amt.toFixed(2)}</span><span class="dep-fee">+ DB$${fee.toFixed(2)} fee</span>`;
-    b.addEventListener('click', () => { Wallet.deposit(amt); refreshWallet(); });
+    b.addEventListener('click', async () => {
+      b.disabled = true;
+      const res = await Wallet.deposit(amt);
+      b.disabled = false;
+      if (!res.ok) alertMsg(res.error);
+      refreshWallet();
+    });
     dg.appendChild(b);
   });
   document.getElementById('wd-amount').value = '';
@@ -153,16 +293,42 @@ function refreshWallet() {
     hl.appendChild(row);
   });
 }
-document.getElementById('wd-btn').addEventListener('click', () => {
+document.getElementById('wd-btn').addEventListener('click', async () => {
   const amt = parseFloat(document.getElementById('wd-amount').value);
   const res = document.getElementById('wd-result');
   if (isNaN(amt)) { res.textContent = 'Enter an amount'; return; }
-  const r = Wallet.withdraw(amt);
+  const r = await Wallet.withdraw(amt);
   if (!r.ok) { res.textContent = r.error; res.style.color = 'var(--cardinal-bright)'; return; }
   res.textContent = `Withdrew DB$${amt.toFixed(2)} — fee DB$${r.fee.toFixed(2)} — payout DB$${r.payout.toFixed(2)}`;
   res.style.color = 'var(--arch-gold)';
   refreshWallet();
 });
+
+// ---------- Sidebar Dynamic Profile Renderer ----------
+function updateSidebarProfile() {
+  const p1Name = document.getElementById('svg-p1-name');
+  if (p1Name) p1Name.textContent = State.profile.name.toUpperCase();
+
+  const p1Bal = document.getElementById('svg-p1-balance');
+  if (p1Bal) p1Bal.textContent = fmt(Wallet.balance());
+
+  const avatarContainer = document.getElementById('svg-p1-avatar-container');
+  if (avatarContainer) {
+    const av = State.profile.avatar;
+    if (av && av.startsWith('data:image/')) {
+      avatarContainer.innerHTML = `<image href="${av}" x="261" y="49" width="78" height="78" clip-path="url(#p1-avatar-clip)" preserveAspectRatio="xMidYMid slice" />`;
+    } else {
+      // Preset text avatar or fallback icon
+      avatarContainer.innerHTML = `
+        <g transform="translate(265, 52)">
+          <path d="M35,46 C35,36.5 43,35 50,35 C57,35 65,36.5 65,46 L65,54 L35,54 Z" class="avatar-icon" />
+          <circle cx="50" cy="24" r="12" class="avatar-icon" />
+        </g>
+        <text x="300" y="96" text-anchor="middle" fill="#e2e8f0" font-family="sans-serif" font-weight="bold" font-size="22">${av || 'JP'}</text>
+      `;
+    }
+  }
+}
 
 // ---------- Game ----------
 let game = null;
@@ -180,11 +346,18 @@ async function startGame(opts) {
     match: opts.match || null,
     wallet: Wallet,
     onHud: updateHud,
-    onMatchOver: (m) => {
+    onMatchOver: async (m) => {
       const modal = document.getElementById('match-modal');
       document.getElementById('mm-title').textContent = m.result.winner === 0 ? 'Match Won' : 'Match Lost';
-      const payout = m.result.winner === 0 ? `+DB$${m.result.payout.toFixed(2)} (rake DB$${m.result.rake.toFixed(2)})` : `Lost DB$${m.buyIn.toFixed(2)} entry`;
-      document.getElementById('mm-detail').textContent = `Racks ${m.racksWon[0]}-${m.racksWon[1]} · ${payout}`;
+
+      let payoutText = `Lost DB$${m.buyIn.toFixed(2)} entry`;
+      if (m.result.winner === 0) {
+        payoutText = `+DB$${m.result.payout.toFixed(2)} (rake DB$${m.result.rake.toFixed(2)})`;
+        // Credit payout to server wallet
+        await Wallet.credit(m.result.payout, `Winnings: Match Pot DB$${m.pot}`);
+      }
+
+      document.getElementById('mm-detail').textContent = `Racks ${m.racksWon[0]}-${m.racksWon[1]} · ${payoutText}`;
       modal.classList.remove('hidden');
       refreshMenu();
     },
@@ -192,9 +365,7 @@ async function startGame(opts) {
 
   await game.asyncInit();
 
-  // SVG Sidebar Player Names
-  const p1Name = document.getElementById('svg-p1-name');
-  if (p1Name) p1Name.textContent = State.profile.name.toUpperCase();
+  updateSidebarProfile();
   const p2Name = document.getElementById('svg-p2-name');
   if (p2Name) p2Name.textContent = State.opponent.name.toUpperCase();
 
@@ -211,6 +382,8 @@ async function startGame(opts) {
 }
 
 function updateHud(hud) {
+  updateSidebarProfile();
+
   const p1Score = document.getElementById('svg-p1-score');
   if (p1Score) p1Score.textContent = hud.match ? hud.match.racksWon[0] : '0';
   const p2Score = document.getElementById('svg-p2-score');
@@ -411,8 +584,19 @@ function alertMsg(msg) {
   setTimeout(() => banner.classList.add('hidden'), 2500);
 }
 
-// Pre-initialize Rapier on boot
-initRapier().catch(console.error);
+// Boot session initialization
+async function boot() {
+  bindProfileModalEvents();
+  await initRapier().catch(console.error);
+  const authenticated = await Auth.initSession();
+
+  refreshMenu();
+  show('menu');
+
+  if (!authenticated) {
+    openProfileModal(false);
+  }
+}
 
 window.addEventListener('resize', () => { if (renderer) renderer.resize(); });
-show('menu');
+boot();
