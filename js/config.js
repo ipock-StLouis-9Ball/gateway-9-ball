@@ -67,25 +67,25 @@ export const TABLE = {
   },
   // Exact pocket throat centers and capture trigger radiuses
   pockets: [
-    { id: "bottom_left",   center: { x: -0.85, y: -0.85 }, triggerRadius: 2.65 },
-    { id: "bottom_right",  center: { x: 88.85, y: -0.85 }, triggerRadius: 2.65 },
-    { id: "top_left",      center: { x: -0.85, y: 44.85 }, triggerRadius: 2.65 },
-    { id: "top_right",     center: { x: 88.85, y: 44.85 }, triggerRadius: 2.65 },
-    { id: "bottom_side",   center: { x: 44.0,  y: -1.00 }, triggerRadius: 2.40 },
-    { id: "top_side",      center: { x: 44.0,  y: 45.00 }, triggerRadius: 2.40 }
+    { id: "bottom_left",   center: { x: -0.4, y: -0.4 }, triggerRadius: 2.5 },
+    { id: "bottom_right",  center: { x: 88.4, y: -0.4 }, triggerRadius: 2.5 },
+    { id: "top_left",      center: { x: -0.4, y: 44.4 }, triggerRadius: 2.5 },
+    { id: "top_right",     center: { x: 88.4, y: 44.4 }, triggerRadius: 2.5 },
+    { id: "bottom_side",   center: { x: 44.0, y: -0.6 }, triggerRadius: 2.2 },
+    { id: "top_side",      center: { x: 44.0, y: 44.6 }, triggerRadius: 2.2 }
   ],
   // Truncated rail cushion segments creating true pocket mouth openings
   cushions: [
     // Bottom Long Rail (Y = 0)
-    { id: "bottom_left_rail",  p1: { x: 3.45,  y: 0.0 }, p2: { x: 41.35, y: 0.0 }, normal: { x: 0, y: 1 } },
-    { id: "bottom_right_rail", p1: { x: 46.65, y: 0.0 }, p2: { x: 84.55, y: 0.0 }, normal: { x: 0, y: 1 } },
+    { id: "bottom_left_rail",  p1: { x: 3.5,  y: 0.0 }, p2: { x: 41.25, y: 0.0 }, normal: { x: 0, y: 1 } },
+    { id: "bottom_right_rail", p1: { x: 46.75, y: 0.0 }, p2: { x: 84.5,  y: 0.0 }, normal: { x: 0, y: 1 } },
     // Top Long Rail (Y = 44)
-    { id: "top_left_rail",     p1: { x: 3.45,  y: 44.0 }, p2: { x: 41.35, y: 44.0 }, normal: { x: 0, y: -1 } },
-    { id: "top_right_rail",    p1: { x: 46.65, y: 44.0 }, p2: { x: 84.55, y: 44.0 }, normal: { x: 0, y: -1 } },
+    { id: "top_left_rail",     p1: { x: 3.5,  y: 44.0 }, p2: { x: 41.25, y: 44.0 }, normal: { x: 0, y: -1 } },
+    { id: "top_right_rail",    p1: { x: 46.75, y: 44.0 }, p2: { x: 84.5,  y: 44.0 }, normal: { x: 0, y: -1 } },
     // Left Short Rail (X = 0)
-    { id: "left_short_rail",   p1: { x: 0.0, y: 3.45 }, p2: { x: 0.0, y: 40.55 }, normal: { x: 1, y: 0 } },
+    { id: "left_short_rail",   p1: { x: 0.0, y: 3.5 }, p2: { x: 0.0, y: 40.5 }, normal: { x: 1, y: 0 } },
     // Right Short Rail (X = 88)
-    { id: "right_short_rail",  p1: { x: 88.0, y: 3.45 }, p2: { x: 88.0, y: 40.55 }, normal: { x: -1, y: 0 } }
+    { id: "right_short_rail",  p1: { x: 88.0, y: 3.5 }, p2: { x: 88.0, y: 40.5 }, normal: { x: -1, y: 0 } }
   ]
 };
 

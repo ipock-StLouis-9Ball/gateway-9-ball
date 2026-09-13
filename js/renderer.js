@@ -39,6 +39,7 @@ export class Renderer {
     this.settings = settings;
 
     this.tableRect = { x: 0, y: 0, w: 0, h: 0 };
+    this.playfieldRect = { x: 0, y: 0, w: 0, h: 0 };
     this.playOffset = { x: 0, y: 0 };
     this.playW = 0;
     this.playH = 0;
@@ -116,28 +117,44 @@ export class Renderer {
       w: drawFrameW,
       h: drawFrameH,
     };
-    // Rail width is 5.0 inches around playing surface
-    this.playOffset = { x: TABLE.railWidth * scale, y: TABLE.railWidth * scale };
-    this.playW = W * scale;
-    this.playH = H * scale;
+
+    const insetX = this.tableRect.w * 0.082; // 8.2% rail margin
+    const insetY = this.tableRect.h * 0.138; // 13.8% rail margin
+    this.playfieldRect = {
+      x: this.tableRect.x + insetX,
+      y: this.tableRect.y + insetY,
+      w: this.tableRect.w - insetX * 2,
+      h: this.tableRect.h - insetY * 2,
+    };
+
+    // Legacy playOffset / playW / playH for compatibility
+    this.playOffset = { x: insetX, y: insetY };
+    this.playW = this.playfieldRect.w;
+    this.playH = this.playfieldRect.h;
   }
 
-  toPx(tx, ty) {
+  coordTransform(x, y) {
+    const pf = this.playfieldRect;
     return {
-      x: this.tableRect.x + this.playOffset.x + tx * this.scale,
-      y: this.tableRect.y + this.playOffset.y + ty * this.scale,
+      x: pf.x + (x / 88.0) * pf.w,
+      y: pf.y + pf.h - (y / 44.0) * pf.h,
     };
   }
 
+  toPx(tx, ty) {
+    return this.coordTransform(tx, ty);
+  }
+
   pxToIn(px, py) {
+    const pf = this.playfieldRect;
     return {
-      x: (px - this.tableRect.x - this.playOffset.x) / this.scale,
-      y: (py - this.tableRect.y - this.playOffset.y) / this.scale,
+      x: ((px - pf.x) / pf.w) * 88.0,
+      y: ((pf.y + pf.h - py) / pf.h) * 44.0,
     };
   }
 
   ballRadiusPx() {
-    return TABLE.ballRadius * this.scale;
+    return (1.125 / 88.0) * this.playfieldRect.w;
   }
 
   draw(balls) {
@@ -152,20 +169,20 @@ export class Renderer {
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, this.cssW, this.cssH);
 
-    const px = this.tableRect.x + this.playOffset.x;
-    const py = this.tableRect.y + this.playOffset.y;
+    const px = this.playfieldRect.x;
+    const py = this.playfieldRect.y;
 
     // 1. Table Background Image (table_futuristic.jpg) or fallback
     if (this.tableFuturisticImg && this.tableFuturisticImg.complete && this.tableFuturisticImg.naturalWidth > 0) {
       ctx.drawImage(this.tableFuturisticImg, this.tableRect.x, this.tableRect.y, this.tableRect.w, this.tableRect.h);
     } else if (this.feltImg && this.feltImg.complete && this.feltImg.naturalWidth > 0) {
-      ctx.drawImage(this.feltImg, px, py, this.playW, this.playH);
+      ctx.drawImage(this.feltImg, px, py, this.playfieldRect.w, this.playfieldRect.h);
       if (this.frameImg && this.frameImg.complete && this.frameImg.naturalWidth > 0) {
         ctx.drawImage(this.frameImg, this.tableRect.x, this.tableRect.y, this.tableRect.w, this.tableRect.h);
       }
     } else {
       ctx.fillStyle = '#E8D5B5'; // sand felt fallback
-      ctx.fillRect(px, py, this.playW, this.playH);
+      ctx.fillRect(px, py, this.playfieldRect.w, this.playfieldRect.h);
       ctx.lineWidth = 12 * this.scale;
       ctx.strokeStyle = '#2a2d32';
       ctx.strokeRect(this.tableRect.x, this.tableRect.y, this.tableRect.w, this.tableRect.h);
@@ -232,7 +249,7 @@ export class Renderer {
 
       // Convert simulation inches to canvas pixels
       const canvasPos = this.toPx(currentX, currentY);
-      const radiusPx = (TABLE.ballRadius * drop.scale) * this.scale;
+      const radiusPx = ((TABLE.ballRadius * drop.scale) / 88.0) * this.playfieldRect.w;
 
       ctx.save();
       ctx.globalAlpha = Math.max(0, drop.opacity);
