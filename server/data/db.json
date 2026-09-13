@@ -1,0 +1,22 @@
+{
+  "users": {
+    "tok_3f9cc20479a1ba60fc15d2bea02b264f": {
+      "id": "usr_0faa0f189a832fd0",
+      "username": "HustlerPro",
+      "avatar": "PRO",
+      "token": "tok_3f9cc20479a1ba60fc15d2bea02b264f",
+      "balance": 2.5,
+      "history": [
+        {
+          "id": "tx_0128d4e2990e",
+          "type": "Deposit",
+          "amount": 2.5,
+          "fee": 0.37,
+          "balanceAfter": 2.5,
+          "ts": "2:28:17 PM"
+        }
+      ],
+      "createdAt": 1789309695693
+    }
+  }
+}

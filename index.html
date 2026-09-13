@@ -121,6 +121,9 @@
   <div id="ui-sidebar">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 800" width="100%" height="100%">
       <defs>
+        <clipPath id="p1-avatar-clip">
+          <rect x="261" y="49" width="78" height="78" rx="8" />
+        </clipPath>
         <linearGradient id="panel-bg" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="#2a3543" />
           <stop offset="50%" stop-color="#202934" />
@@ -234,12 +237,15 @@
         <g id="player-1" transform="translate(0, 5)">
           <rect id="svg-p1-bg" x="257" y="45" width="86" height="86" rx="10" class="recess-well" />
           <rect x="261" y="49" width="78" height="78" rx="8" fill="#1d2632" stroke="#2d3947" stroke-width="1" />
-          <g transform="translate(265, 52)">
-            <path d="M35,46 C35,36.5 43,35 50,35 C57,35 65,36.5 65,46 L65,54 L35,54 Z" class="avatar-icon" />
-            <circle cx="50" cy="24" r="12" class="avatar-icon" />
+          <g id="svg-p1-avatar-container">
+            <g transform="translate(265, 52)">
+              <path d="M35,46 C35,36.5 43,35 50,35 C57,35 65,36.5 65,46 L65,54 L35,54 Z" class="avatar-icon" />
+              <circle cx="50" cy="24" r="12" class="avatar-icon" />
+            </g>
           </g>
-          <rect x="245" y="145" width="110" height="24" rx="5" class="label-box" />
+          <rect x="235" y="145" width="130" height="42" rx="5" class="label-box" />
           <text id="svg-p1-name" x="300" y="161" text-anchor="middle" class="ui-text">PLAYER 1</text>
+          <text id="svg-p1-balance" x="300" y="178" text-anchor="middle" fill="#e8b75a" font-family="sans-serif" font-weight="bold" font-size="11">DB$0.00</text>
           <text id="svg-p1-score" x="300" y="120" text-anchor="middle" class="neon-text" font-size="20">0</text>
         </g>
 
@@ -298,10 +304,17 @@
         </div>
       </div>
 
-      <div class="balance-pill">
-        <span class="bal-label">Balance</span>
-        <span id="menu-balance" class="bal-value">DB$0.00</span>
-        <button id="menu-add" class="bal-add">+ Deposit</button>
+      <div class="menu-top-bar">
+        <div class="balance-pill">
+          <span class="bal-label">Balance</span>
+          <span id="menu-balance" class="bal-value">DB$0.00</span>
+          <button id="menu-add" class="bal-add">+ Deposit</button>
+        </div>
+        <button id="profile-btn" class="profile-pill">
+          <div id="menu-avatar-preview" class="avatar-preview-sm">JP</div>
+          <span id="menu-username" class="prof-name">Player</span>
+          <span class="prof-edit-icon">✎</span>
+        </button>
       </div>
 
       <div class="menu-actions">
@@ -326,6 +339,47 @@
       <p class="demo-note">Demo currency (DB$) — no real money. This preview runs the server-authoritative shot resolver on a Cloud Run backend (Node.js/TypeScript) that decides every shot.</p>
     </div>
   </section>
+
+  <!-- ================= PROFILE MODAL ================= -->
+  <div id="profile-modal" class="modal hidden">
+    <div class="modal-card profile-card">
+      <h2 id="pm-title">Player Profile</h2>
+      <p class="muted small">Set your handle and profile picture. Data persists authoritatively on the backend server.</p>
+
+      <div class="profile-form">
+        <div class="form-group">
+          <label for="pm-username">Username</label>
+          <input id="pm-username" type="text" maxlength="20" placeholder="Enter username..." />
+        </div>
+
+        <div class="form-group">
+          <label>Avatar / Profile Image</label>
+          <div class="avatar-selection">
+            <div class="avatar-preview-lg" id="pm-avatar-preview">JP</div>
+            <div class="avatar-options">
+              <div class="preset-avatars">
+                <button type="button" class="avatar-chip active" data-avatar="JP">JP</button>
+                <button type="button" class="avatar-chip" data-avatar="SL">SL</button>
+                <button type="button" class="avatar-chip" data-avatar="9B">9B</button>
+                <button type="button" class="avatar-chip" data-avatar="PRO">PRO</button>
+              </div>
+              <label for="pm-file-input" class="upload-btn">
+                <span>📷 Upload Custom Photo</span>
+                <input type="file" id="pm-file-input" accept="image/*" class="hidden" />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <p id="pm-error" class="error-text hidden"></p>
+
+        <div class="modal-actions">
+          <button id="pm-save" class="cta">Save Profile</button>
+          <button id="pm-cancel" class="ghost-btn hidden">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ================= MATCH LOBBY ================= -->
   <section id="screen-lobby" class="screen hidden">
