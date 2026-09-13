@@ -37,6 +37,8 @@ export const ECONOMY = {
 // A regulation 9-foot table: playing surface ~50" x 100" (2:1 ratio).
 // We work in arbitrary "inches" and scale to pixels at render time.
 export const TABLE = {
+  name: "Futuristic 8-Foot Home Table",
+  units: "inches",
   width: 88.0, // playfield length (x-axis), inches
   height: 44.0, // playfield width (y-axis), inches
   overallWidth: 98.0,
@@ -48,6 +50,43 @@ export const TABLE = {
   friction: 12.5, // rolling friction
   spinDamping: 2.5, // spin damping
   stopThreshold: 0.8, // velocity threshold to stop ball
+  playingSurface: {
+    width: 44.0,
+    length: 88.0
+  },
+  ball: {
+    radius: 1.125,
+    diameter: 2.25,
+    mass: 0.17
+  },
+  physics: {
+    rollingFriction: 0.015,
+    cushionRestitution: 0.85,
+    jawRestitution: 0.12, // Absorbs bounce in pocket jaws
+    ballRestitution: 0.96
+  },
+  // Exact pocket throat centers and capture trigger radiuses
+  pockets: [
+    { id: "bottom_left",   center: { x: -0.85, y: -0.85 }, triggerRadius: 2.65 },
+    { id: "bottom_right",  center: { x: 88.85, y: -0.85 }, triggerRadius: 2.65 },
+    { id: "top_left",      center: { x: -0.85, y: 44.85 }, triggerRadius: 2.65 },
+    { id: "top_right",     center: { x: 88.85, y: 44.85 }, triggerRadius: 2.65 },
+    { id: "bottom_side",   center: { x: 44.0,  y: -1.00 }, triggerRadius: 2.40 },
+    { id: "top_side",      center: { x: 44.0,  y: 45.00 }, triggerRadius: 2.40 }
+  ],
+  // Truncated rail cushion segments creating true pocket mouth openings
+  cushions: [
+    // Bottom Long Rail (Y = 0)
+    { id: "bottom_left_rail",  p1: { x: 3.45,  y: 0.0 }, p2: { x: 41.35, y: 0.0 }, normal: { x: 0, y: 1 } },
+    { id: "bottom_right_rail", p1: { x: 46.65, y: 0.0 }, p2: { x: 84.55, y: 0.0 }, normal: { x: 0, y: 1 } },
+    // Top Long Rail (Y = 44)
+    { id: "top_left_rail",     p1: { x: 3.45,  y: 44.0 }, p2: { x: 41.35, y: 44.0 }, normal: { x: 0, y: -1 } },
+    { id: "top_right_rail",    p1: { x: 46.65, y: 44.0 }, p2: { x: 84.55, y: 44.0 }, normal: { x: 0, y: -1 } },
+    // Left Short Rail (X = 0)
+    { id: "left_short_rail",   p1: { x: 0.0, y: 3.45 }, p2: { x: 0.0, y: 40.55 }, normal: { x: 1, y: 0 } },
+    // Right Short Rail (X = 88)
+    { id: "right_short_rail",  p1: { x: 88.0, y: 3.45 }, p2: { x: 88.0, y: 40.55 }, normal: { x: -1, y: 0 } }
+  ]
 };
 
 // Standard 9-ball colors (1-9). Cue ball is white.

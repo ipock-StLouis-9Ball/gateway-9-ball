@@ -13,6 +13,7 @@ import { Physics } from './physics.js';
 import { createRack, speedForPower, stateHash } from './rules.js';
 import { TABLE } from './config.js';
 import { resolveShotRemote, hasBackend } from './resolverClient.js';
+import { queuePocketDropAnimation } from './renderer.js';
 
 const CUE_ID = 0;
 
@@ -275,6 +276,12 @@ export class Game {
     for (const fb of frame.balls) {
       const b = this.balls.find((x) => x.id === fb.id);
       if (!b) continue;
+      if (fb.pocketed && !b.pocketed) {
+        const pockets = TABLE.pockets || [];
+        const pIdx = fb.pocketIndex ?? 0;
+        const pocket = pockets[pIdx] || { center: { x: fb.x, y: fb.y } };
+        queuePocketDropAnimation(b, pocket);
+      }
       b.x = fb.x; b.y = fb.y; b.pocketed = fb.pocketed;
     }
   }

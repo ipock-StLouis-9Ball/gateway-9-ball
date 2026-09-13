@@ -1,18 +1,36 @@
 // ============================================================================
 // renderer.js — 2D Canvas Pool Table Renderer Engine.
-// Renders 2D layered SVG/PNG table graphics directly onto HTML5 2D Canvas:
-// 1. Base Felt Layer: './assets/felt.png' or './assets/felt.svg' (2:1 playing surface)
-// 2. Pocket Wells & Cushion Shadows Layer
+// Renders 2D table graphics directly onto HTML5 2D Canvas:
+// 1. Table Background Layer: './assets/table_futuristic.jpg'
+// 2. Dropping Balls Animation Layer
 // 3. Ball Shadows Layer: './assets/shadow.svg'
 // 4. Ball Sprites Layer: './assets/ball-0.svg' .. './assets/ball-9.svg'
 // 5. Aim & Cue Stick Overlay Layer
-// 6. Upper Rail Frame Layer: './assets/pool_table_frame.svg'
 // ============================================================================
 
 import { TABLE, BALL_COLORS } from './config.js';
 
 const CUE_ID = 0;
 const ASSET_DIR = './assets';
+
+// Active dropping ball visual transitions
+const droppingBalls = [];
+
+export function queuePocketDropAnimation(ball, pocket) {
+  droppingBalls.push({
+    ballId: ball.id,
+    color: ball.color || BALL_COLORS[ball.id] || "#FFFFFF",
+    number: ball.id || 0,
+    x: ball.x,
+    y: ball.y,
+    targetX: pocket.center ? pocket.center.x : (pocket.x ?? ball.x),
+    targetY: pocket.center ? pocket.center.y : (pocket.y ?? ball.y),
+    scale: 1.0,
+    opacity: 1.0,
+    progress: 0.0,
+    duration: 0.28 // Duration in seconds (280ms)
+  });
+}
 
 export class Renderer {
   constructor(canvas, settings) {
@@ -28,6 +46,7 @@ export class Renderer {
     this.cssW = 0;
     this.cssH = 0;
     this.aim = null;
+    this.lastTime = performance.now();
 
     this._initAssets();
     this.resize();
@@ -36,7 +55,6 @@ export class Renderer {
   _initAssets() {
     this.imagesLoaded = 0;
 
-    // Helper to load image cleanly
     const loadImg = (path) => {
       const img = new Image();
       img.src = path;
@@ -49,11 +67,11 @@ export class Renderer {
       return img;
     };
 
+    this.tableFuturisticImg = loadImg(`${ASSET_DIR}/table_futuristic.jpg`);
     this.feltImg = loadImg(`${ASSET_DIR}/felt.svg`);
     this.frameImg = loadImg(`${ASSET_DIR}/pool_table_frame.svg`);
     this.shadowImg = loadImg(`${ASSET_DIR}/shadow.svg`);
     this.cushionShadowImg = loadImg(`${ASSET_DIR}/cushion-shadow.svg`);
-    this.pocketWellImg = loadImg(`${ASSET_DIR}/pocket-well.svg`);
 
     this.ballImgs = {};
     for (let i = 0; i <= 9; i++) {
@@ -77,7 +95,6 @@ export class Renderer {
   _computeTableRect() {
     const W = TABLE.width; // 88 inches
     const H = TABLE.height; // 44 inches (2:1 aspect ratio)
-    // pool_table_frame.svg viewBox is 6400 x 3600 with playfield cutout 4000 x 2000 (from 1200,1000 to 5200,2600).
     const outerW = TABLE.overallWidth || 98.0; // 98 inches outer frame
     const outerH = TABLE.overallHeight || 54.0; // 54 inches outer frame
 
@@ -127,6 +144,9 @@ export class Renderer {
     if (!this.ctx) return;
     const ctx = this.ctx;
     const dpr = window.devicePixelRatio || 1;
+    const now = performance.now();
+    const dt = Math.min(0.05, (now - this.lastTime) / 1000);
+    this.lastTime = now;
 
     ctx.save();
     ctx.scale(dpr, dpr);
@@ -135,18 +155,24 @@ export class Renderer {
     const px = this.tableRect.x + this.playOffset.x;
     const py = this.tableRect.y + this.playOffset.y;
 
-    // 1. Felt playing surface
-    if (this.feltImg && this.feltImg.complete && this.feltImg.naturalWidth > 0) {
+    // 1. Table Background Image (table_futuristic.jpg) or fallback
+    if (this.tableFuturisticImg && this.tableFuturisticImg.complete && this.tableFuturisticImg.naturalWidth > 0) {
+      ctx.drawImage(this.tableFuturisticImg, this.tableRect.x, this.tableRect.y, this.tableRect.w, this.tableRect.h);
+    } else if (this.feltImg && this.feltImg.complete && this.feltImg.naturalWidth > 0) {
       ctx.drawImage(this.feltImg, px, py, this.playW, this.playH);
+      if (this.frameImg && this.frameImg.complete && this.frameImg.naturalWidth > 0) {
+        ctx.drawImage(this.frameImg, this.tableRect.x, this.tableRect.y, this.tableRect.w, this.tableRect.h);
+      }
     } else {
       ctx.fillStyle = '#E8D5B5'; // sand felt fallback
       ctx.fillRect(px, py, this.playW, this.playH);
+      ctx.lineWidth = 12 * this.scale;
+      ctx.strokeStyle = '#2a2d32';
+      ctx.strokeRect(this.tableRect.x, this.tableRect.y, this.tableRect.w, this.tableRect.h);
     }
 
-    // 2. Cushion shadow overlay over felt bed
-    if (this.cushionShadowImg && this.cushionShadowImg.complete && this.cushionShadowImg.naturalWidth > 0) {
-      ctx.drawImage(this.cushionShadowImg, px, py, this.playW, this.playH);
-    }
+    // 2. Render Dropping Balls animation
+    this.renderDroppingBalls(ctx, dt);
 
     // 3. Ball shadows (under active balls)
     const rp = this.ballRadiusPx();
@@ -181,16 +207,55 @@ export class Renderer {
     // 5. Aim Overlay (cue stick, aiming vector, ghost ball, target lines)
     this._drawAim(ctx, balls);
 
-    // 6. Upper Pool Table Frame Overlay
-    if (this.frameImg && this.frameImg.complete && this.frameImg.naturalWidth > 0) {
-      ctx.drawImage(this.frameImg, this.tableRect.x, this.tableRect.y, this.tableRect.w, this.tableRect.h);
-    } else {
-      ctx.lineWidth = 12 * this.scale;
-      ctx.strokeStyle = '#5c2d16';
-      ctx.strokeRect(this.tableRect.x, this.tableRect.y, this.tableRect.w, this.tableRect.h);
-    }
-
     ctx.restore();
+  }
+
+  renderDroppingBalls(ctx, dt) {
+    for (let i = droppingBalls.length - 1; i >= 0; i--) {
+      const drop = droppingBalls[i];
+      drop.progress += dt / drop.duration;
+
+      if (drop.progress >= 1.0) {
+        droppingBalls.splice(i, 1);
+        continue;
+      }
+
+      // Cubic ease-in to simulate accelerating downward pull into the cup
+      const t = drop.progress;
+      const easeIn = t * t * t;
+
+      // Interpolate towards pocket center while shrinking
+      const currentX = drop.x + (drop.targetX - drop.x) * easeIn;
+      const currentY = drop.y + (drop.targetY - drop.y) * easeIn;
+      drop.scale = 1.0 - (0.55 * easeIn);     // Shrink down to 45% of original radius
+      drop.opacity = 1.0 - (0.85 * easeIn);   // Fade down to 15% opacity inside the cup
+
+      // Convert simulation inches to canvas pixels
+      const canvasPos = this.toPx(currentX, currentY);
+      const radiusPx = (TABLE.ballRadius * drop.scale) * this.scale;
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, drop.opacity);
+
+      // Ball Body
+      const ballImg = this.ballImgs[drop.number];
+      if (ballImg && ballImg.complete && ballImg.naturalWidth > 0) {
+        ctx.drawImage(ballImg, canvasPos.x - radiusPx, canvasPos.y - radiusPx, radiusPx * 2, radiusPx * 2);
+      } else {
+        ctx.beginPath();
+        ctx.arc(canvasPos.x, canvasPos.y, radiusPx, 0, Math.PI * 2);
+        ctx.fillStyle = drop.color;
+        ctx.fill();
+      }
+
+      // Dark falloff vignette on top of dropping ball
+      ctx.beginPath();
+      ctx.arc(canvasPos.x, canvasPos.y, radiusPx, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0, 0, 0, ${easeIn * 0.65})`;
+      ctx.fill();
+
+      ctx.restore();
+    }
   }
 
   _drawBallFallback(ctx, id, x, y, rp) {

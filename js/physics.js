@@ -1,24 +1,31 @@
 // ============================================================================
 // physics.js — Generic 2D pool table physics (table-space units, inches).
-// Fixed-timestep, impulse-based ball collisions, cushion reflection with
-// pocket mouth gaps, rolling friction, and pocket capture.
+// Substep Euler integration, pre-cushion pocket trigger capture, line-segment
+// cushion reflection with true mouth gaps, rolling drag, and ball impulse collisions.
 //
 // Pure & deterministic: given the same inputs it produces the same result.
-// Exact alignment to pool_table_frame.svg pocket cutouts and cushion bevels.
 // ============================================================================
 
 import { TABLE } from './config.js';
 
-// Pocket definitions matching the JSON table blueprint (origin at bottom-left [0,0] to top-right [88, 44]).
-// Note: y=0 is top rail in canvas coordinates, y=44 is bottom rail.
 export function getPocketBlueprint(W = TABLE.width, H = TABLE.height) {
+  if (TABLE.pockets) {
+    return TABLE.pockets.map((p, idx) => ({
+      id: p.id,
+      type: p.id.includes('side') ? 'side' : 'corner',
+      x: p.center.x,
+      y: p.center.y,
+      trigger_radius: p.triggerRadius,
+      index: idx
+    }));
+  }
   return [
-    { id: 'top_left_corner', type: 'corner', x: 0.0, y: 0.0, trigger_radius: 2.6, mouth_width: 4.875 },
-    { id: 'top_right_corner', type: 'corner', x: W, y: 0.0, trigger_radius: 2.6, mouth_width: 4.875 },
-    { id: 'bottom_left_corner', type: 'corner', x: 0.0, y: H, trigger_radius: 2.6, mouth_width: 4.875 },
-    { id: 'bottom_right_corner', type: 'corner', x: W, y: H, trigger_radius: 2.6, mouth_width: 4.875 },
-    { id: 'top_side', type: 'side', x: W / 2, y: 0.0, trigger_radius: 2.4, mouth_width: 5.25 },
-    { id: 'bottom_side', type: 'side', x: W / 2, y: H, trigger_radius: 2.4, mouth_width: 5.25 },
+    { id: 'bottom_left', type: 'corner', x: -0.85, y: -0.85, trigger_radius: 2.65, index: 0 },
+    { id: 'bottom_right', type: 'corner', x: 88.85, y: -0.85, trigger_radius: 2.65, index: 1 },
+    { id: 'top_left', type: 'corner', x: -0.85, y: 44.85, trigger_radius: 2.65, index: 2 },
+    { id: 'top_right', type: 'corner', x: 88.85, y: 44.85, trigger_radius: 2.65, index: 3 },
+    { id: 'bottom_side', type: 'side', x: 44.0, y: -1.00, trigger_radius: 2.40, index: 4 },
+    { id: 'top_side', type: 'side', x: 44.0, y: 45.00, trigger_radius: 2.40, index: 5 },
   ];
 }
 
@@ -26,177 +33,199 @@ export function pocketCenters(W = TABLE.width, H = TABLE.height) {
   return getPocketBlueprint(W, H).map(p => ({ x: p.x, y: p.y }));
 }
 
-// Distance from a value to a gap region. Returns true if `pos` lies within
-// any pocket-mouth gap along the wall (i.e., no cushion there).
-function inMouth(pos, gaps) {
-  for (const [lo, hi] of gaps) if (pos >= lo && pos <= hi) return true;
-  return false;
-}
+// Line-segment cushion collision clamping for truncated rails
+function resolveSegmentCushions(ball, events = []) {
+  const cushions = TABLE.cushions || [];
+  const radius = ball.radius || TABLE.ballRadius;
+  const restitution = TABLE.physics?.cushionRestitution ?? TABLE.cushionRestitution;
 
-// Precompute mouth gaps matching cushion cutouts
-function wallGaps(W, H) {
-  return {
-    left: [[0, 3.2], [H - 3.2, H]],
-    right: [[0, 3.2], [H - 3.2, H]],
-    top: [[0, 3.2], [W / 2 - 2.6, W / 2 + 2.6], [W - 3.2, W]],
-    bottom: [[0, 3.2], [W / 2 - 2.6, W / 2 + 2.6], [W - 3.2, W]],
-  };
-}
+  for (const c of cushions) {
+    const l2 = (c.p2.x - c.p1.x) ** 2 + (c.p2.y - c.p1.y) ** 2;
+    if (l2 === 0) continue;
+    let t = ((ball.x - c.p1.x) * (c.p2.x - c.p1.x) + (ball.y - c.p1.y) * (c.p2.y - c.p1.y)) / l2;
+    t = Math.max(0, Math.min(1, t));
 
-export class Physics {
-  constructor(W = TABLE.width, H = TABLE.height) {
-    this.W = W;
-    this.H = H;
-    this.r = TABLE.ballRadius;
-    this.gaps = wallGaps(W, H);
-    this.pocketSpecs = getPocketBlueprint(W, H);
-    this.pockets = pocketCenters(W, H);
+    const projX = c.p1.x + t * (c.p2.x - c.p1.x);
+    const projY = c.p1.y + t * (c.p2.y - c.p1.y);
+
+    const dx = ball.x - projX;
+    const dy = ball.y - projY;
+    const dist = Math.hypot(dx, dy);
+
+    if (dist < radius) {
+      // Normal calculation
+      const nx = dist > 0.0001 ? dx / dist : c.normal.x;
+      const ny = dist > 0.0001 ? dy / dist : c.normal.y;
+
+      // Positional separation
+      ball.x = projX + nx * radius;
+      ball.y = projY + ny * radius;
+
+      // Impulse reflection along cushion normal
+      const dot = ball.vx * nx + ball.vy * ny;
+      if (dot < 0) {
+        ball.vx -= (1 + restitution) * dot * nx;
+        ball.vy -= (1 + restitution) * dot * ny;
+        events.push({ type: 'rail', ball: ball.id, wall: c.id });
+      }
+    }
   }
+}
 
-  // Step the world by dt (seconds). Mutates balls in place. Returns events.
-  step(balls, dt) {
-    const events = [];
-    const moving = balls.filter((b) => !b.pocketed);
+function resolveBallPair(b1, b2, events = []) {
+  if (b1.collidable === false || b2.collidable === false) return;
+  const r1 = b1.radius || TABLE.ballRadius;
+  const r2 = b2.radius || TABLE.ballRadius;
+  const dx = b2.x - b1.x;
+  const dy = b2.y - b1.y;
+  const dist = Math.hypot(dx, dy);
+  const minDist = r1 + r2;
 
-    // Integrate motion + friction
-    for (const b of moving) {
-      b.x += b.vx * dt;
-      b.y += b.vy * dt;
-      // rolling friction (deceleration opposite to velocity)
-      const sp = Math.hypot(b.vx, b.vy);
-      if (sp > 0) {
-        const dec = TABLE.friction * dt;
-        if (dec >= sp) {
-          b.vx = 0;
-          b.vy = 0;
+  if (dist < minDist && dist > 0) {
+    const nx = dx / dist;
+    const ny = dy / dist;
+
+    // Positional separation (50/50 split)
+    const overlap = 0.5 * (minDist - dist);
+    b1.x -= nx * overlap;
+    b1.y -= ny * overlap;
+    b2.x += nx * overlap;
+    b2.y += ny * overlap;
+
+    // Impulse resolution
+    const m1 = b1.mass || TABLE.ball?.mass || 0.17;
+    const m2 = b2.mass || TABLE.ball?.mass || 0.17;
+    const kx = b1.vx - b2.vx;
+    const ky = b1.vy - b2.vy;
+    const velAlongNormal = kx * nx + ky * ny;
+
+    if (velAlongNormal > 0) {
+      const e = TABLE.physics?.ballRestitution ?? TABLE.ballRestitution;
+      const p = (1 + e) * velAlongNormal / (m1 + m2);
+
+      b1.vx -= p * m2 * nx;
+      b1.vy -= p * m2 * ny;
+      b2.vx += p * m1 * nx;
+      b2.vy += p * m1 * ny;
+
+      events.push({ type: 'hit', a: b1.id, b: b2.id, speed: Math.abs(velAlongNormal) });
+    }
+  }
+}
+
+export function updatePhysicsStep(balls, dt, subSteps = 8, onBallPocketed = null) {
+  const events = [];
+  const subDt = dt / subSteps;
+  const pockets = TABLE.pockets || getPocketBlueprint().map(p => ({
+    id: p.id,
+    center: { x: p.x, y: p.y },
+    triggerRadius: p.trigger_radius
+  }));
+
+  for (let s = 0; s < subSteps; s++) {
+    // 1. Integration (Euler update) & Drag
+    for (const ball of balls) {
+      if (ball.active === false || ball.pocketed) continue;
+      ball.x += ball.vx * subDt;
+      ball.y += ball.vy * subDt;
+
+      // Apply linear rolling drag
+      const speed = Math.hypot(ball.vx, ball.vy);
+      if (speed > 0) {
+        const friction = TABLE.physics?.rollingFriction ?? 0.015;
+        const drop = speed * friction * subDt * 60;
+        const newSpeed = Math.max(0, speed - drop);
+        if (newSpeed === 0) {
+          ball.vx = 0;
+          ball.vy = 0;
         } else {
-          const f = (sp - dec) / sp;
-          b.vx *= f;
-          b.vy *= f;
+          ball.vx = (ball.vx / speed) * newSpeed;
+          ball.vy = (ball.vy / speed) * newSpeed;
         }
       }
-      if (sp < TABLE.stopThreshold) {
-        b.vx = 0;
-        b.vy = 0;
-      }
-      // spin: cue ball english — modest curve.
-      if (b.englishX || b.englishY) {
-        const damp = Math.exp(-TABLE.spinDamping * dt);
-        b.englishX *= damp;
-        b.englishY *= damp;
-        const sp2 = Math.hypot(b.vx, b.vy);
-        if (sp2 > 1.2) {
-          b.vx += (b.englishX || 0) * dt * 6;
-          b.vy += (b.englishY || 0) * dt * 6;
+
+      // Cue ball spin/english decay & curve
+      if (ball.englishX || ball.englishY) {
+        const damp = Math.exp(-TABLE.spinDamping * subDt);
+        ball.englishX *= damp;
+        ball.englishY *= damp;
+        if (speed > 1.2) {
+          ball.vx += (ball.englishX || 0) * subDt * 6;
+          ball.vy += (ball.englishY || 0) * subDt * 6;
         } else {
-          b.englishX = 0;
-          b.englishY = 0;
+          ball.englishX = 0;
+          ball.englishY = 0;
         }
       }
     }
 
-    // Cushion reflections (with pocket mouth gaps).
-    for (const b of moving) {
-      const r = this.r;
-      // left wall
-      if (b.x - r < 0) {
-        if (!inMouth(b.y, this.gaps.left)) {
-          b.x = r;
-          if (b.vx < 0) { b.vx = -b.vx * TABLE.cushionRestitution; events.push({ type: 'rail', ball: b.id, wall: 'left' }); }
-        }
-      }
-      // right wall
-      if (b.x + r > this.W) {
-        if (!inMouth(b.y, this.gaps.right)) {
-          b.x = this.W - r;
-          if (b.vx > 0) { b.vx = -b.vx * TABLE.cushionRestitution; events.push({ type: 'rail', ball: b.id, wall: 'right' }); }
-        }
-      }
-      // top wall
-      if (b.y - r < 0) {
-        if (!inMouth(b.x, this.gaps.top)) {
-          b.y = r;
-          if (b.vy < 0) { b.vy = -b.vy * TABLE.cushionRestitution; events.push({ type: 'rail', ball: b.id, wall: 'top' }); }
-        }
-      }
-      // bottom wall
-      if (b.y + r > this.H) {
-        if (!inMouth(b.x, this.gaps.bottom)) {
-          b.y = this.H - r;
-          if (b.vy > 0) { b.vy = -b.vy * TABLE.cushionRestitution; events.push({ type: 'rail', ball: b.id, wall: 'bottom' }); }
-        }
-      }
-    }
+    // 2. Pocket Trigger Detection (Must precede cushion collision)
+    for (const ball of balls) {
+      if (ball.active === false || ball.pocketed) continue;
+      for (let pIdx = 0; pIdx < pockets.length; pIdx++) {
+        const pocket = pockets[pIdx];
+        const dx = pocket.center.x - ball.x;
+        const dy = pocket.center.y - ball.y;
+        const distSq = dx * dx + dy * dy;
 
-    // Ball-ball collisions
-    for (let i = 0; i < moving.length; i++) {
-      for (let j = i + 1; j < moving.length; j++) {
-        this._resolveBallPair(moving[i], moving[j], events);
-      }
-    }
+        if (distSq < pocket.triggerRadius * pocket.triggerRadius) {
+          const dot = ball.vx * dx + ball.vy * dy;
+          const speed = Math.hypot(ball.vx, ball.vy);
 
-    // Pocket capture using blueprint trigger radius + velocity alignment check
-    for (const b of moving) {
-      for (let p = 0; p < this.pocketSpecs.length; p++) {
-        const pocket = this.pocketSpecs[p];
-        const dx = b.x - pocket.x;
-        const dy = b.y - pocket.y;
-        const dist = Math.hypot(dx, dy);
+          if (dot > 0 || speed < 0.5) { // Ball tracking into pocket throat or resting in throat
+            ball.pocketed = true;
+            ball.active = false;
+            ball.collidable = false;
+            ball.vx = 0;
+            ball.vy = 0;
+            ball.pocketIndex = pIdx;
 
-        if (dist < pocket.trigger_radius) {
-          const speed = Math.hypot(b.vx, b.vy);
-          // Velocity alignment check: vector pointing toward pocket center
-          const toPocketX = pocket.x - b.x;
-          const toPocketY = pocket.y - b.y;
-          const alignment = speed > 0.001
-            ? (b.vx * toPocketX + b.vy * toPocketY) / (speed * dist || 1)
-            : 1.0;
+            events.push({ type: 'pocket', ball: ball.id, pocket: pIdx, pocketObj: pocket });
 
-          if (alignment > 0.25 || speed < 30) {
-            b.pocketed = true;
-            b.vx = 0;
-            b.vy = 0;
-            b.pocketIndex = p;
-            events.push({ type: 'pocket', ball: b.id, pocket: p });
-            break; // ball can only be in one pocket
+            if (typeof onBallPocketed === 'function') {
+              onBallPocketed(ball, pocket);
+            }
+            break;
           }
         }
       }
     }
 
-    return events;
+    // 3. Segmented Cushion Collisions
+    for (const ball of balls) {
+      if (ball.active === false || ball.pocketed) continue;
+      resolveSegmentCushions(ball, events);
+    }
+
+    // 4. Ball-to-Ball Impulse Collision Resolution
+    for (let i = 0; i < balls.length; i++) {
+      for (let j = i + 1; j < balls.length; j++) {
+        if (balls[i].active === false || balls[j].active === false) continue;
+        if (balls[i].pocketed || balls[j].pocketed) continue;
+        resolveBallPair(balls[i], balls[j], events);
+      }
+    }
   }
 
-  _resolveBallPair(a, b, events) {
-    const dx = b.x - a.x;
-    const dy = b.y - a.y;
-    const dist = Math.hypot(dx, dy);
-    const minDist = this.r * 2;
-    if (dist === 0 || dist >= minDist) return;
-    const nx = dx / dist;
-    const ny = dy / dist;
-    const overlap = minDist - dist;
-    a.x -= nx * overlap * 0.5;
-    a.y -= ny * overlap * 0.5;
-    b.x += nx * overlap * 0.5;
-    b.y += ny * overlap * 0.5;
-    const rvx = b.vx - a.vx;
-    const rvy = b.vy - a.vy;
-    const velAlongNormal = rvx * nx + rvy * ny;
-    if (velAlongNormal > 0) return;
-    const e = TABLE.ballRestitution;
-    const j = (-(1 + e) * velAlongNormal) / 2;
-    const ix = j * nx;
-    const iy = j * ny;
-    a.vx -= ix;
-    a.vy -= iy;
-    b.vx += ix;
-    b.vy += iy;
-    events.push({ type: 'hit', a: a.id, b: b.id, speed: Math.abs(velAlongNormal) });
+  return events;
+}
+
+export class Physics {
+  constructor(W = TABLE.width, H = TABLE.height, onBallPocketed = null) {
+    this.W = W;
+    this.H = H;
+    this.r = TABLE.ballRadius;
+    this.pocketSpecs = getPocketBlueprint(W, H);
+    this.pockets = pocketCenters(W, H);
+    this.onBallPocketed = onBallPocketed;
+  }
+
+  step(balls, dt) {
+    return updatePhysicsStep(balls, dt, 8, this.onBallPocketed);
   }
 
   atRest(balls) {
-    return balls.every((b) => b.pocketed || (b.vx === 0 && b.vy === 0));
+    return balls.every((b) => b.pocketed || b.active === false || (b.vx === 0 && b.vy === 0));
   }
 }
 
