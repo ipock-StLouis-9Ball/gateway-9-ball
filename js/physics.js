@@ -20,12 +20,12 @@ export function getPocketBlueprint(W = TABLE.width, H = TABLE.height) {
     }));
   }
   return [
-    { id: 'bottom_left', type: 'corner', x: -0.85, y: -0.85, trigger_radius: 2.65, index: 0 },
-    { id: 'bottom_right', type: 'corner', x: 88.85, y: -0.85, trigger_radius: 2.65, index: 1 },
-    { id: 'top_left', type: 'corner', x: -0.85, y: 44.85, trigger_radius: 2.65, index: 2 },
-    { id: 'top_right', type: 'corner', x: 88.85, y: 44.85, trigger_radius: 2.65, index: 3 },
-    { id: 'bottom_side', type: 'side', x: 44.0, y: -1.00, trigger_radius: 2.40, index: 4 },
-    { id: 'top_side', type: 'side', x: 44.0, y: 45.00, trigger_radius: 2.40, index: 5 },
+    { id: 'bottom_left', type: 'corner', x: -0.4, y: -0.4, trigger_radius: 2.5, index: 0 },
+    { id: 'bottom_right', type: 'corner', x: 88.4, y: -0.4, trigger_radius: 2.5, index: 1 },
+    { id: 'top_left', type: 'corner', x: -0.4, y: 44.4, trigger_radius: 2.5, index: 2 },
+    { id: 'top_right', type: 'corner', x: 88.4, y: 44.4, trigger_radius: 2.5, index: 3 },
+    { id: 'bottom_side', type: 'side', x: 44.0, y: -0.6, trigger_radius: 2.2, index: 4 },
+    { id: 'top_side', type: 'side', x: 44.0, y: 44.6, trigger_radius: 2.2, index: 5 },
   ];
 }
 
@@ -57,15 +57,18 @@ function resolveSegmentCushions(ball, events = []) {
       const nx = dist > 0.0001 ? dx / dist : c.normal.x;
       const ny = dist > 0.0001 ? dy / dist : c.normal.y;
 
-      // Positional separation
-      ball.x = projX + nx * radius;
-      ball.y = projY + ny * radius;
+      // Positional separation with clearance along normal
+      ball.x = projX + nx * (radius + 0.02);
+      ball.y = projY + ny * (radius + 0.02);
 
-      // Impulse reflection along cushion normal
-      const dot = ball.vx * nx + ball.vy * ny;
-      if (dot < 0) {
-        ball.vx -= (1 + restitution) * dot * nx;
-        ball.vy -= (1 + restitution) * dot * ny;
+      // Only reflect the normal velocity component, preserving 100% of tangential velocity
+      const vn = ball.vx * nx + ball.vy * ny;
+      if (vn < 0) {
+        const vtx = ball.vx - vn * nx;
+        const vty = ball.vy - vn * ny;
+        const newVn = -restitution * vn;
+        ball.vx = vtx + newVn * nx;
+        ball.vy = vty + newVn * ny;
         events.push({ type: 'rail', ball: ball.id, wall: c.id });
       }
     }
