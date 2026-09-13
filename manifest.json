@@ -1,7 +1,7 @@
 {
-  "name": "Gateway 9-Ball",
-  "short_name": "9-Ball",
-  "description": "St. Louis 9-ball pool — practice & wager-style matches (demo currency).",
+  "name": "St. Louis 9 Ball Hustle",
+  "short_name": "9 Ball Hustle",
+  "description": "St. Louis 9-ball pool hustle — practice & wager-style matches (demo currency).",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "landscape",
