@@ -37,16 +37,17 @@ export const ECONOMY = {
 // A regulation 9-foot table: playing surface ~50" x 100" (2:1 ratio).
 // We work in arbitrary "inches" and scale to pixels at render time.
 export const TABLE = {
-  width: 100, // playfield width (long axis), inches
-  height: 50, // playfield height (short axis), inches
-  railThickness: 7.5,
-  ballRadius: 1.35, // scaled up ball radius (2.7" diameter) for proper proportions
-  pocketRadius: 2.8, // pocket mouth capture radius
-  cushionRestitution: 0.85, // K-66 rubber: ~85% energy retained off rail
-  ballRestitution: 0.88, // ball-ball: ~88% energy retained
-  friction: 12.5, // increased rolling friction (inches/sec^2) so balls decelerate naturally
-  spinDamping: 2.5, // english/spin wears off exponentially over distance
-  stopThreshold: 0.8, // below this speed, ball stops
+  width: 88.0, // playfield length (x-axis), inches
+  height: 44.0, // playfield width (y-axis), inches
+  overallWidth: 98.0,
+  overallHeight: 54.0,
+  railWidth: 5.0,
+  ballRadius: 1.125, // 2.25" diameter
+  cushionRestitution: 0.85, // K-66 rubber profile
+  ballRestitution: 0.96, // ball-ball restitution
+  friction: 12.5, // rolling friction
+  spinDamping: 2.5, // spin damping
+  stopThreshold: 0.8, // velocity threshold to stop ball
 };
 
 // Standard 9-ball colors (1-9). Cue ball is white.
@@ -63,12 +64,12 @@ export const BALL_COLORS = {
 };
 
 export const TABLE_COLORS = {
-  classic: { felt: '#1a6b3a', rail: '#3a2418', railEdge: '#5a3624' },
-  tournament: { felt: '#16557f', rail: '#2a1d12', railEdge: '#4a2e1c' },
-  // Maroon cloth with medium cherry wood rails (the requested look).
-  maroon: { felt: '#800d0d', rail: '#3d1c06', railEdge: '#5a2a18', cushion: '#5c1616', plate: '#c9b074' },
-  crimson: { felt: '#7a1f2e', rail: '#1d1410', railEdge: '#3a2620' },
-  midnight: { felt: '#1d2a4a', rail: '#0d0f1a', railEdge: '#222638' },
+  futuristic: { felt: '#E8D5B5', rail: '#2a2d32', railEdge: '#00E5FF', diamond: '#E0115F', cushion: '#d2c2a5', plate: 'rgba(0, 229, 255, 0.4)' },
+  classic: { felt: '#1a6b3a', rail: '#3a2418', railEdge: '#5a3624', diamond: '#ffffff' },
+  tournament: { felt: '#16557f', rail: '#2a1d12', railEdge: '#4a2e1c', diamond: '#ffffff' },
+  maroon: { felt: '#800d0d', rail: '#3d1c06', railEdge: '#5a2a18', cushion: '#5c1616', plate: '#c9b074', diamond: '#ffffff' },
+  crimson: { felt: '#7a1f2e', rail: '#1d1410', railEdge: '#3a2620', diamond: '#ffffff' },
+  midnight: { felt: '#1d2a4a', rail: '#0d0f1a', railEdge: '#222638', diamond: '#ffffff' },
 };
 
 export const CUE_STICKS = {

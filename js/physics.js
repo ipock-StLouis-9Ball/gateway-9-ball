@@ -9,16 +9,21 @@
 
 import { TABLE } from './config.js';
 
-// Pocket centers snapped to pool_table_frame.svg pocket cutouts (in table inches [0..100, 0..50]).
-export function pocketCenters(W = TABLE.width, H = TABLE.height) {
+// Pocket definitions matching the JSON table blueprint (origin at bottom-left [0,0] to top-right [88, 44]).
+// Note: y=0 is top rail in canvas coordinates, y=44 is bottom rail.
+export function getPocketBlueprint(W = TABLE.width, H = TABLE.height) {
   return [
-    { x: -2.5, y: -2.5 },  // top-left
-    { x: W / 2, y: -3.0 }, // top-middle
-    { x: W + 2.5, y: -2.5 },// top-right
-    { x: -2.5, y: H + 2.5 },// bottom-left
-    { x: W / 2, y: H + 3.0 },// bottom-middle
-    { x: W + 2.5, y: H + 2.5 },// bottom-right
+    { id: 'top_left_corner', type: 'corner', x: 0.0, y: 0.0, trigger_radius: 2.6, mouth_width: 4.875 },
+    { id: 'top_right_corner', type: 'corner', x: W, y: 0.0, trigger_radius: 2.6, mouth_width: 4.875 },
+    { id: 'bottom_left_corner', type: 'corner', x: 0.0, y: H, trigger_radius: 2.6, mouth_width: 4.875 },
+    { id: 'bottom_right_corner', type: 'corner', x: W, y: H, trigger_radius: 2.6, mouth_width: 4.875 },
+    { id: 'top_side', type: 'side', x: W / 2, y: 0.0, trigger_radius: 2.4, mouth_width: 5.25 },
+    { id: 'bottom_side', type: 'side', x: W / 2, y: H, trigger_radius: 2.4, mouth_width: 5.25 },
   ];
+}
+
+export function pocketCenters(W = TABLE.width, H = TABLE.height) {
+  return getPocketBlueprint(W, H).map(p => ({ x: p.x, y: p.y }));
 }
 
 // Distance from a value to a gap region. Returns true if `pos` lies within
@@ -28,13 +33,13 @@ function inMouth(pos, gaps) {
   return false;
 }
 
-// Precompute mouth gaps matching pool_table_frame.svg cushion cutouts
+// Precompute mouth gaps matching cushion cutouts
 function wallGaps(W, H) {
   return {
     left: [[0, 3.2], [H - 3.2, H]],
     right: [[0, 3.2], [H - 3.2, H]],
-    top: [[0, 3.2], [W / 2 - 2.5, W / 2 + 2.5], [W - 3.2, W]],
-    bottom: [[0, 3.2], [W / 2 - 2.5, W / 2 + 2.5], [W - 3.2, W]],
+    top: [[0, 3.2], [W / 2 - 2.6, W / 2 + 2.6], [W - 3.2, W]],
+    bottom: [[0, 3.2], [W / 2 - 2.6, W / 2 + 2.6], [W - 3.2, W]],
   };
 }
 
@@ -44,9 +49,8 @@ export class Physics {
     this.H = H;
     this.r = TABLE.ballRadius;
     this.gaps = wallGaps(W, H);
+    this.pocketSpecs = getPocketBlueprint(W, H);
     this.pockets = pocketCenters(W, H);
-    this.captureR = TABLE.pocketRadius * 0.95;
-    this.captureR2 = this.captureR * this.captureR;
   }
 
   // Step the world by dt (seconds). Mutates balls in place. Returns events.
@@ -131,19 +135,31 @@ export class Physics {
       }
     }
 
-    // Pocket capture
+    // Pocket capture using blueprint trigger radius + velocity alignment check
     for (const b of moving) {
-      for (let p = 0; p < this.pockets.length; p++) {
-        const pc = this.pockets[p];
-        const dx = b.x - pc.x;
-        const dy = b.y - pc.y;
-        if (dx * dx + dy * dy < this.captureR2) {
-          b.pocketed = true;
-          b.vx = 0;
-          b.vy = 0;
-          b.pocketIndex = p;
-          events.push({ type: 'pocket', ball: b.id, pocket: p });
-          break;
+      for (let p = 0; p < this.pocketSpecs.length; p++) {
+        const pocket = this.pocketSpecs[p];
+        const dx = b.x - pocket.x;
+        const dy = b.y - pocket.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < pocket.trigger_radius) {
+          const speed = Math.hypot(b.vx, b.vy);
+          // Velocity alignment check: vector pointing toward pocket center
+          const toPocketX = pocket.x - b.x;
+          const toPocketY = pocket.y - b.y;
+          const alignment = speed > 0.001
+            ? (b.vx * toPocketX + b.vy * toPocketY) / (speed * dist || 1)
+            : 1.0;
+
+          if (alignment > 0.25 || speed < 30) {
+            b.pocketed = true;
+            b.vx = 0;
+            b.vy = 0;
+            b.pocketIndex = p;
+            events.push({ type: 'pocket', ball: b.id, pocket: p });
+            break; // ball can only be in one pocket
+          }
         }
       }
     }

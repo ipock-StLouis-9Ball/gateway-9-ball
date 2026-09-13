@@ -75,11 +75,11 @@ export class Renderer {
   }
 
   _computeTableRect() {
-    const W = TABLE.width; // 100 inches
-    const H = TABLE.height; // 50 inches (2:1 aspect ratio)
+    const W = TABLE.width; // 88 inches
+    const H = TABLE.height; // 44 inches (2:1 aspect ratio)
     // pool_table_frame.svg viewBox is 6400 x 3600 with playfield cutout 4000 x 2000 (from 1200,1000 to 5200,2600).
-    const outerW = W * (6400 / 4000); // 160 inches
-    const outerH = H * (3600 / 2000);   // 90 inches
+    const outerW = TABLE.overallWidth || 98.0; // 98 inches outer frame
+    const outerH = TABLE.overallHeight || 54.0; // 54 inches outer frame
 
     const availW = this.cssW;
     const availH = this.cssH;
@@ -99,8 +99,8 @@ export class Renderer {
       w: drawFrameW,
       h: drawFrameH,
     };
-    // Playing area cutout starts at x=1200, y=1000 out of 4000x2000 playfield dimensions -> 30% W, 25% H offset
-    this.playOffset = { x: (1200 / 4000) * W * scale, y: (1000 / 2000) * H * scale };
+    // Rail width is 5.0 inches around playing surface
+    this.playOffset = { x: TABLE.railWidth * scale, y: TABLE.railWidth * scale };
     this.playW = W * scale;
     this.playH = H * scale;
   }
@@ -137,15 +137,9 @@ export class Renderer {
 
     // 1. Felt playing surface
     if (this.feltImg && this.feltImg.complete && this.feltImg.naturalWidth > 0) {
-      // flet.svg has viewBox 1920x1080 with felt rect x=80..1840 (w=1760) & y=80..1000 (h=920).
-      // Scale flet.svg so the inner felt rect aligns exactly with px, py, playW, playH.
-      const svgW = this.playW * (1920 / 1760);
-      const svgH = this.playH * (1080 / 920);
-      const svgX = px - this.playW * (80 / 1760);
-      const svgY = py - this.playH * (80 / 920);
-      ctx.drawImage(this.feltImg, svgX, svgY, svgW, svgH);
+      ctx.drawImage(this.feltImg, px, py, this.playW, this.playH);
     } else {
-      ctx.fillStyle = '#6b1f2b'; // maroon felt fallback
+      ctx.fillStyle = '#E8D5B5'; // sand felt fallback
       ctx.fillRect(px, py, this.playW, this.playH);
     }
 
