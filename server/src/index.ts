@@ -6,10 +6,7 @@
 //        lowestAtStart, foul, foulReason, continueShooting, rackWinner,
 //        pushOut, hash }
 //
-// The deterministic physics + 9-ball rules live in ../../js (shared with the
-// browser), so the server and client agree exactly on every outcome. In
-// production this is the single source of truth for ball positions, pockets,
-// fouls, and the winner — the client only sends shot intent.
+// Uses Rapier2D (Rust-to-WASM) physics compiled with IEEE 754-2008 standard.
 // ============================================================================
 
 import express from 'express';
@@ -28,7 +25,7 @@ app.get('/health', (_req, res) => {
 });
 
 // --- Authoritative shot resolution ---
-app.post('/resolve-shot', (req, res) => {
+app.post('/resolve-shot', async (req, res) => {
   const input = req.body || {};
   const required = ['balls', 'angle', 'power'];
   const missing = required.filter((k) => input[k] === undefined);
@@ -60,24 +57,16 @@ app.post('/resolve-shot', (req, res) => {
     return;
   }
 
-  if (input.english !== undefined && input.english !== null) {
-    if (typeof input.english !== 'object' || typeof input.english.x !== 'number' || !Number.isFinite(input.english.x) || typeof input.english.y !== 'number' || !Number.isFinite(input.english.y)) {
-      res.status(400).json({ ok: false, error: 'Invalid english parameter' });
-      return;
-    }
-  }
-
   if (input.cueBallId !== undefined && typeof input.cueBallId !== 'number') {
     res.status(400).json({ ok: false, error: 'Invalid cueBallId parameter' });
     return;
   }
 
   try {
-    const result = resolveShot({
+    const result = await resolveShot({
       balls: input.balls,
       angle: input.angle,
       power: input.power,
-      english: input.english || { x: 0, y: 0 },
       cueBallId: input.cueBallId ?? 0,
       shotMode: input.shotMode || 'NORMAL',
     });
@@ -90,5 +79,5 @@ app.post('/resolve-shot', (req, res) => {
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Gateway 9-Ball resolver listening on :${PORT}`);
+  console.log(`Gateway 9-Ball Rapier2D resolver listening on :${PORT}`);
 });

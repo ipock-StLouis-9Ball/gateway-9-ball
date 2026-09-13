@@ -11,6 +11,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 
+  <script type="importmap">
+    {
+      "imports": {
+        "@dimforge/rapier2d-compat": "./node_modules/@dimforge/rapier2d-compat/dist/rapier.mjs"
+      }
+    }
+  </script>
+
   <!-- Inline on-page debug console (mobile-friendly) -->
   <style>
     #debug-toggle { position: fixed; left: 8px; top: 8px; z-index: 99999; background: rgba(0,0,0,0.6); color: #fff; border-radius: 6px; padding: 6px 8px; font-size: 18px; backdrop-filter: blur(4px); }
