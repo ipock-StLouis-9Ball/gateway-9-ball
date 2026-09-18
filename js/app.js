@@ -148,22 +148,13 @@ function bindProfileModalEvents() {
 }
 
 // ---------- Screen routing ----------
-const screens = ['menu', 'lobby', 'store', 'wallet', 'game'];
+const screens = ['menu', 'lobby', 'store', 'wallet', 'options', 'game'];
 function show(name) {
   console.log('[app] show screen:', name);
   screens.forEach((s) => {
     const el = document.getElementById('screen-' + s);
     if (el) el.classList.toggle('hidden', s !== name);
   });
-
-  const canvasContainer = document.getElementById('canvas-container');
-  if (canvasContainer) canvasContainer.classList.toggle('hidden', name !== 'game');
-
-  const uiSidebar = document.getElementById('ui-sidebar');
-  if (uiSidebar) uiSidebar.classList.toggle('hidden', name !== 'game');
-
-  const canvas = document.getElementById('game-canvas');
-  if (canvas) canvas.classList.toggle('hidden', name !== 'game');
 
   if (name === 'menu') refreshMenu();
   if (name === 'wallet') { document.getElementById('wd-result').textContent = ''; refreshWallet(); }
@@ -262,7 +253,7 @@ document.getElementById('find-match').addEventListener('click', async () => {
 });
 
 // ---------- Store ----------
-let storeTab = 'tables';
+let storeTab = 'cues';
 function refreshStore() {
   document.getElementById('store-balance').textContent = fmt(Wallet.balance());
   document.querySelectorAll('.store-tabs .tab').forEach((t) => t.classList.toggle('active', t.dataset.tab === storeTab));
@@ -651,9 +642,31 @@ function alertMsg(msg) {
   setTimeout(() => banner.classList.add('hidden'), 2500);
 }
 
+// ---------- Options & Compliance ----------
+function bindOptionsEvents() {
+  document.getElementById('all-docs-btn')?.addEventListener('click', () => {
+    const vaultDocs = document.getElementById('vault-docs');
+    const btn = document.getElementById('all-docs-btn');
+    if (vaultDocs) {
+      const isHidden = vaultDocs.classList.toggle('hidden');
+      if (btn) btn.textContent = isHidden ? 'All Documents' : 'Hide Documents';
+    }
+  });
+
+  document.getElementById('master-volume')?.addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value) / 100;
+    State.settings.volume = val;
+  });
+
+  document.getElementById('sound-toggle')?.addEventListener('change', (e) => {
+    State.settings.soundOn = e.target.checked;
+  });
+}
+
 // Boot session initialization
 async function boot() {
   bindProfileModalEvents();
+  bindOptionsEvents();
   await initRapier().catch(console.error);
   await Auth.initSession();
 

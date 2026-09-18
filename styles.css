@@ -518,42 +518,133 @@ body {
 }
 
 /* Options & Compliance */
-.legal-vault {
-  margin-top: 20px;
-  padding: 16px;
-  border: 1px solid var(--arch-gold);
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.legal-vault h3 {
-  font-size: 0.95rem;
-  color: var(--arch-gold);
-  margin-bottom: 8px;
-}
-
-.legal-vault p {
-  font-size: 0.75rem;
-  line-height: 1.4;
-  color: var(--text-muted);
+.options-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 #screen-options label {
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
   align-items: center;
-  margin: 14px 0;
+  gap: 12px;
   color: var(--text);
   font-size: 0.9rem;
 }
 
 #screen-options select, #screen-options input[type=range] {
   flex: 1;
+  max-width: 220px;
   padding: 6px;
   border-radius: 6px;
   background: rgba(15, 23, 42, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--text);
+}
+
+/* Custom CSS Toggle Switch */
+.toggle-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #334155;
+  transition: .3s;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--arch-gold);
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+  background-color: #000;
+}
+
+.legal-vault {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid var(--arch-gold);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.legal-vault h3 {
+  font-size: 0.95rem;
+  color: var(--arch-gold);
+  margin-bottom: 2px;
+}
+
+.legal-vault p {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+  margin-bottom: 0;
+}
+
+.vault-docs {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px dashed rgba(255, 215, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vault-docs h4 {
+  font-size: 0.85rem;
+  color: var(--arch-gold-bright);
+}
+
+.vault-docs p {
+  font-size: 0.75rem;
+  color: var(--text);
+}
+
+.small-btn {
+  align-self: flex-start;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  margin-top: 6px;
 }
 
 /* Game Canvas & HUD Layout */
