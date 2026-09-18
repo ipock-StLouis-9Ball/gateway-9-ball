@@ -289,10 +289,9 @@ function refreshWallet() {
   const dg = document.getElementById('dep-grid');
   dg.innerHTML = '';
   ECONOMY.depositOptions.forEach((amt) => {
-    const fee = ECONOMY.depositFee(amt);
     const b = document.createElement('button');
     b.className = 'dep-btn';
-    b.innerHTML = `<span class="dep-amt">+ DB$${amt.toFixed(2)}</span><span class="dep-fee">+ DB$${fee.toFixed(2)} fee</span>`;
+    b.innerHTML = `<span class="dep-amt">+ DB$${amt.toFixed(2)}</span><span class="dep-fee">PayPal Checkout (Vault Card)</span>`;
     b.addEventListener('click', async () => {
       b.disabled = true;
       const res = await handleFirstDeposit(amt);
@@ -302,6 +301,17 @@ function refreshWallet() {
     });
     dg.appendChild(b);
   });
+
+  const vaultNote = document.getElementById('wd-vault-note');
+  if (vaultNote) {
+    if (State.profile.vaultedPaymentMethod) {
+      const pm = State.profile.vaultedPaymentMethod;
+      const cardInfo = pm.cardBrand ? `${pm.cardBrand} (•••• ${pm.cardLast4 || '4242'})` : `PayPal (${pm.payerEmail || 'Vaulted'})`;
+      vaultNote.textContent = `Saved Payment Method: ${cardInfo}`;
+    } else {
+      vaultNote.textContent = 'Saved Payment Method: None yet (Will vault on first deposit)';
+    }
+  }
   document.getElementById('wd-amount').value = '';
   const hl = document.getElementById('history-list');
   hl.innerHTML = '';
@@ -325,10 +335,14 @@ function refreshWallet() {
 document.getElementById('wd-btn').addEventListener('click', async () => {
   const amt = parseFloat(document.getElementById('wd-amount').value);
   const res = document.getElementById('wd-result');
-  if (isNaN(amt)) { res.textContent = 'Enter an amount'; return; }
-  const r = await Wallet.withdraw(amt);
+  if (isNaN(amt) || amt < 10.0) { res.textContent = 'Enter a valid amount (minimum DB$10.00)'; res.style.color = 'var(--cardinal-bright)'; return; }
+  const speedEl = document.querySelector('input[name="wd-speed"]:checked');
+  const speed = speedEl ? speedEl.value : 'standard';
+
+  const r = await Wallet.withdraw(amt, speed);
   if (!r.ok) { res.textContent = r.error; res.style.color = 'var(--cardinal-bright)'; return; }
-  res.textContent = `Withdrew DB$${amt.toFixed(2)} — fee DB$${r.fee.toFixed(2)} — payout DB$${r.payout.toFixed(2)}`;
+  const feeText = r.fee > 0 ? `fee DB$${r.fee.toFixed(2)}` : 'free';
+  res.textContent = `Withdrew DB$${amt.toFixed(2)} via PayPal (${r.speed.toUpperCase()} - ${feeText}) — payout DB$${r.payout.toFixed(2)}`;
   res.style.color = 'var(--arch-gold)';
   refreshWallet();
 });

@@ -456,10 +456,21 @@
         <div class="wallet-card">
           <h3>Withdraw</h3>
           <div class="withdraw-form">
-            <input id="wd-amount" type="number" step="0.01" placeholder="Amount" />
-            <button id="wd-btn" class="cta small">Withdraw</button>
+            <input id="wd-amount" type="number" step="0.01" placeholder="Amount (min DB$10.00)" />
+            <div class="withdraw-speed-selector" style="display:flex; gap:8px; margin: 8px 0;">
+              <label style="font-size:12px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+                <input type="radio" name="wd-speed" value="standard" checked />
+                <span>Standard ACH (2-3 Days, $0 Fee)</span>
+              </label>
+              <label style="font-size:12px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+                <input type="radio" name="wd-speed" value="instant" />
+                <span>Instant Payout (1.5% Fee)</span>
+              </label>
+            </div>
+            <button id="wd-btn" class="cta small">Withdraw via PayPal</button>
           </div>
-          <p class="muted small" id="wd-fee-note">Withdraw fee: $0.30 + 10% (min $1.50). Minimum DB$10.00.</p>
+          <p class="muted small" id="wd-vault-note" style="color:#00d8f6; font-weight:500;">Saved Payment Method: Vaulted Card / PayPal Account</p>
+          <p class="muted small" id="wd-fee-note">Min DB$10.00. Standard ACH is free (0%). Instant Payout to saved card incurs a 1.5% fee.</p>
           <p class="muted small" id="wd-result"></p>
         </div>
       </div>
