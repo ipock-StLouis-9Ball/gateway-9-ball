@@ -1,5 +1,15 @@
 {
+  "name": "nine-ball-tournament-backend",
+  "version": "1.0.0",
+  "main": "server.js",
   "dependencies": {
-    "@dimforge/rapier2d-compat": "^0.20.0"
+    "express": "^4.17.1",
+    "mongoose": "^5.12.3",
+    "socket.io": "^4.0.1",
+    "cors": "^2.8.5",
+    "body-parser": "^1.19.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^8.5.1",
+    "@google-cloud/vertexai": "^1.1.0"
   }
 }
