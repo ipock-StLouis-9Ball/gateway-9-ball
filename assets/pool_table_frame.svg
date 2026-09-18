@@ -3,18 +3,27 @@
     <!-- White Oak Wood Grain -->
     <pattern id="whiteOak" patternUnits="userSpaceOnUse" width="200" height="60">
       <rect width="200" height="60" fill="#F2E8D6"/>
-      <path d="M0,12 Q50,4 100,13 T200,9" stroke="#E2D3B9" stroke-width="2" fill="none" opacity="0.8"/>
-      <path d="M0,28 Q60,21 120,30 T200,26" stroke="#D9C9AD" stroke-width="1.5" fill="none" opacity="0.7"/>
-      <path d="M0,45 Q40,37 90,46 T200,42" stroke="#E2D3B9" stroke-width="1.8" fill="none" opacity="0.8"/>
+      <path d="M0,12 Q50,4 100,13 T200,9" stroke="#E2D3B9" stroke-width="2.5" fill="none" opacity="0.85"/>
+      <path d="M0,28 Q60,21 120,30 T200,26" stroke="#D9C9AD" stroke-width="1.8" fill="none" opacity="0.75"/>
+      <path d="M0,45 Q40,37 90,46 T200,42" stroke="#E2D3B9" stroke-width="2.2" fill="none" opacity="0.8"/>
     </pattern>
 
-    <!-- Polished Silver for Plates -->
+    <!-- Polished Gold for Corner Castings -->
+    <linearGradient id="polishedGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f2d777" />
+      <stop offset="25%" stop-color="#fff5b5" />
+      <stop offset="50%" stop-color="#d4af37" />
+      <stop offset="75%" stop-color="#fff5b5" />
+      <stop offset="100%" stop-color="#aa8529" />
+    </linearGradient>
+
+    <!-- Polished Silver for Side Castings -->
     <linearGradient id="polishedSilver" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#e6e6e6" />
+      <stop offset="0%" stop-color="#d9d9d9" />
       <stop offset="30%" stop-color="#ffffff" />
-      <stop offset="50%" stop-color="#b3b3b3" />
+      <stop offset="50%" stop-color="#999999" />
       <stop offset="70%" stop-color="#ffffff" />
-      <stop offset="100%" stop-color="#999999" />
+      <stop offset="100%" stop-color="#737373" />
     </linearGradient>
 
     <!-- Ruby Gem for Diamond Sights -->
@@ -25,96 +34,121 @@
       <stop offset="100%" stop-color="#4d0000" />
     </radialGradient>
 
-    <!-- Realistic drop shadow for the cushions to show thickness -->
-    <filter id="cushionShadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#000" flood-opacity="0.6"/>
-    </filter>
+    <g id="diamond" fill="url(#rubyGem)" stroke="#3b1116" stroke-width="0.8">
+      <path d="M 0,-6 L 4,0 L 0,6 L -4,0 Z" />
+    </g>
 
-    <!-- Pure Neon Glow: Generates ONLY ambient light blur with no solid core -->
     <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feGaussianBlur stdDeviation="8" result="blur" />
     </filter>
 
-    <!-- THE TRANSPARENCY MASK: Cuts the center and pockets out of the wood and metal -->
-    <mask id="frameMask">
-      <rect x="0" y="0" width="1000" height="500" fill="white" />
-      <!-- Center void -->
-      <rect x="30" y="30" width="940" height="440" fill="black" />
-      <!-- Perfect WPA regulation circular pocket drops (No ovals) -->
-      <circle cx="25" cy="25" r="32" fill="black" />
-      <circle cx="975" cy="25" r="32" fill="black" />
-      <circle cx="25" cy="475" r="32" fill="black" />
-      <circle cx="975" cy="475" r="32" fill="black" />
-      <circle cx="500" cy="12" r="28" fill="black" />
-      <circle cx="500" cy="488" r="28" fill="black" />
-    </mask>
+    <filter id="cushionShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
   </defs>
 
   <!-- ========================================== -->
-  <!-- LAYER 1: WOOD & METAL PLATES (Masked)      -->
+  <!-- LAYER 1: WOOD RAILS (No Masks Used)        -->
   <!-- ========================================== -->
-  <g mask="url(#frameMask)">
-    <!-- Outer White Oak Rail -->
-    <rect x="0" y="0" width="1000" height="500" rx="15" ry="15" fill="url(#whiteOak)" stroke="#D6C6AA" stroke-width="3"/>
+  <!-- These are drawn as 4 separate rectangles that tuck perfectly under the metal castings -->
+  <g fill="url(#whiteOak)" stroke="#D6C6AA" stroke-width="1">
+    <rect x="75" y="0" width="375" height="60" />
+    <rect x="550" y="0" width="375" height="60" />
+    <rect x="75" y="440" width="375" height="60" />
+    <rect x="550" y="440" width="375" height="60" />
+    <rect x="0" y="75" width="60" height="350" />
+    <rect x="940" y="75" width="60" height="350" />
+  </g>
+
+  <!-- ========================================== -->
+  <!-- LAYER 2: METAL CASTINGS & POCKET CUTOUTS   -->
+  <!-- ========================================== -->
+  <!-- Paths physically trace the curves of the pocket cutouts so the center remains empty -->
+  <g stroke="#555555" stroke-width="1.5">
     
-    <!-- Metallic Corner & Side Plates -->
-    <g fill="url(#polishedSilver)" stroke="#FFFFFF" stroke-width="0.5">
-      <path d="M 0,70 L 15,70 L 15,15 L 70,15 L 70,0 L 15,0 Q 0,0 0,15 Z" />
-      <path d="M 1000,70 L 985,70 L 985,15 L 930,15 L 930,0 L 985,0 Q 1000,0 1000,15 Z" />
-      <path d="M 0,430 L 15,430 L 15,485 L 70,485 L 70,500 L 15,500 Q 0,500 0,485 Z" />
-      <path d="M 1000,430 L 985,430 L 985,485 L 930,485 L 930,500 L 985,500 Q 1000,500 1000,485 Z" />
-      <rect x="460" y="0" width="80" height="15" />
-      <rect x="460" y="485" width="80" height="15" />
+    <!-- GOLD CORNERS -->
+    <g fill="url(#polishedGold)">
+      <!-- Top Left -->
+      <path d="M 85,0 L 20,0 A 20,20 0 0,0 0,20 L 0,85 L 25,85 A 40,40 0 0,0 85,25 L 85,0 Z" />
+      <!-- Top Right -->
+      <path d="M 915,0 L 980,0 A 20,20 0 0,1 1000,20 L 1000,85 L 975,85 A 40,40 0 0,1 915,25 L 915,0 Z" />
+      <!-- Bottom Left -->
+      <path d="M 0,415 L 0,480 A 20,20 0 0,0 20,500 L 85,500 L 85,475 A 40,40 0 0,0 25,415 L 0,415 Z" />
+      <!-- Bottom Right -->
+      <path d="M 1000,415 L 1000,480 A 20,20 0 0,1 980,500 L 915,500 L 915,475 A 40,40 0 0,1 975,415 L 1000,415 Z" />
+    </g>
+
+    <!-- SILVER SIDE POCKETS -->
+    <g fill="url(#polishedSilver)">
+      <!-- Top Side -->
+      <path d="M 440,0 L 560,0 L 560,60 L 535,60 A 35,35 0 0,1 465,60 L 440,60 Z" />
+      <!-- Bottom Side -->
+      <path d="M 440,500 L 560,500 L 560,440 L 535,440 A 35,35 0 0,0 465,440 L 440,440 Z" />
     </g>
   </g>
 
   <!-- ========================================== -->
-  <!-- LAYER 2: NEON GLOW (Under Rubber)          -->
+  <!-- LAYER 3: NEON GLOW (Mobile Safe Fallback)  -->
   <!-- ========================================== -->
-  <!-- Placed before the rubber so the solid rubber body covers the top half of the blur -->
-  <g stroke="#FF0022" stroke-width="9" stroke-linecap="round" filter="url(#neonGlow)">
-    <line x1="80" y1="45" x2="476" y2="45" />
-    <line x1="524" y1="45" x2="920" y2="45" />
-    <line x1="80" y1="455" x2="476" y2="455" />
-    <line x1="524" y1="455" x2="920" y2="455" />
-    <line x1="45" y1="80" x2="45" y2="420" />
-    <line x1="955" y1="80" x2="955" y2="420" />
+  <!-- Stacked opacity strokes guarantee the red glow renders perfectly on any device -->
+  <g stroke="#E30022" stroke-linecap="round">
+    <!-- Wide, faint outer glow -->
+    <g stroke-width="20" opacity="0.25" filter="url(#neonGlow)">
+      <line x1="100" y1="60" x2="445" y2="60" /> <line x1="555" y1="60" x2="900" y2="60" />
+      <line x1="100" y1="440" x2="445" y2="440" /> <line x1="555" y1="440" x2="900" y2="440" />
+      <line x1="60" y1="100" x2="60" y2="400" /> <line x1="940" y1="100" x2="940" y2="400" />
+    </g>
+    <!-- Medium inner glow -->
+    <g stroke-width="10" opacity="0.6">
+      <line x1="100" y1="60" x2="445" y2="60" /> <line x1="555" y1="60" x2="900" y2="60" />
+      <line x1="100" y1="440" x2="445" y2="440" /> <line x1="555" y1="440" x2="900" y2="440" />
+      <line x1="60" y1="100" x2="60" y2="400" /> <line x1="940" y1="100" x2="940" y2="400" />
+    </g>
   </g>
 
   <!-- ========================================== -->
-  <!-- LAYER 3: K-66 CUSHIONS (On Top w/ Shadow)  -->
+  <!-- LAYER 4: K-66 CUSHIONS (Blond Sand)        -->
   <!-- ========================================== -->
-  <!-- The sharp polygon shapes remain fully opaque on top, casting a shadow down onto the felt -->
+  <!-- Solid rubber cushions sit on top of the neon glow to cast it downward -->
+  <!-- Fallback shadow path included for mobile renderers beneath the main filter -->
+  <g fill="#1a1a1a" opacity="0.4" transform="translate(0, 4)">
+    <polygon points="80,60 460,60 445,85 105,85" />
+    <polygon points="540,60 920,60 895,85 555,85" />
+    <polygon points="80,440 460,440 445,415 105,415" />
+    <polygon points="540,440 920,440 895,415 555,415" />
+    <polygon points="60,80 60,420 85,395 85,105" />
+    <polygon points="940,80 940,420 915,395 915,105" />
+  </g>
+  
   <g fill="#E8D5B5" filter="url(#cushionShadow)">
-    <polygon points="80,45 476,45 465,30 55,30" />
-    <polygon points="524,45 920,45 945,30 535,30" />
-    <polygon points="80,455 476,455 465,470 55,470" />
-    <polygon points="524,455 920,455 945,470 535,470" />
-    <polygon points="45,80 45,420 30,445 30,55" />
-    <polygon points="955,80 955,420 970,445 970,55" />
+    <polygon points="80,60 460,60 445,85 105,85" />
+    <polygon points="540,60 920,60 895,85 555,85" />
+    <polygon points="80,440 460,440 445,415 105,415" />
+    <polygon points="540,440 920,440 895,415 555,415" />
+    <polygon points="60,80 60,420 85,395 85,105" />
+    <polygon points="940,80 940,420 915,395 915,105" />
   </g>
 
   <!-- ========================================== -->
-  <!-- LAYER 4: RUBY DIAMOND SIGHTS               -->
+  <!-- LAYER 5: RUBY DIAMOND SIGHTS               -->
   <!-- ========================================== -->
-  <g fill="url(#rubyGem)" stroke="#3b1116" stroke-width="0.8">
-    <polygon points="215,15 220,10 225,15 220,20" />
-    <polygon points="315,15 320,10 325,15 320,20" />
-    <polygon points="415,15 420,10 425,15 420,20" />
-    <polygon points="575,15 580,10 585,15 580,20" />
-    <polygon points="675,15 680,10 685,15 680,20" />
-    <polygon points="775,15 780,10 785,15 780,20" />
-    <polygon points="215,485 220,480 225,485 220,490" />
-    <polygon points="315,485 320,480 325,485 320,490" />
-    <polygon points="415,485 420,480 425,485 420,490" />
-    <polygon points="575,485 580,480 585,485 580,490" />
-    <polygon points="675,485 680,480 685,485 680,490" />
-    <polygon points="775,485 780,480 785,485 780,490" />
-    <polygon points="15,165 20,160 25,165 20,170" />
-    <polygon points="15,250 20,245 25,250 20,255" />
-    <polygon points="15,335 20,330 25,335 20,340" />
-    <polygon points="975,165 980,160 985,165 980,170" />
-    <polygon points="975,250 980,245 985,250 980,255" />
-    <polygon points="975,335 980,330 985,335 980,340" />
+  <g>
+    <!-- Top Rail -->
+    <use href="#diamond" x="180" y="30" /> <use href="#diamond" x="260" y="30" /> <use href="#diamond" x="340" y="30" />
+    <use href="#diamond" x="660" y="30" /> <use href="#diamond" x="740" y="30" /> <use href="#diamond" x="820" y="30" />
+    
+    <!-- Bottom Rail -->
+    <use href="#diamond" x="180" y="470" /> <use href="#diamond" x="260" y="470" /> <use href="#diamond" x="340" y="470" />
+    <use href="#diamond" x="660" y="470" /> <use href="#diamond" x="740" y="470" /> <use href="#diamond" x="820" y="470" />
+    
+    <!-- Left Rail -->
+    <use href="#diamond" x="30" y="165" transform="rotate(90 30 165)" />
+    <use href="#diamond" x="30" y="250" transform="rotate(90 30 250)" />
+    <use href="#diamond" x="30" y="335" transform="rotate(90 30 335)" />
+    
+    <!-- Right Rail -->
+    <use href="#diamond" x="970" y="165" transform="rotate(90 970 165)" />
+    <use href="#diamond" x="970" y="250" transform="rotate(90 970 250)" />
+    <use href="#diamond" x="970" y="335" transform="rotate(90 970 335)" />
   </g>
 </svg>
