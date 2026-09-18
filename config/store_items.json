@@ -5,7 +5,6 @@
       "label": "Pool Cues",
       "items": [
         { "id": "cue_newtonian", "name": "The Newtonian", "description": "Solid oak with inlaid brass physics equations.", "price": 2.99 },
-        { "id": "cue_kinetic", "name": "The Kinetic", "description": "Matte carbon fiber with a pulsing neon energy core.", "price": 4.99 },
         { "id": "cue_hustler", "name": "The Hustler", "description": "Distressed wood with a duct-taped grip and misaligned ferrule.", "price": 0.99 },
         { "id": "cue_sovereign", "name": "The Sovereign", "description": "Gold-plated filigree butt with a crushed velvet wrap.", "price": 14.99 },
         { "id": "cue_void", "name": "The Void", "description": "Coated in light-absorbing black material, completely reflectionless.", "price": 9.99 },
@@ -16,24 +15,7 @@
       "id": "ball_schemes",
       "label": "Ball Schemes",
       "items": [
-        { "id": "balls_celestial", "name": "Celestial Bodies", "description": "Cue ball is a white dwarf star; numbered balls are scaled planets and moons.", "price": 4.99 },
-        { "id": "balls_atomic", "name": "Atomic", "description": "Semi-transparent spheres with orbiting electron animations.", "price": 3.99 },
-        { "id": "balls_synthwave", "name": "Synthwave", "description": "Glowing neon wireframe designs against a pitch-black table felt.", "price": 2.99 },
-        { "id": "balls_elemental", "name": "Elemental", "description": "Textures of magma, frost, granite, and storm clouds.", "price": 4.99 },
         { "id": "balls_high_roller", "name": "High Roller", "description": "Styled like heavy clay poker chips with metallic inlaid numbers.", "price": 5.99 }
-      ]
-    },
-    {
-      "id": "cosmetics",
-      "label": "In-Game Enhancements",
-      "items": [
-        { "id": "item_chalk_neon", "name": "Custom Chalk", "description": "Leaves distinct colored dust impacts (Neon Pink, Gold, Ash).", "price": 0.99 },
-        { "id": "item_break_effects", "name": "Break Effects", "description": "Visual particle animations (Kinetic Shockwaves, Static Electricity) on break.", "price": 1.99 },
-        { "id": "item_table_felts", "name": "Table Felts", "description": "Material swaps: Digital Grids, Crushed Velvet, Stained Dive-Bar.", "price": 1.49 },
-        { "id": "item_ball_trails", "name": "Cue Ball Trails", "description": "Tracer lines during instant replays or practice mode.", "price": 0.99 },
-        { "id": "item_env_swaps", "name": "Environment Swaps", "description": "Lighting/Acoustics: Underground Garage, High-Rise Penthouse, Empty Void.", "price": 9.99 },
-        { "id": "item_decals", "name": "Custom Decals", "description": "Unlockable emblems for table bumpers.", "price": 0.99 },
-        { "id": "item_table_frames", "name": "Table Frames", "description": "Rim Swaps: Brushed Steel, Neon Tubing, Carved Marble.", "price": 3.99 }
       ]
     }
   ]
