@@ -1,221 +1,112 @@
-<svg xmlns="http://www.w3.org/2000/svg"
-     width="1200"
-     height="700"
-     viewBox="0 0 1200 700"
-     role="img"
-     aria-label="Modern transparent metallic billiard table rail overlay">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+    <defs>
+        <linearGradient id="mahogany-top-bottom" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#120401" />
+            <stop offset="20%" stop-color="#3d180a" />
+            <stop offset="50%" stop-color="#662f18" />
+            <stop offset="80%" stop-color="#3d180a" />
+            <stop offset="100%" stop-color="#120401" />
+        </linearGradient>
 
-  <defs>
-    <!-- Brushed Titanium Rail Material -->
-    <linearGradient id="metalBase" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#D0D5DB"/>
-      <stop offset="0.48" stop-color="#9BA4B5"/>
-      <stop offset="1" stop-color="#5C6675"/>
-    </linearGradient>
+        <linearGradient id="mahogany-left-right" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#120401" />
+            <stop offset="20%" stop-color="#3d180a" />
+            <stop offset="50%" stop-color="#662f18" />
+            <stop offset="80%" stop-color="#3d180a" />
+            <stop offset="100%" stop-color="#120401" />
+        </linearGradient>
 
-    <linearGradient id="metalEdge" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#3A414C"/>
-      <stop offset="0.5" stop-color="#1A1E24"/>
-      <stop offset="1" stop-color="#0F1115"/>
-    </linearGradient>
+        <linearGradient id="chrome-bezel" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1b1e21" />
+            <stop offset="20%" stop-color="#e6ebf0" />
+            <stop offset="40%" stop-color="#4c535c" />
+            <stop offset="50%" stop-color="#ffffff" />
+            <stop offset="70%" stop-color="#8a939e" />
+            <stop offset="100%" stop-color="#1b1e21" />
+        </linearGradient>
 
-    <!-- Matte beach-blond cushion material -->
-    <linearGradient id="cushion" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#E8D5B5"/>
-      <stop offset="0.6" stop-color="#D4BB94"/>
-      <stop offset="1" stop-color="#B39566"/>
-    </linearGradient>
+        <filter id="neon-glow-filter" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur-wide" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur-med" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="blur-sharp" />
+            <feComponentTransfer in="blur-wide" result="glow-boosted">
+                <feFuncA type="linear" slope="2.0"/>
+            </feComponentTransfer>
+            <feMerge>
+                <feMergeNode in="glow-boosted" />
+                <feMergeNode in="blur-med" />
+                <feMergeNode in="blur-sharp" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
 
-    <!-- Recessed ruby diamond material -->
-    <linearGradient id="ruby" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#FF5C5C"/>
-      <stop offset="0.35" stop-color="#D91122"/>
-      <stop offset="1" stop-color="#7A000D"/>
-    </linearGradient>
+        <g id="diamond-sight">
+            <polygon points="0,-7 5,0 0,7 -5,0" fill="#f0e2cc" stroke="#230d05" stroke-width="1.5" />
+        </g>
 
-    <!-- Cushion drop shadow -->
-    <filter id="cushionShadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow
-        dx="0"
-        dy="3"
-        stdDeviation="2"
-        flood-color="#05080A"
-        flood-opacity="0.85"/>
-    </filter>
+        <mask id="playfield-cutout-mask">
+            <rect x="0" y="0" width="1600" height="900" fill="#ffffff" />
+            <path fill="#000000" d="
+                M 210,180 
+                L 760,180 
+                A 45,45 0 0 1 840,180 
+                L 1390,180 
+                A 55,55 0 0 1 1420,210 
+                L 1420,690 
+                A 55,55 0 0 1 1390,720 
+                L 840,720 
+                A 45,45 0 0 1 760,720 
+                L 210,720 
+                A 55,55 0 0 1 180,690 
+                L 180,210 
+                A 55,55 0 0 1 210,180 Z" />
+        </mask>
+    </defs>
 
-    <!-- Tiny recess shadow for ruby diamonds -->
-    <filter id="rubyInset" x="-80%" y="-80%" width="260%" height="260%">
-      <feDropShadow
-        dx="0"
-        dy="1"
-        stdDeviation="0.55"
-        flood-color="#110000"
-        flood-opacity="0.95"/>
-    </filter>
-
-    <!-- Restored Clip Paths -->
-    <clipPath id="topBottomClip">
-      <path
-        fill-rule="evenodd"
-        d="
-          M 85 58 H 1115 V 142 H 85 Z
-          M 85 558 H 1115 V 642 H 85 Z
-        "/>
-    </clipPath>
-
-    <clipPath id="sideClip">
-      <path
-        fill-rule="evenodd"
-        d="
-          M 58 85 H 142 V 615 H 58 Z
-          M 1058 85 H 1142 V 615 H 1058 Z
-        "/>
-    </clipPath>
-
-    <!-- Reusable inset ruby diamond -->
-    <g id="diamond">
-      <rect
-        x="-7"
-        y="-7"
-        width="14"
-        height="14"
-        rx="1.2"
-        fill="#111317"
-        stroke="#444B55"
-        stroke-width="0.5"
-        transform="rotate(45)"/>
-      <rect
-        x="-5"
-        y="-5"
-        width="10"
-        height="10"
-        rx="0.7"
-        fill="url(#ruby)"
-        transform="rotate(45)"
-        filter="url(#rubyInset)"/>
-      <path
-        d="M 0 -4 L 3 0 L 0 -1 L -3 0 Z"
-        fill="#FFFFFF"
-        opacity="0.6"
-        transform="rotate(45)"/>
+    <g mask="url(#playfield-cutout-mask)">
+        <rect x="100" y="100" width="1400" height="700" rx="30" ry="30" fill="url(#mahogany-top-bottom)" />
+        <path d="M 100,100 L 180,180 L 180,720 L 100,800 Z" fill="url(#mahogany-left-right)" />
+        <path d="M 1500,100 L 1420,180 L 1420,720 L 1500,800 Z" fill="url(#mahogany-left-right)" />
     </g>
-  </defs>
 
-  <!-- 
-    1. Outer Brushed Titanium Rail Assembly 
-    (Built with fill-rule="evenodd" to natively cut out playfield and all 6 pockets with zero masks)
-  -->
-  <path fill="url(#metalEdge)" fill-rule="evenodd" d="
-    <!-- Outer Frame Base -->
-    M 85 40 H 1115 A 45 45 0 0 1 1160 85 V 615 A 45 45 0 0 1 1115 660 H 85 A 45 45 0 0 1 40 615 V 85 A 45 45 0 0 1 85 40 Z
-    
-    <!-- Inner Playfield Cutout -->
-    M 153 130 H 1047 A 8 8 0 0 1 1055 138 V 562 A 8 8 0 0 1 1047 570 H 153 A 8 8 0 0 1 145 562 V 138 A 8 8 0 0 1 153 130 Z
+    <g stroke="#f73bfa" stroke-width="4" stroke-linecap="round" fill="none" filter="url(#neon-glow-filter)">
+        <line x1="220" y1="182" x2="755" y2="182" />
+        <line x1="845" y1="182" x2="1380" y2="182" />
+        <line x1="1418" y1="220" x2="1418" y2="680" />
+        <line x1="845" y1="718" x2="1380" y2="718" />
+        <line x1="220" y1="718" x2="755" y2="718" />
+        <line x1="182" y1="220" x2="182" y2="680" />
+    </g>
 
-    <!-- 6 Uniform r=28 Pocket Cutouts -->
-    M 153 115 A 28 28 0 1 0 97 115 A 28 28 0 1 0 153 115 Z
-    M 628 102 A 28 28 0 1 0 572 102 A 28 28 0 1 0 628 102 Z
-    M 1103 115 A 28 28 0 1 0 1047 115 A 28 28 0 1 0 1103 115 Z
-    M 153 585 A 28 28 0 1 0 97 585 A 28 28 0 1 0 153 585 Z
-    M 628 598 A 28 28 0 1 0 572 598 A 28 28 0 1 0 628 598 Z
-    M 1103 585 A 28 28 0 1 0 1047 585 A 28 28 0 1 0 1103 585 Z
-  "/>
+    <g fill="url(#chrome-bezel)" stroke="#111" stroke-width="1">
+        <path d="M 100,140 C 100,100 100,100 140,100 L 210,100 C 200,140 140,200 100,210 Z" />
+        <path d="M 1500,140 C 1500,100 1500,100 1460,100 L 1390,100 C 1400,140 1460,200 1500,210 Z" />
+        <path d="M 1500,760 C 1500,800 1500,800 1460,800 L 1390,800 C 1400,760 1460,700 1500,690 Z" />
+        <path d="M 100,760 C 100,800 100,800 140,800 L 210,800 C 200,760 140,700 100,690 Z" />
+        <path d="M 755,100 L 845,100 C 840,145 760,145 755,100 Z" />
+        <path d="M 755,800 L 845,800 C 840,755 760,755 755,800 Z" />
+    </g>
 
-  <!-- Main Metal Top Surface -->
-  <path fill="url(#metalBase)" fill-rule="evenodd" d="
-    M 87 49 H 1113 A 38 38 0 0 1 1151 87 V 613 A 38 38 0 0 1 1113 651 H 87 A 38 38 0 0 1 49 613 V 87 A 38 38 0 0 1 87 49 Z
-    
-    <!-- Inner Playfield Cutout -->
-    M 145 130 H 1055 V 570 H 145 Z
-
-    <!-- 6 Pocket Cutouts -->
-    M 153 115 A 28 28 0 1 0 97 115 A 28 28 0 1 0 153 115 Z
-    M 628 102 A 28 28 0 1 0 572 102 A 28 28 0 1 0 628 102 Z
-    M 1103 115 A 28 28 0 1 0 1047 115 A 28 28 0 1 0 1103 115 Z
-    M 153 585 A 28 28 0 1 0 97 585 A 28 28 0 1 0 153 585 Z
-    M 628 598 A 28 28 0 1 0 572 598 A 28 28 0 1 0 628 598 Z
-    M 1103 585 A 28 28 0 1 0 1047 585 A 28 28 0 1 0 1103 585 Z
-  "/>
-
-  <!-- Rail Highlights & Grooves -->
-  <rect x="57" y="57" width="1086" height="586" rx="32" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.50"/>
-  <rect x="68" y="68" width="1064" height="564" rx="25" fill="none" stroke="#111317" stroke-width="8" opacity="0.80"/>
-  <rect x="74" y="74" width="1052" height="552" rx="20" fill="none" stroke="#A8B2C1" stroke-width="2" opacity="0.70"/>
-
-  <!-- 
-    2. Cushion Assembly with Clean Mitered Angle Cuts (No Masks)
-  -->
-  <g id="cushions" filter="url(#cushionShadow)">
-    <!-- Top-Left Rail Cushion -->
-    <path d="M 158 130 L 572 130 L 562 148 L 176 148 Z" fill="url(#cushion)"/>
-    <!-- Top-Right Rail Cushion -->
-    <path d="M 628 130 L 1042 130 L 1024 148 L 638 148 Z" fill="url(#cushion)"/>
-    <!-- Bottom-Left Rail Cushion -->
-    <path d="M 158 570 L 572 570 L 562 552 L 176 552 Z" fill="url(#cushion)"/>
-    <!-- Bottom-Right Rail Cushion -->
-    <path d="M 628 570 L 1042 570 L 1024 552 L 638 552 Z" fill="url(#cushion)"/>
-    <!-- Left Rail Cushion -->
-    <path d="M 145 158 L 145 542 L 163 532 L 163 168 Z" fill="url(#cushion)"/>
-    <!-- Right Rail Cushion -->
-    <path d="M 1055 158 L 1055 542 L 1037 532 L 1037 168 Z" fill="url(#cushion)"/>
-
-    <!-- Neon Cyan LED Accent Lines Under Cushions -->
-    <line x1="158" y1="130" x2="572" y2="130" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
-    <line x1="628" y1="130" x2="1042" y2="130" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
-    <line x1="158" y1="570" x2="572" y2="570" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
-    <line x1="628" y1="570" x2="1042" y2="570" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
-    <line x1="145" y1="158" x2="145" y2="542" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
-    <line x1="1055" y1="158" x2="1055" y2="542" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
-  </g>
-
-  <!-- 3. Pocket Depth Rings / Bezels -->
-  <g id="pocket-bevels" fill="none">
-    <!-- Top-Left -->
-    <circle cx="125" cy="115" r="35" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="125" cy="115" r="28" stroke="#111317" stroke-width="5"/>
-    <!-- Top-Middle -->
-    <circle cx="600" cy="102" r="35" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="600" cy="102" r="28" stroke="#111317" stroke-width="5"/>
-    <!-- Top-Right -->
-    <circle cx="1075" cy="115" r="35" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="1075" cy="115" r="28" stroke="#111317" stroke-width="5"/>
-    <!-- Bottom-Left -->
-    <circle cx="125" cy="585" r="35" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="125" cy="585" r="28" stroke="#111317" stroke-width="5"/>
-    <!-- Bottom-Middle -->
-    <circle cx="600" cy="598" r="35" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="600" cy="598" r="28" stroke="#111317" stroke-width="5"/>
-    <!-- Bottom-Right -->
-    <circle cx="1075" cy="585" r="35" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="1075" cy="585" r="28" stroke="#111317" stroke-width="5"/>
-  </g>
-
-  <!-- 4. Exactly 18 WPA-Compliant Ruby Sight Diamonds -->
-  <g id="diamond-sights">
-    <!-- Top rail: 6 diamonds -->
-    <use href="#diamond" x="258.75" y="86"/>
-    <use href="#diamond" x="372.50" y="86"/>
-    <use href="#diamond" x="486.25" y="86"/>
-    <use href="#diamond" x="713.75" y="86"/>
-    <use href="#diamond" x="827.50" y="86"/>
-    <use href="#diamond" x="941.25" y="86"/>
-
-    <!-- Bottom rail: 6 diamonds -->
-    <use href="#diamond" x="258.75" y="614"/>
-    <use href="#diamond" x="372.50" y="614"/>
-    <use href="#diamond" x="486.25" y="614"/>
-    <use href="#diamond" x="713.75" y="614"/>
-    <use href="#diamond" x="827.50" y="614"/>
-    <use href="#diamond" x="941.25" y="614"/>
-
-    <!-- Left rail: 3 diamonds -->
-    <use href="#diamond" x="86" y="240"/>
-    <use href="#diamond" x="86" y="350"/>
-    <use href="#diamond" x="86" y="460"/>
-
-    <!-- Right rail: 3 diamonds -->
-    <use href="#diamond" x="1114" y="240"/>
-    <use href="#diamond" x="1114" y="350"/>
-    <use href="#diamond" x="1114" y="460"/>
-  </g>
+    <g>
+        <use href="#diamond-sight" x="140" y="310" />
+        <use href="#diamond-sight" x="140" y="450" />
+        <use href="#diamond-sight" x="140" y="590" />
+        <use href="#diamond-sight" x="1460" y="310" />
+        <use href="#diamond-sight" x="1460" y="450" />
+        <use href="#diamond-sight" x="1460" y="590" />
+        <use href="#diamond-sight" x="335" y="140" />
+        <use href="#diamond-sight" x="487" y="140" />
+        <use href="#diamond-sight" x="640" y="140" />
+        <use href="#diamond-sight" x="960" y="140" />
+        <use href="#diamond-sight" x="1113" y="140" />
+        <use href="#diamond-sight" x="1265" y="140" />
+        <use href="#diamond-sight" x="335" y="760" />
+        <use href="#diamond-sight" x="487" y="760" />
+        <use href="#diamond-sight" x="640" y="760" />
+        <use href="#diamond-sight" x="960" y="760" />
+        <use href="#diamond-sight" x="1113" y="760" />
+        <use href="#diamond-sight" x="1265" y="760" />
+    </g>
 </svg>
+
+2. Ensure the parent HTML canvas container styling remains set to transparent so the WebGL scene below displays through the center cutout.
