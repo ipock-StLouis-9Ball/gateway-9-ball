@@ -137,39 +137,38 @@ export const TABLE_COLORS = {
 };
 
 export const CUE_STICKS = {
-  maple: { name: 'Hard Maple', tip: '#3a2a1a', shaft: '#d9b27a' },
-  carbon: { name: 'Carbon Pro', tip: '#1a1a1a', shaft: '#2b2b2b' },
-  mahogany: { name: 'Mahogany', tip: '#2a1410', shaft: '#7a4a2a' },
-  electric: { name: 'Electric Blue', tip: '#0a1a3a', shaft: '#2f7fd6' },
+  maple: { name: 'Hard Maple', tip: '#3a2a1a', shaft: '#d9b27a', asset: null },
+  cue_newtonian: { name: 'The Newtonian', tip: '#4a2e1b', shaft: '#f2d199', asset: 'assets/cues/cue_newtonian.svg' },
+  cue_hustler: { name: 'The Hustler', tip: '#3a2215', shaft: '#b08453', asset: 'assets/cues/cue_hustler.svg' },
+  cue_sovereign: { name: 'The Sovereign', tip: '#1f1008', shaft: '#5a1224', asset: 'assets/cues/cue_sovereign.svg' },
+  cue_void: { name: 'The Void', tip: '#0d0d0d', shaft: '#2a2d32', asset: 'assets/cues/cue_void.svg' },
+  cue_industrialist: { name: 'The Industrialist', tip: '#202020', shaft: '#b0b8c0', asset: 'assets/cues/cue_industrialist.svg' },
 };
 
 export const BALL_SKINS = {
-  classic: { name: 'Classic', colors: BALL_COLORS },
-  neon: {
-    name: 'Neon',
-    colors: {
-      1: '#fff200', 2: '#00d4ff', 3: '#ff2e4e', 4: '#c93eff', 5: '#ff8a00',
-      6: '#19ff7a', 7: '#ff5a2a', 8: '#0a0a0a', 9: '#fff200',
-    },
-  },
-  matte: {
-    name: 'Matte',
-    colors: {
-      1: '#e8c34a', 2: '#3a64c8', 3: '#c83828', 4: '#6a3aa8', 5: '#d8661a',
-      6: '#3a8a4a', 7: '#8a4a3a', 8: '#222222', 9: '#e8c34a',
-    },
-  },
+  classic: { name: 'Classic', schemeDir: null, colors: BALL_COLORS },
+  balls_high_roller: { name: 'High Roller', schemeDir: 'assets/balls/high_roller', colors: BALL_COLORS },
+  balls_metallic: { name: 'Polished Metallic', schemeDir: 'assets/balls/balls_metallic', colors: BALL_COLORS },
+  balls_pearl: { name: 'Pearlescent Accent', schemeDir: 'assets/balls/balls_pearl', colors: BALL_COLORS },
 };
 
 export const STORE_ITEMS = {
   tables: Object.entries(TABLE_COLORS).map(([id, v]) => ({
     id, name: id.charAt(0).toUpperCase() + id.slice(1),
-    price: id === 'classic' ? 0 : 8,
+    price: (id === 'classic' || id === 'maroon') ? 0 : 8,
   })),
-  cues: Object.entries(CUE_STICKS).map(([id, v]) => ({
-    id, name: v.name, price: id === 'maple' ? 0 : 12,
-  })),
-  balls: Object.entries(BALL_SKINS).map(([id, v]) => ({
-    id, name: v.name, price: id === 'classic' ? 0 : 10,
-  })),
+  cues: [
+    { id: 'maple', name: 'Hard Maple', description: 'Standard hard maple cue stick.', price: 0 },
+    { id: 'cue_newtonian', name: 'The Newtonian', description: 'Solid oak with inlaid brass physics equations.', price: 2.99 },
+    { id: 'cue_hustler', name: 'The Hustler', description: 'Distressed wood with a duct-taped grip and misaligned ferrule.', price: 0.99 },
+    { id: 'cue_sovereign', name: 'The Sovereign', description: 'Gold-plated filigree butt with a crushed velvet wrap.', price: 14.99 },
+    { id: 'cue_void', name: 'The Void', description: 'Coated in light-absorbing black material, completely reflectionless.', price: 9.99 },
+    { id: 'cue_industrialist', name: 'The Industrialist', description: 'Heavy steel shaft with exposed rivets and a raw leather grip.', price: 3.99 },
+  ],
+  balls: [
+    { id: 'classic', name: 'Classic', description: 'Standard regulation tournament pool balls.', price: 0 },
+    { id: 'balls_high_roller', name: 'High Roller', description: 'Styled like heavy clay poker chips with metallic inlaid numbers.', price: 5.99 },
+    { id: 'balls_metallic', name: 'Polished Metallic', description: 'Anodized titanium and chrome finishes with deep-etched metallic numbers and sharp specular reflections.', price: 4.99 },
+    { id: 'balls_pearl', name: 'Pearlescent Accent', description: 'Multi-stage custom automotive pearl coatings with subtle shifting highlights and clean contrast.', price: 5.99 },
+  ],
 };

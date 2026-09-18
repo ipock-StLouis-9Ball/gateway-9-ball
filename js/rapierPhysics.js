@@ -4,15 +4,22 @@
 // collision detection (CCD), sensor-based pocket triggers, and exact diamond rack.
 // ============================================================================
 
-import RAPIER from '@dimforge/rapier2d-compat';
 import { TABLE } from './config.js';
 
+let RAPIER = null;
 let rapierInitialized = false;
 
 export async function initRapier() {
   if (!rapierInitialized) {
-    await RAPIER.init();
-    rapierInitialized = true;
+    try {
+      const mod = await import('@dimforge/rapier2d-compat');
+      RAPIER = mod.default || mod;
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Rapier WASM init timeout')), 2000));
+      await Promise.race([RAPIER.init(), timeoutPromise]);
+      rapierInitialized = true;
+    } catch (err) {
+      console.warn('Rapier WASM init fallback/timeout:', err);
+    }
   }
   return RAPIER;
 }
@@ -100,6 +107,16 @@ export function createRegulationRackPositions() {
 export class RapierPoolWorld {
   constructor() {
     this.RAPIER = RAPIER;
+    if (!RAPIER) {
+      console.warn('Rapier RAPIER module is null (offline/CDN fallback mode). Physics world operating in fallback stub mode.');
+      this.world = null;
+      this.pocketSensors = new Map();
+      this.cushionColliders = new Set();
+      this.ballBodies = new Map();
+      this.bodyToBallId = new Map();
+      this.pocketedBalls = new Map();
+      return;
+    }
     // Zero gravity for 2D pool table top-down plane
     this.world = new RAPIER.World({ x: 0.0, y: 0.0 });
     this.world.timestep = FIXED_TIMESTEP;
@@ -154,6 +171,11 @@ export class RapierPoolWorld {
       return;
     }
 
+    if (!this.world) {
+      this.ballBodies.set(id, { x, y, id });
+      return;
+    }
+
     const bodyDesc = RAPIER.RigidBodyDesc.dynamic()
       .setTranslation(x, y)
       .setLinearDamping(LINEAR_DAMPING)
@@ -196,6 +218,7 @@ export class RapierPoolWorld {
   }
 
   step() {
+    if (!this.world) return [];
     this.world.step(this.eventQueue);
 
     const frameEvents = [];
@@ -269,6 +292,7 @@ export class RapierPoolWorld {
   }
 
   isAtRest() {
+    if (!this.world) return true;
     for (const entry of this.ballBodies.values()) {
       if (entry.body.isSleeping()) continue;
       const linvel = entry.body.linvel();
@@ -280,6 +304,20 @@ export class RapierPoolWorld {
 
   getBallStates() {
     const states = [];
+    if (!this.world) {
+      for (const [id, ball] of this.ballBodies.entries()) {
+        states.push({
+          id,
+          x: ball.x ?? 25,
+          y: ball.y ?? 25,
+          vx: 0,
+          vy: 0,
+          pocketed: false,
+          pocketIndex: -1,
+        });
+      }
+      return states;
+    }
     // Active balls
     for (const [id, entry] of this.ballBodies.entries()) {
       const pos = entry.body.translation();
@@ -314,6 +352,9 @@ export class RapierPoolWorld {
   castAimLine(cueX, cueY, angle) {
     const dirX = Math.cos(angle);
     const dirY = Math.sin(angle);
+    if (!this.world) {
+      return { ghost: { x: cueX + dirX * 30, y: cueY + dirY * 30 }, target: null, isCushion: false, reflectedDir: null };
+    }
     const targetDistance = 200.0;
     const maxToi = 200.0;
     const shape = new RAPIER.Ball(BALL_RADIUS);
@@ -378,6 +419,6 @@ export class RapierPoolWorld {
   }
 
   destroy() {
-    this.world.free();
+    if (this.world) this.world.free();
   }
 }

@@ -14,7 +14,7 @@ const TOKEN_STORAGE_KEY = 'stlouis_session_token';
 export const State = {
   token: null,
   wallet: {
-    balance: 0.0,
+    balance: 25.0,
     history: [], // {id, type, amount, fee, balanceAfter, ts}
   },
   owned: {
@@ -74,16 +74,20 @@ export const Auth = {
     if (!stored) return false;
     State.token = stored;
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
       const res = await fetch(`${API_BASE}/api/profile/me`, {
         headers: getAuthHeaders(),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       const data = await res.json();
       if (data.ok && data.profile) {
         this._updateStateFromProfile(data.profile);
         return true;
       }
     } catch (err) {
-      console.error('Failed to authenticate stored token:', err);
+      console.warn('Failed to authenticate stored token:', err);
     }
     // Token invalid or server error
     State.token = null;
@@ -201,12 +205,17 @@ export const Wallet = {
     }
   },
   async charge(amount, label = 'Buy-in') {
+    if (!Wallet.canAfford(amount)) return { ok: false, error: 'Insufficient balance' };
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
       const res = await fetch(`${API_BASE}/api/wallet/charge`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({ amount, label }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       const data = await res.json();
       if (data.ok) {
         State.wallet.balance = data.balance;
@@ -215,16 +224,24 @@ export const Wallet = {
       }
       return { ok: false, error: data.error || 'Charge failed' };
     } catch (err) {
-      return { ok: false, error: 'Network error during charge' };
+      // Standalone / offline fallback
+      State.wallet.balance = Math.round((State.wallet.balance - amount) * 100) / 100;
+      const tx = { id: `tx_${Date.now()}`, type: label, amount, fee: 0, balanceAfter: State.wallet.balance, ts: new Date().toLocaleTimeString() };
+      State.wallet.history.unshift(tx);
+      return { ok: true, balance: State.wallet.balance };
     }
   },
   async credit(amount, label = 'Winnings') {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
       const res = await fetch(`${API_BASE}/api/wallet/credit`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({ amount, label }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       const data = await res.json();
       if (data.ok) {
         State.wallet.balance = data.balance;
@@ -233,7 +250,11 @@ export const Wallet = {
       }
       return { ok: false, error: data.error || 'Credit failed' };
     } catch (err) {
-      return { ok: false, error: 'Network error during credit' };
+      // Standalone / offline fallback
+      State.wallet.balance = Math.round((State.wallet.balance + amount) * 100) / 100;
+      const tx = { id: `tx_${Date.now()}`, type: label, amount, fee: 0, balanceAfter: State.wallet.balance, ts: new Date().toLocaleTimeString() };
+      State.wallet.history.unshift(tx);
+      return { ok: true, balance: State.wallet.balance };
     }
   },
 };

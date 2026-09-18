@@ -15,7 +15,9 @@
       "id": "ball_schemes",
       "label": "Ball Schemes",
       "items": [
-        { "id": "balls_high_roller", "name": "High Roller", "description": "Styled like heavy clay poker chips with metallic inlaid numbers.", "price": 5.99 }
+        { "id": "balls_high_roller", "name": "High Roller", "description": "Styled like heavy clay poker chips with metallic inlaid numbers.", "price": 5.99 },
+        { "id": "balls_metallic", "name": "Polished Metallic", "description": "Anodized titanium and chrome finishes with deep-etched metallic numbers and sharp specular reflections.", "price": 4.99 },
+        { "id": "balls_pearl", "name": "Pearlescent Accent", "description": "Multi-stage custom automotive pearl coatings with subtle shifting highlights and clean contrast.", "price": 5.99 }
       ]
     }
   ]
