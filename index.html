@@ -121,31 +121,36 @@
       <svg class="table-svg-frame" viewBox="0 0 110 60" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="wood-rail-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#20120a" />
-            <stop offset="25%" stop-color="#3a2214" />
-            <stop offset="50%" stop-color="#4a2e1d" />
-            <stop offset="75%" stop-color="#321c10" />
-            <stop offset="100%" stop-color="#1a0f08" />
+            <stop offset="0%" stop-color="#141619" />
+            <stop offset="25%" stop-color="#202328" />
+            <stop offset="50%" stop-color="#282c33" />
+            <stop offset="75%" stop-color="#1c1f24" />
+            <stop offset="100%" stop-color="#101215" />
+          </linearGradient>
+          <linearGradient id="chrome-casting" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#737982" />
+            <stop offset="50%" stop-color="#d0d5dd" />
+            <stop offset="100%" stop-color="#40444d" />
           </linearGradient>
           <linearGradient id="sand-cushion-grad-top" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#b8a688" />
-            <stop offset="40%" stop-color="#d8caaf" />
-            <stop offset="100%" stop-color="#f0e2ca" />
+            <stop offset="0%" stop-color="#cbb797" />
+            <stop offset="40%" stop-color="#dcc8a8" />
+            <stop offset="100%" stop-color="#E8D5B5" />
           </linearGradient>
           <linearGradient id="sand-cushion-grad-bot" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stop-color="#b8a688" />
-            <stop offset="40%" stop-color="#d8caaf" />
-            <stop offset="100%" stop-color="#f0e2ca" />
+            <stop offset="0%" stop-color="#cbb797" />
+            <stop offset="40%" stop-color="#dcc8a8" />
+            <stop offset="100%" stop-color="#E8D5B5" />
           </linearGradient>
           <linearGradient id="sand-cushion-grad-left" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#b8a688" />
-            <stop offset="40%" stop-color="#d8caaf" />
-            <stop offset="100%" stop-color="#f0e2ca" />
+            <stop offset="0%" stop-color="#cbb797" />
+            <stop offset="40%" stop-color="#dcc8a8" />
+            <stop offset="100%" stop-color="#E8D5B5" />
           </linearGradient>
           <linearGradient id="sand-cushion-grad-right" x1="100%" y1="0%" x2="0%" y2="0%">
-            <stop offset="0%" stop-color="#b8a688" />
-            <stop offset="40%" stop-color="#d8caaf" />
-            <stop offset="100%" stop-color="#f0e2ca" />
+            <stop offset="0%" stop-color="#cbb797" />
+            <stop offset="40%" stop-color="#dcc8a8" />
+            <stop offset="100%" stop-color="#E8D5B5" />
           </linearGradient>
           <radialGradient id="pocket-drop-grad" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stop-color="#050403" />
@@ -157,16 +162,26 @@
           </filter>
         </defs>
 
-        <!-- 1. Heavy Outer Hardwood Rail Frame -->
-        <rect x="0" y="0" width="110" height="60" rx="3.5" fill="url(#wood-rail-grad)" stroke="#120a05" stroke-width="0.5" />
+        <!-- 1. Heavy Outer Rail Frame -->
+        <rect x="0" y="0" width="110" height="60" rx="3.5" fill="url(#wood-rail-grad)" stroke="#0c0e10" stroke-width="0.5" />
 
-        <!-- 2. Pocket Drop Wells & Cutouts Recessing Outward Into Rail Structure -->
-        <circle cx="5" cy="5" r="3.8" fill="url(#pocket-drop-grad)" />
-        <circle cx="105" cy="5" r="3.8" fill="url(#pocket-drop-grad)" />
-        <circle cx="5" cy="55" r="3.8" fill="url(#pocket-drop-grad)" />
-        <circle cx="105" cy="55" r="3.8" fill="url(#pocket-drop-grad)" />
-        <circle cx="55" cy="3.2" r="3.2" fill="url(#pocket-drop-grad)" />
-        <circle cx="55" cy="56.8" r="3.2" fill="url(#pocket-drop-grad)" />
+        <!-- 2. Pocket Castings & Drop Wells Recessing Outward Into Rail Structure -->
+        <!-- Corner Castings -->
+        <circle cx="5" cy="5" r="4.6" fill="url(#chrome-casting)" stroke="#222" stroke-width="0.3" />
+        <circle cx="105" cy="5" r="4.6" fill="url(#chrome-casting)" stroke="#222" stroke-width="0.3" />
+        <circle cx="5" cy="55" r="4.6" fill="url(#chrome-casting)" stroke="#222" stroke-width="0.3" />
+        <circle cx="105" cy="55" r="4.6" fill="url(#chrome-casting)" stroke="#222" stroke-width="0.3" />
+        <!-- Side Castings -->
+        <circle cx="55" cy="3.2" r="4.0" fill="url(#chrome-casting)" stroke="#222" stroke-width="0.3" />
+        <circle cx="55" cy="56.8" r="4.0" fill="url(#chrome-casting)" stroke="#222" stroke-width="0.3" />
+
+        <!-- Pocket Drop Holes -->
+        <circle cx="5" cy="5" r="3.6" fill="url(#pocket-drop-grad)" />
+        <circle cx="105" cy="5" r="3.6" fill="url(#pocket-drop-grad)" />
+        <circle cx="5" cy="55" r="3.6" fill="url(#pocket-drop-grad)" />
+        <circle cx="105" cy="55" r="3.6" fill="url(#pocket-drop-grad)" />
+        <circle cx="55" cy="3.2" r="3.0" fill="url(#pocket-drop-grad)" />
+        <circle cx="55" cy="56.8" r="3.0" fill="url(#pocket-drop-grad)" />
 
         <!-- 3. Beach Blond Sand Inner Cushion Slopes with Correct Nose Orientation & WPA End Facings -->
         <!-- Top Left Rail Segment -->
