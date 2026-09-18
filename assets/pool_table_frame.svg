@@ -27,29 +27,20 @@
 
     <!-- Realistic drop shadow for the cushions to show thickness -->
     <filter id="cushionShadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#000" flood-opacity="0.55"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#000" flood-opacity="0.6"/>
     </filter>
 
-    <!-- Cardinal Red Neon Glow (Expands outward from the cushion nose) -->
+    <!-- Pure Neon Glow: Generates ONLY ambient light blur with no solid core -->
     <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="5" result="blur1" />
-      <feGaussianBlur stdDeviation="10" result="blur2" />
-      <feMerge>
-        <feMergeNode in="blur2" />
-        <feMergeNode in="blur1" />
-        <feMergeNode in="SourceGraphic" />
-      </feMerge>
+      <feGaussianBlur stdDeviation="6" result="blur" />
     </filter>
 
     <!-- THE TRANSPARENCY MASK: Cuts the center and pockets out of the wood and metal -->
     <mask id="frameMask">
-      <!-- Make the entire 1000x500 frame visible by default -->
       <rect x="0" y="0" width="1000" height="500" fill="white" />
-      
-      <!-- Punch out the center completely (Leaves a 30-unit thick wood frame) -->
+      <!-- Center void -->
       <rect x="30" y="30" width="940" height="440" fill="black" />
-      
-      <!-- Punch out perfect WPA regulation circular pocket drops into the wood -->
+      <!-- Perfect WPA regulation circular pocket drops (No ovals) -->
       <circle cx="25" cy="25" r="32" fill="black" />
       <circle cx="975" cy="25" r="32" fill="black" />
       <circle cx="25" cy="475" r="32" fill="black" />
@@ -63,33 +54,25 @@
   <!-- LAYER 1: WOOD & METAL PLATES (Masked)      -->
   <!-- ========================================== -->
   <g mask="url(#frameMask)">
-    
     <!-- Outer White Oak Rail -->
     <rect x="0" y="0" width="1000" height="500" rx="15" ry="15" fill="url(#whiteOak)" stroke="#D6C6AA" stroke-width="3"/>
     
     <!-- Metallic Corner & Side Plates -->
     <g fill="url(#polishedSilver)" stroke="#FFFFFF" stroke-width="0.5">
-      <!-- Top-Left Corner -->
       <path d="M 0,70 L 15,70 L 15,15 L 70,15 L 70,0 L 15,0 Q 0,0 0,15 Z" />
-      <!-- Top-Right Corner -->
       <path d="M 1000,70 L 985,70 L 985,15 L 930,15 L 930,0 L 985,0 Q 1000,0 1000,15 Z" />
-      <!-- Bottom-Left Corner -->
       <path d="M 0,430 L 15,430 L 15,485 L 70,485 L 70,500 L 15,500 Q 0,500 0,485 Z" />
-      <!-- Bottom-Right Corner -->
       <path d="M 1000,430 L 985,430 L 985,485 L 930,485 L 930,500 L 985,500 Q 1000,500 1000,485 Z" />
-      <!-- Top Side Plate -->
       <rect x="460" y="0" width="80" height="15" />
-      <!-- Bottom Side Plate -->
       <rect x="460" y="485" width="80" height="15" />
     </g>
   </g>
 
   <!-- ========================================== -->
-  <!-- LAYER 2: NEON GLOW (Unmasked, Under Rubber)-->
+  <!-- LAYER 2: NEON GLOW (Under Rubber)          -->
   <!-- ========================================== -->
-  <!-- These lines trace the exact edges of the felt. Because they render BEFORE the rubber cushions, 
-       the rubber covers the top half of the blur, forcing the light to spill ONLY onto the felt -->
-  <g stroke="#C41E3A" stroke-width="3.5" stroke-linecap="round" filter="url(#neonGlow)" opacity="0.95">
+  <!-- Placed before the rubber so the solid rubber body covers the top half of the blur -->
+  <g stroke="#FF0022" stroke-width="9" stroke-linecap="round" filter="url(#neonGlow)">
     <line x1="80" y1="45" x2="476" y2="45" />
     <line x1="524" y1="45" x2="920" y2="45" />
     <line x1="80" y1="455" x2="476" y2="455" />
@@ -99,21 +82,15 @@
   </g>
 
   <!-- ========================================== -->
-  <!-- LAYER 3: K-66 CUSHIONS (Unmasked w/ Shadow)-->
+  <!-- LAYER 3: K-66 CUSHIONS (On Top w/ Shadow)  -->
   <!-- ========================================== -->
-  <!-- Straight geometric jaws mapping exact WPA 142° corner and 104° side angles -->
+  <!-- The sharp polygon shapes remain fully opaque on top, casting a shadow down onto the felt -->
   <g fill="#E8D5B5" filter="url(#cushionShadow)">
-    <!-- Top Left -->
     <polygon points="80,45 476,45 465,30 55,30" />
-    <!-- Top Right -->
     <polygon points="524,45 920,45 945,30 535,30" />
-    <!-- Bottom Left -->
     <polygon points="80,455 476,455 465,470 55,470" />
-    <!-- Bottom Right -->
     <polygon points="524,455 920,455 945,470 535,470" />
-    <!-- Left -->
     <polygon points="45,80 45,420 30,445 30,55" />
-    <!-- Right -->
     <polygon points="955,80 955,420 970,445 970,55" />
   </g>
 
@@ -121,25 +98,21 @@
   <!-- LAYER 4: RUBY DIAMOND SIGHTS               -->
   <!-- ========================================== -->
   <g fill="url(#rubyGem)" stroke="#3b1116" stroke-width="0.8">
-    <!-- Top Rail -->
     <polygon points="215,15 220,10 225,15 220,20" />
     <polygon points="315,15 320,10 325,15 320,20" />
     <polygon points="415,15 420,10 425,15 420,20" />
     <polygon points="575,15 580,10 585,15 580,20" />
     <polygon points="675,15 680,10 685,15 680,20" />
     <polygon points="775,15 780,10 785,15 780,20" />
-    <!-- Bottom Rail -->
     <polygon points="215,485 220,480 225,485 220,490" />
     <polygon points="315,485 320,480 325,485 320,490" />
     <polygon points="415,485 420,480 425,485 420,490" />
     <polygon points="575,485 580,480 585,485 580,490" />
     <polygon points="675,485 680,480 685,485 680,490" />
     <polygon points="775,485 780,480 785,485 780,490" />
-    <!-- Left Rail -->
     <polygon points="15,165 20,160 25,165 20,170" />
     <polygon points="15,250 20,245 25,250 20,255" />
     <polygon points="15,335 20,330 25,335 20,340" />
-    <!-- Right Rail -->
     <polygon points="975,165 980,160 985,165 980,170" />
     <polygon points="975,250 980,245 985,250 980,255" />
     <polygon points="975,335 980,330 985,335 980,340" />
