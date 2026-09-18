@@ -16,14 +16,7 @@
             <stop offset="100%" stop-color="#120401" />
         </linearGradient>
 
-        <linearGradient id="chrome-bezel" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#1b1e21" />
-            <stop offset="20%" stop-color="#e6ebf0" />
-            <stop offset="40%" stop-color="#4c535c" />
-            <stop offset="50%" stop-color="#ffffff" />
-            <stop offset="70%" stop-color="#8a939e" />
-            <stop offset="100%" stop-color="#1b1e21" />
-        </linearGradient>
+        
 
         <filter id="neon-glow-filter" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur-wide" />
@@ -78,15 +71,7 @@
         <line x1="182" y1="220" x2="182" y2="680" />
     </g>
 
-    <g fill="url(#chrome-bezel)" stroke="#111" stroke-width="1">
-        <path d="M 100,140 C 100,100 100,100 140,100 L 210,100 C 200,140 140,200 100,210 Z" />
-        <path d="M 1500,140 C 1500,100 1500,100 1460,100 L 1390,100 C 1400,140 1460,200 1500,210 Z" />
-        <path d="M 1500,760 C 1500,800 1500,800 1460,800 L 1390,800 C 1400,760 1460,700 1500,690 Z" />
-        <path d="M 100,760 C 100,800 100,800 140,800 L 210,800 C 200,760 140,700 100,690 Z" />
-        <path d="M 755,100 L 845,100 C 840,145 760,145 755,100 Z" />
-        <path d="M 755,800 L 845,800 C 840,755 760,755 755,800 Z" />
-    </g>
-
+    
     <g>
         <use href="#diamond-sight" x="140" y="310" />
         <use href="#diamond-sight" x="140" y="450" />
