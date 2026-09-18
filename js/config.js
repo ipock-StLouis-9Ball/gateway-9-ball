@@ -35,20 +35,16 @@ export const ECONOMY = {
 };
 
 // --- Regulation-style table & ball geometry (table-space units) -------------
-// Official WPA / BCA Tournament 9-Foot Pool Table Specification:
-// Playing bed surface: exactly 100" x 50" (2:1 ratio).
-// Rail Assembly: Total Rail Width = 5.0" (Wood Cap: 3 13/16" [3.8125"], Inner Cushion: 1 3/16" [1.1875"]).
-// Overall Table Outer Footprint: 110" x 60".
+// A regulation 9-foot table: playing surface ~50" x 100" (2:1 ratio).
+// We work in arbitrary "inches" and scale to pixels at render time.
 export const TABLE = {
   name: "WPA Regulation 9-Foot Tournament Table",
   units: "inches",
   width: 100.0, // playfield length (x-axis), inches
   height: 50.0, // playfield width (y-axis), inches
-  overallWidth: 110.0,
-  overallHeight: 60.0,
-  totalRailWidth: 5.0,
-  woodRailWidth: 3.8125, // 3 13/16 inches
-  cushionWidth: 1.1875,  // 1 3/16 inches
+  overallWidth: 112.0,
+  overallHeight: 62.0,
+  railWidth: 6.0,
   ballRadius: 1.125, // 2.25" diameter
   cushionRestitution: 0.85, // K-66 rubber profile
   ballRestitution: 0.96, // ball-ball restitution
@@ -95,26 +91,26 @@ export const TABLE = {
     { id: "right_short_rail",  p1: { x: 100.0, y: 2.4375 }, p2: { x: 100.0, y: 47.5625 }, normal: { x: -1, y: 0 } },
 
     // Pocket Jaw Facing Colliders (recessing outward into pocket throats)
-    // Side pocket bottom facings (X = 47.3125 and 52.6875, facing cut angle 103°, 38.5° from rail line)
-    { id: "bottom_side_facing_left",  p1: { x: 47.3125, y: 0.0 }, p2: { x: 47.3125 - 1.25 * Math.cos(38.5 * Math.PI / 180), y: -1.25 * Math.sin(38.5 * Math.PI / 180) } },
-    { id: "bottom_side_facing_right", p1: { x: 52.6875, y: 0.0 }, p2: { x: 52.6875 + 1.25 * Math.cos(38.5 * Math.PI / 180), y: -1.25 * Math.sin(38.5 * Math.PI / 180) } },
+    // Side pocket bottom facings (X = 47.3125 and 52.6875, angled back at 103° total / 51.5° each side)
+    { id: "bottom_side_facing_left",  p1: { x: 47.3125, y: 0.0 }, p2: { x: 47.3125 - 1.25 * Math.cos(51.5 * Math.PI / 180), y: -1.25 * Math.sin(51.5 * Math.PI / 180) } },
+    { id: "bottom_side_facing_right", p1: { x: 52.6875, y: 0.0 }, p2: { x: 52.6875 + 1.25 * Math.cos(51.5 * Math.PI / 180), y: -1.25 * Math.sin(51.5 * Math.PI / 180) } },
     // Side pocket top facings
-    { id: "top_side_facing_left",  p1: { x: 47.3125, y: 50.0 }, p2: { x: 47.3125 - 1.25 * Math.cos(38.5 * Math.PI / 180), y: 50.0 + 1.25 * Math.sin(38.5 * Math.PI / 180) } },
-    { id: "top_side_facing_right", p1: { x: 52.6875, y: 50.0 }, p2: { x: 52.6875 + 1.25 * Math.cos(38.5 * Math.PI / 180), y: 50.0 + 1.25 * Math.sin(38.5 * Math.PI / 180) } },
+    { id: "top_side_facing_left",  p1: { x: 47.3125, y: 50.0 }, p2: { x: 47.3125 - 1.25 * Math.cos(51.5 * Math.PI / 180), y: 50.0 + 1.25 * Math.sin(51.5 * Math.PI / 180) } },
+    { id: "top_side_facing_right", p1: { x: 52.6875, y: 50.0 }, p2: { x: 52.6875 + 1.25 * Math.cos(51.5 * Math.PI / 180), y: 50.0 + 1.25 * Math.sin(51.5 * Math.PI / 180) } },
 
-    // Corner facings (142° facing cut angle -> 19° from rail line, recessing back into throat)
+    // Corner facings (142° facing cut angle -> 71° from rail wall)
     // Bottom-Left
-    { id: "bl_facing_long",  p1: { x: 2.4375, y: 0.0 }, p2: { x: 2.4375 - 1.5 * Math.cos(19 * Math.PI / 180), y: -1.5 * Math.sin(19 * Math.PI / 180) } },
-    { id: "bl_facing_short", p1: { x: 0.0, y: 2.4375 }, p2: { x: -1.5 * Math.sin(19 * Math.PI / 180), y: 2.4375 - 1.5 * Math.cos(19 * Math.PI / 180) } },
+    { id: "bl_facing_long",  p1: { x: 2.4375, y: 0.0 }, p2: { x: 2.4375 - 1.5 * Math.cos(71 * Math.PI / 180), y: -1.5 * Math.sin(71 * Math.PI / 180) } },
+    { id: "bl_facing_short", p1: { x: 0.0, y: 2.4375 }, p2: { x: -1.5 * Math.sin(71 * Math.PI / 180), y: 2.4375 - 1.5 * Math.cos(71 * Math.PI / 180) } },
     // Bottom-Right
-    { id: "br_facing_long",  p1: { x: 97.5625, y: 0.0 }, p2: { x: 97.5625 + 1.5 * Math.cos(19 * Math.PI / 180), y: -1.5 * Math.sin(19 * Math.PI / 180) } },
-    { id: "br_facing_short", p1: { x: 100.0, y: 2.4375 }, p2: { x: 100.0 + 1.5 * Math.sin(19 * Math.PI / 180), y: 2.4375 - 1.5 * Math.cos(19 * Math.PI / 180) } },
+    { id: "br_facing_long",  p1: { x: 97.5625, y: 0.0 }, p2: { x: 97.5625 + 1.5 * Math.cos(71 * Math.PI / 180), y: -1.5 * Math.sin(71 * Math.PI / 180) } },
+    { id: "br_facing_short", p1: { x: 100.0, y: 2.4375 }, p2: { x: 100.0 + 1.5 * Math.sin(71 * Math.PI / 180), y: 2.4375 - 1.5 * Math.cos(71 * Math.PI / 180) } },
     // Top-Left
-    { id: "tl_facing_long",  p1: { x: 2.4375, y: 50.0 }, p2: { x: 2.4375 - 1.5 * Math.cos(19 * Math.PI / 180), y: 50.0 + 1.5 * Math.sin(19 * Math.PI / 180) } },
-    { id: "tl_facing_short", p1: { x: 0.0, y: 47.5625 }, p2: { x: -1.5 * Math.sin(19 * Math.PI / 180), y: 47.5625 + 1.5 * Math.cos(19 * Math.PI / 180) } },
+    { id: "tl_facing_long",  p1: { x: 2.4375, y: 50.0 }, p2: { x: 2.4375 - 1.5 * Math.cos(71 * Math.PI / 180), y: 50.0 + 1.5 * Math.sin(71 * Math.PI / 180) } },
+    { id: "tl_facing_short", p1: { x: 0.0, y: 47.5625 }, p2: { x: -1.5 * Math.sin(71 * Math.PI / 180), y: 47.5625 + 1.5 * Math.cos(71 * Math.PI / 180) } },
     // Top-Right
-    { id: "tr_facing_long",  p1: { x: 97.5625, y: 50.0 }, p2: { x: 97.5625 + 1.5 * Math.cos(19 * Math.PI / 180), y: 50.0 + 1.5 * Math.sin(19 * Math.PI / 180) } },
-    { id: "tr_facing_short", p1: { x: 100.0, y: 47.5625 }, p2: { x: 100.0 + 1.5 * Math.sin(19 * Math.PI / 180), y: 47.5625 + 1.5 * Math.cos(19 * Math.PI / 180) } }
+    { id: "tr_facing_long",  p1: { x: 97.5625, y: 50.0 }, p2: { x: 97.5625 + 1.5 * Math.cos(71 * Math.PI / 180), y: 50.0 + 1.5 * Math.sin(71 * Math.PI / 180) } },
+    { id: "tr_facing_short", p1: { x: 100.0, y: 47.5625 }, p2: { x: 100.0 + 1.5 * Math.sin(71 * Math.PI / 180), y: 47.5625 + 1.5 * Math.cos(71 * Math.PI / 180) } }
   ]
 };
 
