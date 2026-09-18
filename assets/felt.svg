@@ -1,42 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 1000" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" width="100%" height="100%">
   <defs>
-    <!-- Original Gradients and Filters from 1825.jpg -->
+    <!-- Original Beach Blond Gradient -->
     <radialGradient id="feltVignette" cx="50%" cy="50%" r="70%">
       <stop offset="0%" stop-color="#F2E3CA" />
       <stop offset="60%" stop-color="#E8D5B5" />
       <stop offset="88%" stop-color="#D8C2A0" />
       <stop offset="100%" stop-color="#C5AF8D" />
     </radialGradient>
+    
     <filter id="clothGrain" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
       <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" result="noise" />
       <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.04 0" />
       <feBlend mode="multiply" in="SourceGraphic" result="blend" />
     </filter>
 
-    <!-- New Mask to cut out perfectly equal geometric circles -->
     <mask id="pocketCutouts">
-      <!-- The solid white rectangle keeps the felt visible everywhere by default -->
-      <rect width="500" height="1000" fill="white" />
+      <!-- White background keeps the table visible -->
+      <rect width="1000" height="500" fill="white" />
       
-      <!-- Black shapes subtract from the mask, creating the exact cutouts at corner coordinates -->
-      <!-- Top Corners -->
-      <circle cx="0" cy="0" r="25" fill="black" />
-      <circle cx="500" cy="0" r="25" fill="black" />
+      <!-- Corner Pockets (Radius: 32) -->
+      <circle cx="0" cy="0" r="32" fill="black" />
+      <circle cx="1000" cy="0" r="32" fill="black" />
+      <circle cx="0" cy="500" r="32" fill="black" />
+      <circle cx="1000" cy="500" r="32" fill="black" />
       
-      <!-- Middle Pockets (Centered exactly on the long edges at the 500 mark) -->
-      <circle cx="0" cy="500" r="25" fill="black" />
-      <circle cx="500" cy="500" r="25" fill="black" />
-      
-      <!-- Bottom Corners -->
-      <circle cx="0" cy="1000" r="25" fill="black" />
-      <circle cx="500" cy="1000" r="25" fill="black" />
+      <!-- Middle Pockets (Radius: 28) - Centered on the long edges -->
+      <circle cx="500" cy="0" r="28" fill="black" />
+      <circle cx="500" cy="500" r="28" fill="black" />
     </mask>
   </defs>
 
-  <!-- Grouping the felt and grain layers so the mask applies to both simultaneously -->
   <g mask="url(#pocketCutouts)">
-    <rect width="500" height="1000" fill="url(#feltVignette)" />
-    <!-- Completing the cut-off style tag from 1825.jpg -->
-    <rect width="500" height="1000" fill="#000" filter="url(#clothGrain)" opacity="0.4" style="mix-blend-mode: multiply;" />
+    <!-- Base Felt Color -->
+    <rect width="1000" height="500" fill="url(#feltVignette)" />
+    <!-- Noise layer with 'overlay' to keep colors bright -->
+    <rect width="1000" height="500" fill="#000" filter="url(#clothGrain)" opacity="0.4" style="mix-blend-mode: overlay;" />
   </g>
 </svg>
