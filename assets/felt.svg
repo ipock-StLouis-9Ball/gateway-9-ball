@@ -24,9 +24,9 @@
       <circle cx="0" cy="500" r="32" fill="black" />
       <circle cx="1000" cy="500" r="32" fill="black" />
       
-      <!-- Middle Pockets (Radius: 28) - Centered on the long edges -->
-      <circle cx="500" cy="0" r="28" fill="black" />
-      <circle cx="500" cy="500" r="28" fill="black" />
+      <!-- Middle Pockets (Radius: 26) - Centered on the long edges -->
+      <circle cx="500" cy="0" r="26" fill="black" />
+      <circle cx="500" cy="500" r="26" fill="black" />
     </mask>
   </defs>
 
