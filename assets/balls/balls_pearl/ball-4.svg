@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="100%" height="100%" shape-rendering="geometricPrecision">
+  <defs>
+    <radialGradient id="pearlBody" cx="30%" cy="25%" r="75%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+      <stop offset="35%" stop-color="#9b4af0" />
+      <stop offset="70%" stop-color="#181c2b" />
+      <stop offset="100%" stop-color="#9b4af0" />
+    </radialGradient>
+    <radialGradient id="pearlInlay" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="60%" stop-color="#f0f4f8" />
+      <stop offset="100%" stop-color="#c8d2de" />
+    </radialGradient>
+    <radialGradient id="softPearlGlow" cx="32%" cy="25%" r="40%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85" />
+      <stop offset="50%" stop-color="#e8f4ff" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
+    </radialGradient>
+  </defs>
+  <circle cx="128" cy="128" r="120" fill="url(#pearlBody)" />
+  <circle cx="128" cy="128" r="52" fill="url(#pearlInlay)" stroke="#8090a0" stroke-width="2" />
+  <circle cx="128" cy="128" r="46" fill="none" stroke="#ffffff" stroke-width="1.5" />
+  <text x="128" y="142" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="48" fill="#1e2430" text-anchor="middle">4</text>
+  <ellipse cx="90" cy="78" rx="52" ry="28" fill="url(#softPearlGlow)" transform="rotate(-20 90 78)" />
+</svg>

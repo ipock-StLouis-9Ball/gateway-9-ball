@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 50" width="100%" height="100%" shape-rendering="geometricPrecision">
+  <defs>
+    <linearGradient id="oakGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f2d199" />
+      <stop offset="35%" stop-color="#dca868" />
+      <stop offset="70%" stop-color="#9e662c" />
+      <stop offset="100%" stop-color="#54300c" />
+    </linearGradient>
+    <linearGradient id="brassGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff1b0" />
+      <stop offset="50%" stop-color="#d4af37" />
+      <stop offset="100%" stop-color="#806214" />
+    </linearGradient>
+    <linearGradient id="cueSheen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4" />
+      <stop offset="30%" stop-color="#ffffff" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.35" />
+    </linearGradient>
+  </defs>
+
+  <!-- Cue Stick Tapered Body (Tip height ~8px at x=15 to Butt height ~28px at x=795) -->
+  <polygon points="15,21 795,11 795,39 15,29" fill="url(#oakGrad)" />
+  <polygon points="15,21 795,11 795,39 15,29" fill="url(#cueSheen)" />
+
+  <!-- Leather Tip & Ferrule (x=0..15) -->
+  <rect x="0" y="21.5" width="5" height="7" rx="1" fill="#4a2e1b" />
+  <rect x="5" y="21" width="10" height="8" fill="#f8f8f0" stroke="#d0d0c0" stroke-width="0.5" />
+
+  <!-- Inlaid Brass Physics Equations on Forearm & Butt -->
+  <text x="120" y="27" font-family="serif" font-style="italic" font-size="9" fill="url(#brassGold)" opacity="0.85">F = ma</text>
+  <text x="220" y="27" font-family="serif" font-style="italic" font-size="9" fill="url(#brassGold)" opacity="0.85">p = mv</text>
+  <text x="340" y="28" font-family="serif" font-style="italic" font-size="10" fill="url(#brassGold)" opacity="0.85">E = ½mv²</text>
+  <text x="500" y="29" font-family="serif" font-style="italic" font-size="11" fill="url(#brassGold)" opacity="0.9">L = r × p</text>
+  <text x="640" y="30" font-family="serif" font-style="italic" font-size="12" fill="url(#brassGold)" opacity="0.9">τ = r × F</text>
+
+  <!-- Brass Accent Rings -->
+  <rect x="420" y="17" width="6" height="16" fill="url(#brassGold)" />
+  <rect x="580" y="14" width="8" height="22" fill="url(#brassGold)" />
+
+  <!-- Rubber Butt Cap -->
+  <rect x="795" y="10" width="5" height="30" rx="2" fill="#151515" />
+</svg>

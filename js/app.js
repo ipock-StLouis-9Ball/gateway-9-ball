@@ -150,6 +150,7 @@ function bindProfileModalEvents() {
 // ---------- Screen routing ----------
 const screens = ['menu', 'lobby', 'store', 'wallet', 'game'];
 function show(name) {
+  console.log('[app] show screen:', name);
   screens.forEach((s) => {
     const el = document.getElementById('screen-' + s);
     if (el) el.classList.toggle('hidden', s !== name);
@@ -172,6 +173,7 @@ function show(name) {
 document.querySelectorAll('[data-goto]').forEach((el) => {
   el.addEventListener('click', () => {
     const t = el.dataset.goto;
+    console.log('[App] Menu action clicked:', t);
     if (t === 'practice') startGame({ practice: true });
     else show(t);
   });
@@ -272,14 +274,22 @@ function refreshStore() {
     const div = document.createElement('div');
     div.className = 'store-item';
     let swatch = '';
-    if (storeTab === 'tables') swatch = `<div class="swatch" style="background:${TABLE_COLORS[item.id].felt}"></div>`;
-    else if (storeTab === 'cues') swatch = `<div class="swatch" style="background:linear-gradient(90deg,${CUE_STICKS[item.id].tip},${CUE_STICKS[item.id].shaft})"></div>`;
-    else swatch = `<div class="swatch" style="background:${BALL_SKINS[item.id].colors[9]}"></div>`;
+    if (storeTab === 'tables') {
+      const color = TABLE_COLORS[item.id] ? TABLE_COLORS[item.id].felt : '#1a6b3a';
+      swatch = `<div class="swatch" style="background:${color}"></div>`;
+    } else if (storeTab === 'cues') {
+      const c = CUE_STICKS[item.id] || { tip: '#3a2a1a', shaft: '#d9b27a' };
+      swatch = `<div class="swatch" style="background:linear-gradient(90deg, ${c.tip}, ${c.shaft})"></div>`;
+    } else {
+      const b = BALL_SKINS[item.id] || BALL_SKINS.classic;
+      const bg = b.colors ? b.colors[9] : '#f5c518';
+      swatch = `<div class="swatch" style="background:${bg}"></div>`;
+    }
     let btnLabel, btnClass;
     if (equipped) { btnLabel = 'Equipped'; btnClass = 'equipped'; }
     else if (owned) { btnLabel = 'Equip'; btnClass = 'owned'; }
-    else { btnLabel = `Buy DB$${item.price}`; btnClass = ''; }
-    div.innerHTML = `${swatch}<div class="si-name">${item.name}</div><div class="si-price">${item.price ? 'DB$' + item.price.toFixed(2) : 'Free'}</div><button class="si-btn ${btnClass}">${btnLabel}</button>`;
+    else { btnLabel = `Buy DB$${item.price.toFixed(2)}`; btnClass = ''; }
+    div.innerHTML = `${swatch}<div class="si-name">${item.name}</div><div class="si-desc" style="font-size:11px; opacity:0.8; margin:2px 0 6px 0;">${item.description || ''}</div><div class="si-price">${item.price ? 'DB$' + item.price.toFixed(2) : 'Free'}</div><button class="si-btn ${btnClass}">${btnLabel}</button>`;
     div.querySelector('.si-btn').addEventListener('click', async () => {
       if (equipped) return;
       if (owned) { Store.equip(storeTab, item.id); }
@@ -427,8 +437,10 @@ async function startGame(opts) {
   document.getElementById('match-modal').classList.add('hidden');
 
   requestAnimationFrame(() => {
-    renderer.resize();
-    game.start();
+    requestAnimationFrame(() => {
+      if (renderer) renderer.resize();
+      if (game) game.start();
+    });
   });
 
   window.__game = game;
@@ -646,8 +658,11 @@ async function boot() {
   await Auth.initSession();
 
   refreshMenu();
-  show('menu');
 }
 
 window.addEventListener('resize', () => { if (renderer) renderer.resize(); });
+
+// Synchronously initialize menu screen and routing
+refreshMenu();
+show('menu');
 boot();
