@@ -34,99 +34,85 @@
       <stop offset="100%" stop-color="#4d0000" />
     </radialGradient>
 
+    <!-- Master Diamond Template -->
     <g id="diamond" fill="url(#rubyGem)" stroke="#3b1116" stroke-width="0.8">
       <path d="M 0,-6 L 4,0 L 0,6 L -4,0 Z" />
     </g>
 
+    <!-- Visual Filters (Degrade gracefully on simple mobile viewers) -->
     <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feGaussianBlur stdDeviation="7" result="blur" />
     </filter>
-
     <filter id="cushionShadow" x="-10%" y="-10%" width="120%" height="120%">
       <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#000" flood-opacity="0.6"/>
     </filter>
   </defs>
 
   <!-- ========================================== -->
-  <!-- LAYER 1: WOOD RAILS (No Masks Used)        -->
+  <!-- LAYER 1: WOOD RAIL (NO MASKS USED)         -->
   <!-- ========================================== -->
-  <!-- These are drawn as 4 separate rectangles that tuck perfectly under the metal castings -->
-  <g fill="url(#whiteOak)" stroke="#D6C6AA" stroke-width="1">
-    <rect x="75" y="0" width="375" height="60" />
-    <rect x="550" y="0" width="375" height="60" />
-    <rect x="75" y="440" width="375" height="60" />
-    <rect x="550" y="440" width="375" height="60" />
-    <rect x="0" y="75" width="60" height="350" />
-    <rect x="940" y="75" width="60" height="350" />
-  </g>
+  <!-- fill-rule="evenodd" mathematically cuts the transparent center and circular pocket 
+       bites directly out of the wood path, guaranteeing it works in every viewer. -->
+  <path fill="url(#whiteOak)" fill-rule="evenodd" stroke="#D6C6AA" stroke-width="1.5" d="
+    M 20,0 L 980,0 A 20,20 0 0 1 1000,20 L 1000,480 A 20,20 0 0 1 980,500 L 20,500 A 20,20 0 0 1 0,480 L 0,20 A 20,20 0 0 1 20,0 Z
+    M 95,60 L 465,60 A 35,35 0 0 0 535,60 L 905,60 A 35,35 0 0 0 940,95 L 940,405 A 35,35 0 0 0 905,440 L 535,440 A 35,35 0 0 0 465,440 L 95,440 A 35,35 0 0 0 60,405 L 60,95 A 35,35 0 0 0 95,60 Z
+  "/>
 
   <!-- ========================================== -->
   <!-- LAYER 2: METAL CASTINGS & POCKET CUTOUTS   -->
   <!-- ========================================== -->
-  <!-- Paths physically trace the curves of the pocket cutouts so the center remains empty -->
+  <!-- These castings lay directly over the wood cutouts, forming the perfect metal jaws -->
   <g stroke="#555555" stroke-width="1.5">
-    
     <!-- GOLD CORNERS -->
     <g fill="url(#polishedGold)">
       <!-- Top Left -->
-      <path d="M 85,0 L 20,0 A 20,20 0 0,0 0,20 L 0,85 L 25,85 A 40,40 0 0,0 85,25 L 85,0 Z" />
+      <path d="M 110,0 L 20,0 A 20,20 0 0 0 0,20 L 0,110 L 60,110 L 60,95 A 35,35 0 0 1 95,60 L 110,60 Z" />
       <!-- Top Right -->
-      <path d="M 915,0 L 980,0 A 20,20 0 0,1 1000,20 L 1000,85 L 975,85 A 40,40 0 0,1 915,25 L 915,0 Z" />
+      <path d="M 890,0 L 980,0 A 20,20 0 0 1 1000,20 L 1000,110 L 940,110 L 940,95 A 35,35 0 0 1 905,60 L 890,60 Z" />
       <!-- Bottom Left -->
-      <path d="M 0,415 L 0,480 A 20,20 0 0,0 20,500 L 85,500 L 85,475 A 40,40 0 0,0 25,415 L 0,415 Z" />
+      <path d="M 110,500 L 20,500 A 20,20 0 0 1 0,480 L 0,390 L 60,390 L 60,405 A 35,35 0 0 1 95,440 L 110,440 Z" />
       <!-- Bottom Right -->
-      <path d="M 1000,415 L 1000,480 A 20,20 0 0,1 980,500 L 915,500 L 915,475 A 40,40 0 0,1 975,415 L 1000,415 Z" />
+      <path d="M 890,500 L 980,500 A 20,20 0 0 0 1000,480 L 1000,390 L 940,390 L 940,405 A 35,35 0 0 1 905,440 L 890,440 Z" />
     </g>
-
     <!-- SILVER SIDE POCKETS -->
     <g fill="url(#polishedSilver)">
       <!-- Top Side -->
-      <path d="M 440,0 L 560,0 L 560,60 L 535,60 A 35,35 0 0,1 465,60 L 440,60 Z" />
+      <path d="M 430,0 L 570,0 L 570,60 L 535,60 A 35,35 0 0,1 465,60 L 430,60 Z" />
       <!-- Bottom Side -->
-      <path d="M 440,500 L 560,500 L 560,440 L 535,440 A 35,35 0 0,0 465,440 L 440,440 Z" />
+      <path d="M 430,500 L 570,500 L 570,440 L 535,440 A 35,35 0 0,0 465,440 L 430,440 Z" />
     </g>
   </g>
 
   <!-- ========================================== -->
   <!-- LAYER 3: NEON GLOW (Mobile Safe Fallback)  -->
   <!-- ========================================== -->
-  <!-- Stacked opacity strokes guarantee the red glow renders perfectly on any device -->
+  <!-- Stacked opacity lines guarantee a smooth glow even if GitHub strips the blur filter -->
   <g stroke="#E30022" stroke-linecap="round">
-    <!-- Wide, faint outer glow -->
-    <g stroke-width="20" opacity="0.25" filter="url(#neonGlow)">
-      <line x1="100" y1="60" x2="445" y2="60" /> <line x1="555" y1="60" x2="900" y2="60" />
-      <line x1="100" y1="440" x2="445" y2="440" /> <line x1="555" y1="440" x2="900" y2="440" />
-      <line x1="60" y1="100" x2="60" y2="400" /> <line x1="940" y1="100" x2="940" y2="400" />
+    <!-- Wide, faint outer glow (Uses actual blur filter if supported) -->
+    <g stroke-width="16" opacity="0.3" filter="url(#neonGlow)">
+      <line x1="110" y1="80" x2="455" y2="80" /> <line x1="545" y1="80" x2="890" y2="80" />
+      <line x1="110" y1="420" x2="455" y2="420" /> <line x1="545" y1="420" x2="890" y2="420" />
+      <line x1="80" y1="110" x2="80" y2="390" /> <line x1="920" y1="110" x2="920" y2="390" />
     </g>
-    <!-- Medium inner glow -->
-    <g stroke-width="10" opacity="0.6">
-      <line x1="100" y1="60" x2="445" y2="60" /> <line x1="555" y1="60" x2="900" y2="60" />
-      <line x1="100" y1="440" x2="445" y2="440" /> <line x1="555" y1="440" x2="900" y2="440" />
-      <line x1="60" y1="100" x2="60" y2="400" /> <line x1="940" y1="100" x2="940" y2="400" />
+    <!-- Medium inner glow (Ensures red light bleeds nicely on basic viewers) -->
+    <g stroke-width="8" opacity="0.6">
+      <line x1="110" y1="80" x2="455" y2="80" /> <line x1="545" y1="80" x2="890" y2="80" />
+      <line x1="110" y1="420" x2="455" y2="420" /> <line x1="545" y1="420" x2="890" y2="420" />
+      <line x1="80" y1="110" x2="80" y2="390" /> <line x1="920" y1="110" x2="920" y2="390" />
     </g>
   </g>
 
   <!-- ========================================== -->
   <!-- LAYER 4: K-66 CUSHIONS (Blond Sand)        -->
   <!-- ========================================== -->
-  <!-- Solid rubber cushions sit on top of the neon glow to cast it downward -->
-  <!-- Fallback shadow path included for mobile renderers beneath the main filter -->
-  <g fill="#1a1a1a" opacity="0.4" transform="translate(0, 4)">
-    <polygon points="80,60 460,60 445,85 105,85" />
-    <polygon points="540,60 920,60 895,85 555,85" />
-    <polygon points="80,440 460,440 445,415 105,415" />
-    <polygon points="540,440 920,440 895,415 555,415" />
-    <polygon points="60,80 60,420 85,395 85,105" />
-    <polygon points="940,80 940,420 915,395 915,105" />
-  </g>
-  
+  <!-- The sharp, angled polygon jaws. The rubber covers the neon glow, forcing light down onto the felt -->
   <g fill="#E8D5B5" filter="url(#cushionShadow)">
-    <polygon points="80,60 460,60 445,85 105,85" />
-    <polygon points="540,60 920,60 895,85 555,85" />
-    <polygon points="80,440 460,440 445,415 105,415" />
-    <polygon points="540,440 920,440 895,415 555,415" />
-    <polygon points="60,80 60,420 85,395 85,105" />
-    <polygon points="940,80 940,420 915,395 915,105" />
+    <polygon points="95,60 465,60 450,85 120,85" />
+    <polygon points="535,60 905,60 880,85 550,85" />
+    <polygon points="95,440 465,440 450,415 120,415" />
+    <polygon points="535,440 905,440 880,415 550,415" />
+    <polygon points="60,95 60,405 85,380 85,120" />
+    <polygon points="940,95 940,405 915,380 915,120" />
   </g>
 
   <!-- ========================================== -->
@@ -134,18 +120,15 @@
   <!-- ========================================== -->
   <g>
     <!-- Top Rail -->
-    <use href="#diamond" x="180" y="30" /> <use href="#diamond" x="260" y="30" /> <use href="#diamond" x="340" y="30" />
-    <use href="#diamond" x="660" y="30" /> <use href="#diamond" x="740" y="30" /> <use href="#diamond" x="820" y="30" />
-    
+    <use href="#diamond" x="190" y="30" /> <use href="#diamond" x="270" y="30" /> <use href="#diamond" x="350" y="30" />
+    <use href="#diamond" x="650" y="30" /> <use href="#diamond" x="730" y="30" /> <use href="#diamond" x="810" y="30" />
     <!-- Bottom Rail -->
-    <use href="#diamond" x="180" y="470" /> <use href="#diamond" x="260" y="470" /> <use href="#diamond" x="340" y="470" />
-    <use href="#diamond" x="660" y="470" /> <use href="#diamond" x="740" y="470" /> <use href="#diamond" x="820" y="470" />
-    
+    <use href="#diamond" x="190" y="470" /> <use href="#diamond" x="270" y="470" /> <use href="#diamond" x="350" y="470" />
+    <use href="#diamond" x="650" y="470" /> <use href="#diamond" x="730" y="470" /> <use href="#diamond" x="810" y="470" />
     <!-- Left Rail -->
     <use href="#diamond" x="30" y="165" transform="rotate(90 30 165)" />
     <use href="#diamond" x="30" y="250" transform="rotate(90 30 250)" />
     <use href="#diamond" x="30" y="335" transform="rotate(90 30 335)" />
-    
     <!-- Right Rail -->
     <use href="#diamond" x="970" y="165" transform="rotate(90 970 165)" />
     <use href="#diamond" x="970" y="250" transform="rotate(90 970 250)" />
