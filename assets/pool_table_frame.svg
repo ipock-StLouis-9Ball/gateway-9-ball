@@ -1,91 +1,125 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6400 3600" width="100%" height="100%" shape-rendering="geometricPrecision">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
   <defs>
-    <!-- Brushed Charcoal Metallic Rail Gradient -->
-    <linearGradient id="charcoalMetal" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1c1e22"/>
-      <stop offset="20%" stop-color="#2e3238"/>
-      <stop offset="40%" stop-color="#181a1d"/>
-      <stop offset="60%" stop-color="#3a3e46"/>
-      <stop offset="80%" stop-color="#22252a"/>
-      <stop offset="100%" stop-color="#121316"/>
+    <!-- White Oak Wood Gradients for 3D Rail Texture -->
+    <linearGradient id="white-oak-top" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ab9e87" />
+      <stop offset="25%" stop-color="#e8dfcc" />
+      <stop offset="50%" stop-color="#f7f3e8" />
+      <stop offset="75%" stop-color="#e8dfcc" />
+      <stop offset="100%" stop-color="#6e6350" />
     </linearGradient>
 
-    <!-- Cyan Glow Gradient for Inner Rail Accents -->
-    <linearGradient id="cyanGlowGrad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#00E5FF" stop-opacity="0.9"/>
-      <stop offset="50%" stop-color="#80F3FF" stop-opacity="1.0"/>
-      <stop offset="100%" stop-color="#00E5FF" stop-opacity="0.9"/>
+    <linearGradient id="white-oak-bottom" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#6e6350" />
+      <stop offset="25%" stop-color="#e8dfcc" />
+      <stop offset="50%" stop-color="#f7f3e8" />
+      <stop offset="75%" stop-color="#e8dfcc" />
+      <stop offset="100%" stop-color="#ab9e87" />
     </linearGradient>
 
-    <!-- Transparent Glass Pocket Depth Radial Gradient -->
-    <radialGradient id="glassPocketGrad" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#000000" stop-opacity="0.95"/>
-      <stop offset="50%" stop-color="#00E5FF" stop-opacity="0.25"/>
-      <stop offset="80%" stop-color="#001824" stop-opacity="0.6"/>
-      <stop offset="100%" stop-color="#00E5FF" stop-opacity="0.8"/>
+    <linearGradient id="white-oak-left" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ab9e87" />
+      <stop offset="25%" stop-color="#e8dfcc" />
+      <stop offset="50%" stop-color="#f7f3e8" />
+      <stop offset="75%" stop-color="#e8dfcc" />
+      <stop offset="100%" stop-color="#6e6350" />
+    </linearGradient>
+
+    <linearGradient id="white-oak-right" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6e6350" />
+      <stop offset="25%" stop-color="#e8dfcc" />
+      <stop offset="50%" stop-color="#f7f3e8" />
+      <stop offset="75%" stop-color="#e8dfcc" />
+      <stop offset="100%" stop-color="#ab9e87" />
+    </linearGradient>
+
+    <!-- GEMSTONE RADIAL GRADIENT FOR FACETED RUBIES -->
+    <radialGradient id="ruby-gem" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ff6b81" />
+      <stop offset="30%" stop-color="#ff1e43" />
+      <stop offset="75%" stop-color="#b3001b" />
+      <stop offset="100%" stop-color="#52000a" />
     </radialGradient>
 
-    <!-- Ruby Red Diamond Inlay -->
-    <g id="ruby-diamond">
-      <polygon points="0,-24 16,0 0,24 -16,0" fill="#00E5FF" opacity="0.6"/>
-      <polygon points="0,-20 13,0 0,20 -13,0" fill="#E0115F"/>
-      <polygon points="0,-16 8,-2 0,0 -6,-8" fill="#FF7BA9" opacity="0.9"/>
-    </g>
+    <!-- Inner Cushion Bumper St. Louis Cardinals Red Neon Glow Filter -->
+    <filter id="red-neon-filter" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="11" result="blur-wide" />
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur-med" />
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur-sharp" />
+      <feComponentTransfer in="blur-wide" result="glow-boosted">
+        <feFuncA type="linear" slope="2.6"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode in="glow-boosted" />
+        <feMergeNode in="blur-med" />
+        <feMergeNode in="blur-sharp" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- 6600K Kelvin Daylight Outer Chassis Neon Glow Filter -->
+    <filter id="kelvin-chassis-filter" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="blur-wide" />
+      <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur-med" />
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur-sharp" />
+      <feComponentTransfer in="blur-wide" result="glow-boosted">
+        <feFuncA type="linear" slope="2.2"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode in="glow-boosted" />
+        <feMergeNode in="blur-med" />
+        <feMergeNode in="blur-sharp" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
   </defs>
 
-  <!-- Layer 1: Outer Soft Shadow -->
-  <rect x="220" y="120" width="5960" height="3360" rx="180" ry="180" fill="#000000" opacity="0.7" filter="blur(20px)"/>
+  <!-- MASTER TRANSPARENCY MASK & CHASSIS INTERIOR FIELD -->
+  <path fill-rule="evenodd" fill="#111111" d="M 100,100 L 1500,100 L 1500,800 L 100,800 Z M 180,240 A 60,60 0 0,1 240,180 L 750,180 A 50,50 0 0,1 850,180 L 1360,180 A 60,60 0 0,1 1420,240 L 1420,660 A 60,60 0 0,1 1360,720 L 850,720 A 50,50 0 0,1 750,720 L 240,720 A 60,60 0 0,1 180,660 Z" />
 
-  <!-- Layer 2: Outer Brushed Charcoal Metallic Frame Body with Playing Area Cutout -->
-  <path d="M 400 200 H 6000 Q 6200 200 6200 400 V 3200 Q 6200 3400 6000 3400 H 400 Q 200 3400 200 3200 V 400 Q 200 200 400 200 Z M 1200 1000 H 5200 V 2600 H 1200 Z" fill="url(#charcoalMetal)" fill-rule="evenodd" stroke="#101214" stroke-width="16"/>
+  <!-- 6600K KELVIN DAYLIGHT EXTERIOR CHASSIS UNDERGLOW -->
+  <g fill="none" stroke="#ebf3ff" stroke-width="5" filter="url(#kelvin-chassis-filter)" opacity="0.9">
+    <rect x="98" y="98" width="1404" height="704" rx="42" stroke="#adcfff" stroke-width="6" />
+    <rect x="100" y="100" width="1400" height="700" rx="40" />
+  </g>
 
-  <!-- Layer 3: Cyan Glow Accent Lines along Rail-Felt Junction -->
-  <path d="M 1200 985 H 3080 M 3320 985 H 5200" stroke="#00E5FF" stroke-width="12" fill="none"/>
-  <path d="M 1200 2615 H 3080 M 3320 2615 H 5200" stroke="#00E5FF" stroke-width="12" fill="none"/>
-  <path d="M 1185 1000 V 2600 M 5215 1000 V 2600" stroke="#00E5FF" stroke-width="12" fill="none"/>
+  <!-- 3D WHITE OAK WOOD RAILS LAYOUT -->
+  <path fill="url(#white-oak-top)" d="M 180,100 L 775,100 L 750,180 L 240,180 A 60,60 0 0,1 180,240 L 100,160 C 100,120 120,100 180,100 Z" />
+  <path fill="url(#white-oak-top)" d="M 825,100 L 1420,100 C 1480,100 1500,120 1500,160 L 1420,240 A 60,60 0 0,1 1360,180 L 850,180 Z" />
+  <path fill="url(#white-oak-bottom)" d="M 100,740 L 180,660 A 60,60 0 0,1 240,720 L 750,720 L 775,800 L 180,800 C 120,800 100,780 100,740 Z" />
+  <path fill="url(#white-oak-bottom)" d="M 850,720 L 1360,720 A 60,60 0 0,1 1420,660 L 1500,740 C 1500,780 1480,800 1420,800 L 825,800 Z" />
+  <path fill="url(#white-oak-left)" d="M 100,160 L 180,240 L 180,660 L 100,740 Z" />
+  <path fill="url(#white-oak-right)" d="M 1420,240 L 1500,160 L 1500,740 L 1420,660 Z" />
 
-  <!-- Layer 4: Transparent Glass Pockets with Depth Shading -->
-  <!-- Top-Left Corner -->
-  <circle cx="1100" cy="900" r="140" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
-  <!-- Top-Right Corner -->
-  <circle cx="5300" cy="900" r="140" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
-  <!-- Bottom-Left Corner -->
-  <circle cx="1100" cy="2700" r="140" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
-  <!-- Bottom-Right Corner -->
-  <circle cx="5300" cy="2700" r="140" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
-  <!-- Top-Center Side -->
-  <circle cx="3200" cy="880" r="130" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
-  <!-- Bottom-Center Side -->
-  <circle cx="3200" cy="2720" r="130" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
+  <!-- RUBY GEMSTONE DIAMOND SIGHTS -->
+  <g fill="url(#ruby-gem)" stroke="#3b1116" stroke-width="1.2">
+    <polygon points="135,300 140,306 135,312 130,306" />
+    <polygon points="135,450 140,456 135,462 130,456" />
+    <polygon points="135,600 140,606 135,612 130,606" />
+    <polygon points="1465,300 1470,306 1465,312 1460,306" />
+    <polygon points="1465,450 1470,456 1465,462 1460,456" />
+    <polygon points="1465,600 1470,606 1465,612 1460,606" />
+    <polygon points="320,135 326,140 332,135 326,130" />
+    <polygon points="460,135 466,140 472,135 466,130" />
+    <polygon points="600,135 606,140 612,135 606,130" />
+    <polygon points="1000,135 1006,140 1012,135 1006,130" />
+    <polygon points="1140,135 1146,140 1152,135 1146,130" />
+    <polygon points="1280,135 1286,140 1292,135 1286,130" />
+    <polygon points="320,765 326,770 332,765 326,760" />
+    <polygon points="460,765 466,770 472,765 466,760" />
+    <polygon points="600,765 606,770 612,765 606,760" />
+    <polygon points="1000,765 1006,770 1012,765 1006,760" />
+    <polygon points="1140,765 1146,770 1152,765 1146,760" />
+    <polygon points="1280,765 1286,770 1292,765 1286,760" />
+  </g>
 
-  <!-- Layer 5: Ruby Diamond Inlays (18 Total) -->
-  <!-- Top Left Rail Diamonds -->
-  <use href="#ruby-diamond" x="1550" y="600"/>
-  <use href="#ruby-diamond" x="2060" y="600"/>
-  <use href="#ruby-diamond" x="2570" y="600"/>
-
-  <!-- Top Right Rail Diamonds -->
-  <use href="#ruby-diamond" x="3830" y="600"/>
-  <use href="#ruby-diamond" x="4340" y="600"/>
-  <use href="#ruby-diamond" x="4850" y="600"/>
-
-  <!-- Bottom Left Rail Diamonds -->
-  <use href="#ruby-diamond" x="1550" y="3000"/>
-  <use href="#ruby-diamond" x="2060" y="3000"/>
-  <use href="#ruby-diamond" x="2570" y="3000"/>
-
-  <!-- Bottom Right Rail Diamonds -->
-  <use href="#ruby-diamond" x="3830" y="3000"/>
-  <use href="#ruby-diamond" x="4340" y="3000"/>
-  <use href="#ruby-diamond" x="4850" y="3000"/>
-
-  <!-- Left Rail Diamonds -->
-  <use href="#ruby-diamond" x="600" y="1420"/>
-  <use href="#ruby-diamond" x="600" y="1800"/>
-  <use href="#ruby-diamond" x="600" y="2180"/>
-
-  <!-- Right Rail Diamonds -->
-  <use href="#ruby-diamond" x="5800" y="1420"/>
-  <use href="#ruby-diamond" x="5800" y="1800"/>
-  <use href="#ruby-diamond" x="5800" y="2180"/>
+  <!-- HIGH-INTENSITY INNER CUSHION ST. LOUIS CARDINALS RED NEON LIGHTS -->
+  <g fill="none" stroke="#C41E3A" stroke-width="4.5" filter="url(#red-neon-filter)">
+    <path d="M 240,180 L 750,180" />
+    <path d="M 850,180 L 1360,180" />
+    <path d="M 1420,240 L 1420,660" />
+    <path d="M 1360,720 L 850,720" />
+    <path d="M 750,720 L 240,720" />
+    <path d="M 180,660 L 180,240" />
+  </g>
 </svg>

@@ -125,16 +125,18 @@ export class Renderer {
   }
 
   _computeTableRect() {
+    const W = TABLE.width; // 100 inches
+    const H = TABLE.height; // 50 inches (2:1 aspect ratio)
+    // pool_table_frame.svg viewBox is 1600 x 900 with playfield cutout 1240 x 540 (from 180,180 to 1420,720).
+    const outerW = W * (1600 / 1240); // ~129.03 inches
+    const outerH = H * (900 / 540);   // 83.33 inches
+
     const availW = this.cssW;
     const availH = this.cssH;
 
-    // Maintain 2:1 aspect ratio for 100" x 50" WPA playing surface
-    let playW = availW;
-    let playH = availW / 2;
-    if (playH > availH) {
-      playH = availH;
-      playW = availH * 2;
-    }
+    const margin = Math.max(2, Math.min(availW, availH) * 0.005);
+    const maxW = availW - margin * 2;
+    const maxH = availH - margin * 2;
 
     const offsetX = (availW - playW) / 2;
     const offsetY = (availH - playH) / 2;
@@ -146,11 +148,10 @@ export class Renderer {
       w: playW,
       h: playH,
     };
-
-    this.tableRect = { ...this.playfieldRect };
-    this.playOffset = { x: 0, y: 0 };
-    this.playW = this.playfieldRect.w;
-    this.playH = this.playfieldRect.h;
+    // Playing area cutout starts at x=180, y=180 out of 1240x540 playfield dimensions
+    this.playOffset = { x: (180 / 1240) * W * scale, y: (180 / 540) * H * scale };
+    this.playW = W * scale;
+    this.playH = H * scale;
   }
 
   coordTransform(x, y) {
