@@ -14,14 +14,14 @@
   <script type="importmap">
     {
       "imports": {
-        "@dimforge/rapier2d-compat": "./node_modules/@dimforge/rapier2d-compat/dist/rapier.mjs"
+        "@dimforge/rapier2d-compat": "https://cdn.jsdelivr.net/npm/@dimforge/rapier2d-compat@0.12.0/rapier.mjs"
       }
     }
   </script>
 
   <!-- Inline on-page debug console (mobile-friendly) -->
   <style>
-    #debug-toggle { position: fixed; left: 8px; top: 8px; z-index: 99999; background: rgba(0,0,0,0.6); color: #fff; border-radius: 6px; padding: 6px 8px; font-size: 18px; backdrop-filter: blur(4px); }
+    #debug-toggle { position: fixed; right: 8px; top: 8px; z-index: 99999; background: rgba(0,0,0,0.6); color: #fff; border-radius: 6px; padding: 6px 8px; font-size: 18px; backdrop-filter: blur(4px); }
     #debug-log { position: fixed; left: 8px; bottom: 8px; z-index: 99998; background: rgba(10,10,10,0.92); color: #e6eef8; max-width: 94vw; width: 94vw; max-height: 40vh; overflow: auto; border-radius: 8px; padding: 8px; font-family: monospace; font-size: 12px; line-height: 1.2; box-shadow: 0 6px 18px rgba(0,0,0,0.6); display: none; }
     #debug-log .dbg-line { padding: 2px 4px; border-bottom: 1px solid rgba(255,255,255,0.02); }
     #debug-log .dbg-err { color: #ffb3b3; }
