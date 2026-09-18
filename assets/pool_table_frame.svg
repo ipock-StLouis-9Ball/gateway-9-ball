@@ -53,6 +53,25 @@
         flood-opacity="0.95"/>
     </filter>
 
+    <!-- Restored Clip Paths -->
+    <clipPath id="topBottomClip">
+      <path
+        fill-rule="evenodd"
+        d="
+          M 85 58 H 1115 V 142 H 85 Z
+          M 85 558 H 1115 V 642 H 85 Z
+        "/>
+    </clipPath>
+
+    <clipPath id="sideClip">
+      <path
+        fill-rule="evenodd"
+        d="
+          M 58 85 H 142 V 615 H 58 Z
+          M 1058 85 H 1142 V 615 H 1058 Z
+        "/>
+    </clipPath>
+
     <!-- Reusable inset ruby diamond -->
     <g id="diamond">
       <rect
