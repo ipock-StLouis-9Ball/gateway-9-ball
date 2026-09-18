@@ -109,4 +109,3 @@
     </g>
 </svg>
 
-2. Ensure the parent HTML canvas container styling remains set to transparent so the WebGL scene below displays through the center cutout.
