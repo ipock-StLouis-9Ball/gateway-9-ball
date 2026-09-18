@@ -89,12 +89,7 @@
         flood-opacity="0.95"/>
     </filter>
 
-    <!--
-      Main transparency mask:
-      - Corner pockets shifted diagonally outward into rail corners.
-      - Top side pocket moved up towards outer rail edge.
-      - Bottom side pocket moved down towards outer rail edge.
-    -->
+    <!-- Main transparency mask with uniform radius 28 for all pockets -->
     <mask id="tableCutouts"
           maskUnits="userSpaceOnUse"
           x="0"
@@ -106,15 +101,14 @@
       <!-- Fully transparent playfield -->
       <rect x="145" y="130" width="910" height="440" rx="8" fill="black"/>
 
-      <!-- Corner Pocket Openings (Moved diagonally outward) -->
-      <circle cx="115" cy="100" r="43" fill="black"/>
-      <circle cx="1085" cy="100" r="43" fill="black"/>
-      <circle cx="115" cy="600" r="43" fill="black"/>
-      <circle cx="1085" cy="600" r="43" fill="black"/>
+      <!-- All pockets set to uniform radius r="28" -->
+      <circle cx="145" cy="130" r="28" fill="black"/>
+      <circle cx="600" cy="130" r="28" fill="black"/>
+      <circle cx="1055" cy="130" r="28" fill="black"/>
 
-      <!-- Side Pocket Openings (Top moved up, Bottom moved down) -->
-      <circle cx="600" cy="95" r="36" fill="black"/>
-      <circle cx="600" cy="605" r="36" fill="black"/>
+      <circle cx="145" cy="570" r="28" fill="black"/>
+      <circle cx="600" cy="570" r="28" fill="black"/>
+      <circle cx="1055" cy="570" r="28" fill="black"/>
     </mask>
 
     <!-- Keeps the centers of pocket depth rings transparent -->
@@ -126,13 +120,13 @@
           height="700">
       <rect width="1200" height="700" fill="white"/>
 
-      <circle cx="115" cy="100" r="33" fill="black"/>
-      <circle cx="1085" cy="100" r="33" fill="black"/>
-      <circle cx="115" cy="600" r="33" fill="black"/>
-      <circle cx="1085" cy="600" r="33" fill="black"/>
+      <circle cx="145" cy="130" r="21" fill="black"/>
+      <circle cx="600" cy="130" r="21" fill="black"/>
+      <circle cx="1055" cy="130" r="21" fill="black"/>
 
-      <circle cx="600" cy="95" r="28" fill="black"/>
-      <circle cx="600" cy="605" r="28" fill="black"/>
+      <circle cx="145" cy="570" r="21" fill="black"/>
+      <circle cx="600" cy="570" r="21" fill="black"/>
+      <circle cx="1055" cy="570" r="21" fill="black"/>
     </mask>
 
     <!-- Grain clips -->
@@ -201,6 +195,7 @@
       rx="38"
       fill="url(#oakBase)"/>
 
+    <!-- Outer metallic highlight -->
     <rect
       x="57"
       y="57"
@@ -212,6 +207,7 @@
       stroke-width="2"
       opacity="0.50"/>
 
+    <!-- Inner deep metal groove -->
     <rect
       x="68"
       y="68"
@@ -223,6 +219,7 @@
       stroke-width="8"
       opacity="0.80"/>
 
+    <!-- Inner silver bevel highlight -->
     <rect
       x="74"
       y="74"
@@ -274,80 +271,61 @@
     </g>
   </g>
 
-  <!-- Cushion and LED Accent Assembly -->
+  <!-- Cushion assembly with perfectly fitted mitered segments -->
   <g id="cushion-inset"
      mask="url(#tableCutouts)"
      filter="url(#cushionInset)">
 
-    <rect
-      x="118"
-      y="104"
-      width="964"
-      height="492"
-      rx="16"
-      fill="none"
-      stroke="#1F1A14"
-      stroke-width="28"/>
+    <!-- Shadow Seam Segments -->
+    <line x1="173" y1="130" x2="572" y2="130" stroke="#1F1A14" stroke-width="28" stroke-linecap="square"/>
+    <line x1="628" y1="130" x2="1027" y2="130" stroke="#1F1A14" stroke-width="28" stroke-linecap="square"/>
+    <line x1="173" y1="570" x2="572" y2="570" stroke="#1F1A14" stroke-width="28" stroke-linecap="square"/>
+    <line x1="628" y1="570" x2="1027" y2="570" stroke="#1F1A14" stroke-width="28" stroke-linecap="square"/>
+    <line x1="145" y1="158" x2="145" y2="542" stroke="#1F1A14" stroke-width="28" stroke-linecap="square"/>
+    <line x1="1055" y1="158" x2="1055" y2="542" stroke="#1F1A14" stroke-width="28" stroke-linecap="square"/>
 
-    <rect
-      x="133"
-      y="119"
-      width="934"
-      height="462"
-      rx="10"
-      fill="none"
-      stroke="url(#cushion)"
-      stroke-width="18"/>
+    <!-- Matte Beach-Blond Cushion Segments -->
+    <line x1="173" y1="130" x2="572" y2="130" stroke="url(#cushion)" stroke-width="18" stroke-linecap="square"/>
+    <line x1="628" y1="130" x2="1027" y2="130" stroke="url(#cushion)" stroke-width="18" stroke-linecap="square"/>
+    <line x1="173" y1="570" x2="572" y2="570" stroke="url(#cushion)" stroke-width="18" stroke-linecap="square"/>
+    <line x1="628" y1="570" x2="1027" y2="570" stroke="url(#cushion)" stroke-width="18" stroke-linecap="square"/>
+    <line x1="145" y1="158" x2="145" y2="542" stroke="url(#cushion)" stroke-width="18" stroke-linecap="square"/>
+    <line x1="1055" y1="158" x2="1055" y2="542" stroke="url(#cushion)" stroke-width="18" stroke-linecap="square"/>
 
-    <!-- Blue LED Glow -->
-    <rect
-      x="144"
-      y="130"
-      width="912"
-      height="440"
-      rx="8"
-      fill="none"
-      stroke="#00E5FF"
-      stroke-width="8"
-      opacity="0.30"/>
-
-    <rect
-      x="144"
-      y="130"
-      width="912"
-      height="440"
-      rx="8"
-      fill="none"
-      stroke="#00E5FF"
-      stroke-width="2"
-      opacity="0.95"/>
+    <!-- Sharp Blue LED Core Accent Lines -->
+    <line x1="173" y1="130" x2="572" y2="130" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
+    <line x1="628" y1="130" x2="1027" y2="130" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
+    <line x1="173" y1="570" x2="572" y2="570" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
+    <line x1="628" y1="570" x2="1027" y2="570" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
+    <line x1="145" y1="158" x2="145" y2="542" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
+    <line x1="1055" y1="158" x2="1055" y2="542" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
   </g>
 
-  <!-- Pocket depth rings matching new outward positions -->
+  <!-- Pocket depth rings matching radius 28 -->
   <g id="pocket-bevels" mask="url(#pocketCenter)" fill="none">
-    <!-- Top-Left -->
-    <circle cx="115" cy="100" r="42" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="115" cy="100" r="39" stroke="#111317" stroke-width="6"/>
+    <!-- Top-left -->
+    <circle cx="145" cy="130" r="28" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="145" cy="130" r="25" stroke="#111317" stroke-width="5"/>
 
-    <!-- Top-Middle -->
-    <circle cx="600" cy="95" r="36" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="600" cy="95" r="33" stroke="#111317" stroke-width="6"/>
+    <!-- Top-middle -->
+    <circle cx="600" cy="130" r="28" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="600" cy="130" r="25" stroke="#111317" stroke-width="5"/>
 
-    <!-- Top-Right -->
-    <circle cx="1085" cy="100" r="42" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="1085" cy="100" r="39" stroke="#111317" stroke-width="6"/>
+    <!-- Top-right -->
+    <circle cx="1055" cy="130" r="28" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="1055" cy="130" r="25" stroke="#111317" stroke-width="5"/>
 
-    <!-- Bottom-Left -->
-    <circle cx="115" cy="600" r="42" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="115" cy="600" r="39" stroke="#111317" stroke-width="6"/>
+    <!-- Bottom-left -->
+    <circle cx="145" cy="570" r="28" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="145" cy="570" r="25" stroke="#111317" stroke-width="5"/>
 
-    <!-- Bottom-Middle -->
-    <circle cx="600" cy="605" r="36" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="600" cy="605" r="33" stroke="#111317" stroke-width="6"/>
+    <!-- Bottom-middle -->
+    <circle cx="600" cy="570" r="28" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="600" cy="570" r="25" stroke="#111317" stroke-width="5"/>
 
-    <!-- Bottom-Right -->
-    <circle cx="1085" cy="600" r="42" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="1085" cy="600" r="39" stroke="#111317" stroke-width="6"/>
+    <!-- Bottom-right -->
+    <circle cx="1055" cy="570" r="28" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="1055" cy="570" r="25" stroke="#111317" stroke-width="5"/>
   </g>
 
   <!-- Exactly 18 WPA-compliant ruby sight diamonds -->
