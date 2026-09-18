@@ -49,10 +49,10 @@ export function getPocketBlueprint(W = TABLE.width, H = TABLE.height) {
 }
 
 export function createRegulationRackPositions() {
-  const apexX = 66.0; // Foot spot
-  const apexY = 22.0; // Center Y
-  const cueX = 22.0;  // Head spot
-  const cueY = 22.0;
+  const apexX = 75.0; // Foot spot (WPA 100" x 50" surface)
+  const apexY = 25.0; // Center Y
+  const cueX = 25.0;  // Head spot
+  const cueY = 25.0;
 
   const epsilon = 0.005; // Spacing epsilon to prevent overlap explosion on frame 0
   const d = BALL_DIAMETER + epsilon; // 2.255 inches
