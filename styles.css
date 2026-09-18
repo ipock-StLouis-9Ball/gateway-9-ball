@@ -68,7 +68,7 @@ body {
 
 .hidden { display: none !important; }
 
-.screen { position: fixed; inset: 0; overflow: auto; }
+.screen { position: fixed; inset: 0; overflow: auto; z-index: 10; pointer-events: auto; }
 .muted { color: var(--text-muted); }
 .small { font-size: 12px; }
 .link-btn { background: none; border: none; color: var(--arch-gold); font-size: 12px; cursor: pointer; text-decoration: underline; }
@@ -180,13 +180,15 @@ body {
 .upload-btn:hover { background: rgba(232, 183, 90, 0.1); }
 .error-text { color: var(--cardinal-bright); font-size: 13px; font-weight: 600; text-align: center; }
 
-.menu-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.menu-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; position: relative; z-index: 20; pointer-events: auto; }
 .menu-btn {
   display: flex; flex-direction: column; gap: 4px; align-items: flex-start;
   background: rgba(11, 18, 32, 0.85); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: var(--radius);
   padding: 18px 20px; cursor: pointer; color: #ffffff; text-align: left;
   backdrop-filter: blur(8px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   transition: transform 0.12s, border-color 0.12s, background 0.12s;
+  pointer-events: auto;
+  touch-action: manipulation;
 }
 .menu-btn:hover, .menu-btn:active { transform: translateY(-2px); border-color: var(--arch-gold); background: rgba(20, 30, 48, 0.92); }
 .menu-btn.primary { background: linear-gradient(135deg, rgba(196, 30, 58, 0.95), rgba(138, 20, 40, 0.95)); border-color: var(--cardinal-bright); }
