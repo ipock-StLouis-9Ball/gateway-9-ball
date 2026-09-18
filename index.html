@@ -117,41 +117,108 @@
   <!-- Canvas container and inline SVG sidebar for strict 80vw / 20vw layout structure -->
   <div id="canvas-container" class="hidden">
     <div class="modern-pool-table">
-      <!-- Pockets -->
-      <div class="pocket tl"></div>
-      <div class="pocket tc"></div>
-      <div class="pocket tr"></div>
-      <div class="pocket bl"></div>
-      <div class="pocket bc"></div>
-      <div class="pocket br"></div>
+      <!-- Master WPA Table SVG Frame: 110" x 60" Outer Footprint -->
+      <svg class="table-svg-frame" viewBox="0 0 110 60" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="wood-rail-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#20120a" />
+            <stop offset="25%" stop-color="#3a2214" />
+            <stop offset="50%" stop-color="#4a2e1d" />
+            <stop offset="75%" stop-color="#321c10" />
+            <stop offset="100%" stop-color="#1a0f08" />
+          </linearGradient>
+          <linearGradient id="sand-cushion-grad-top" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#b8a688" />
+            <stop offset="40%" stop-color="#d8caaf" />
+            <stop offset="100%" stop-color="#f0e2ca" />
+          </linearGradient>
+          <linearGradient id="sand-cushion-grad-bot" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#b8a688" />
+            <stop offset="40%" stop-color="#d8caaf" />
+            <stop offset="100%" stop-color="#f0e2ca" />
+          </linearGradient>
+          <linearGradient id="sand-cushion-grad-left" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#b8a688" />
+            <stop offset="40%" stop-color="#d8caaf" />
+            <stop offset="100%" stop-color="#f0e2ca" />
+          </linearGradient>
+          <linearGradient id="sand-cushion-grad-right" x1="100%" y1="0%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#b8a688" />
+            <stop offset="40%" stop-color="#d8caaf" />
+            <stop offset="100%" stop-color="#f0e2ca" />
+          </linearGradient>
+          <radialGradient id="pocket-drop-grad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#050403" />
+            <stop offset="60%" stop-color="#120e0a" />
+            <stop offset="100%" stop-color="#281d14" />
+          </radialGradient>
+          <filter id="cushion-shadow" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="0" dy="1.5" stdDeviation="1.2" flood-color="#000" flood-opacity="0.6" />
+          </filter>
+        </defs>
 
-      <!-- Ruby Red Diamond Sights (Top Rail: 6 diamonds across 2 segments) -->
-      <div class="diamond top-1"></div>
-      <div class="diamond top-2"></div>
-      <div class="diamond top-3"></div>
-      <div class="diamond top-4"></div>
-      <div class="diamond top-5"></div>
-      <div class="diamond top-6"></div>
+        <!-- 1. Heavy Outer Hardwood Rail Frame -->
+        <rect x="0" y="0" width="110" height="60" rx="3.5" fill="url(#wood-rail-grad)" stroke="#120a05" stroke-width="0.5" />
 
-      <!-- Ruby Red Diamond Sights (Bottom Rail: 6 diamonds across 2 segments) -->
-      <div class="diamond bottom-1"></div>
-      <div class="diamond bottom-2"></div>
-      <div class="diamond bottom-3"></div>
-      <div class="diamond bottom-4"></div>
-      <div class="diamond bottom-5"></div>
-      <div class="diamond bottom-6"></div>
+        <!-- 2. Pocket Drop Wells & Cutouts Recessing Outward Into Rail Structure -->
+        <circle cx="5" cy="5" r="3.8" fill="url(#pocket-drop-grad)" />
+        <circle cx="105" cy="5" r="3.8" fill="url(#pocket-drop-grad)" />
+        <circle cx="5" cy="55" r="3.8" fill="url(#pocket-drop-grad)" />
+        <circle cx="105" cy="55" r="3.8" fill="url(#pocket-drop-grad)" />
+        <circle cx="55" cy="3.2" r="3.2" fill="url(#pocket-drop-grad)" />
+        <circle cx="55" cy="56.8" r="3.2" fill="url(#pocket-drop-grad)" />
 
-      <!-- Ruby Red Diamond Sights (Left Rail: 3 diamonds) -->
-      <div class="diamond left-1"></div>
-      <div class="diamond left-2"></div>
-      <div class="diamond left-3"></div>
+        <!-- 3. Beach Blond Sand Inner Cushion Slopes with Correct Nose Orientation & WPA End Facings -->
+        <!-- Top Left Rail Segment -->
+        <polygon points="8.447,5.0 52.312,5.0 50.820,3.812 8.038,3.812" fill="url(#sand-cushion-grad-top)" filter="url(#cushion-shadow)" />
+        <!-- Top Right Rail Segment -->
+        <polygon points="57.688,5.0 101.553,5.0 101.962,3.812 59.180,3.812" fill="url(#sand-cushion-grad-top)" filter="url(#cushion-shadow)" />
+        <!-- Bottom Left Rail Segment -->
+        <polygon points="8.447,55.0 52.312,55.0 50.820,56.188 8.038,56.188" fill="url(#sand-cushion-grad-bot)" filter="url(#cushion-shadow)" />
+        <!-- Bottom Right Rail Segment -->
+        <polygon points="57.688,55.0 101.553,55.0 101.962,56.188 59.180,56.188" fill="url(#sand-cushion-grad-bot)" filter="url(#cushion-shadow)" />
+        <!-- Left Short Rail Segment -->
+        <polygon points="5.0,8.447 5.0,51.553 3.812,51.962 3.812,8.038" fill="url(#sand-cushion-grad-left)" filter="url(#cushion-shadow)" />
+        <!-- Right Short Rail Segment -->
+        <polygon points="105.0,8.447 105.0,51.553 106.188,51.962 106.188,8.038" fill="url(#sand-cushion-grad-right)" filter="url(#cushion-shadow)" />
 
-      <!-- Ruby Red Diamond Sights (Right Rail: 3 diamonds) -->
-      <div class="diamond right-1"></div>
-      <div class="diamond right-2"></div>
-      <div class="diamond right-3"></div>
+        <!-- Cushion Nose Edge Highlighting (Active 100" x 50" Boundary Lines) -->
+        <line x1="8.447" y1="5.0" x2="52.312" y2="5.0" stroke="#fff" stroke-width="0.25" stroke-opacity="0.8" />
+        <line x1="57.688" y1="5.0" x2="101.553" y2="5.0" stroke="#fff" stroke-width="0.25" stroke-opacity="0.8" />
+        <line x1="8.447" y1="55.0" x2="52.312" y2="55.0" stroke="#fff" stroke-width="0.25" stroke-opacity="0.8" />
+        <line x1="57.688" y1="55.0" x2="101.553" y2="55.0" stroke="#fff" stroke-width="0.25" stroke-opacity="0.8" />
+        <line x1="5.0" y1="8.447" x2="5.0" y2="51.553" stroke="#fff" stroke-width="0.25" stroke-opacity="0.8" />
+        <line x1="105.0" y1="8.447" x2="105.0" y2="51.553" stroke="#fff" stroke-width="0.25" stroke-opacity="0.8" />
 
-      <!-- Beach Blond Felt Playing Surface -->
+        <!-- 4. Mathematically Interpolated Ruby Red Diamond Sights (18 Total) -->
+        <!-- Top Rail Diamonds (6 Total) -->
+        <polygon points="19.413,1.906 20.013,1.306 20.613,1.906 20.013,2.506" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+        <polygon points="30.380,1.906 30.980,1.306 31.580,1.906 30.980,2.506" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+        <polygon points="41.346,1.906 41.946,1.306 42.546,1.906 41.946,2.506" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+        <polygon points="67.454,1.906 68.054,1.306 68.654,1.906 68.054,2.506" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+        <polygon points="78.420,1.906 79.020,1.306 79.620,1.906 79.020,2.506" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+        <polygon points="89.387,1.906 89.987,1.306 90.587,1.906 89.987,2.506" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+
+        <!-- Bottom Rail Diamonds (6 Total) -->
+        <polygon points="19.413,58.094 20.013,57.494 20.613,58.094 20.013,58.694" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+        <polygon points="30.380,58.094 30.980,57.494 31.580,58.094 30.980,58.694" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+        <polygon points="41.346,58.094 41.946,57.494 42.546,58.094 41.946,58.694" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+        <polygon points="67.454,58.094 68.054,57.494 68.654,58.094 68.054,58.694" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+        <polygon points="78.420,58.094 79.020,57.494 79.620,58.094 79.020,58.694" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+        <polygon points="89.387,58.094 89.987,57.494 90.587,58.094 89.987,58.694" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+
+        <!-- Left Short Rail Diamonds (3 Total) -->
+        <polygon points="1.906,16.913 2.506,17.513 1.906,18.113 1.306,17.513" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+        <polygon points="1.906,29.400 2.506,30.000 1.906,30.600 1.306,30.000" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+        <polygon points="1.906,41.887 2.506,42.487 1.906,43.087 1.306,42.487" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+
+        <!-- Right Short Rail Diamonds (3 Total) -->
+        <polygon points="108.094,16.913 108.694,17.513 108.094,18.113 107.494,17.513" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+        <polygon points="108.094,29.400 108.694,30.000 108.094,30.600 107.494,30.000" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+        <polygon points="108.094,41.887 108.694,42.487 108.094,43.087 107.494,42.487" fill="#e0115f" stroke="#fff" stroke-width="0.15" />
+      </svg>
+
+      <!-- Beach Blond Felt Playing Surface Bed (100" x 50" Active Area) -->
       <div class="felt-surface">
         <canvas id="game-canvas"></canvas>
       </div>

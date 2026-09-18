@@ -62,88 +62,43 @@ body {
   background: transparent !important;
 }
 
-/* Fully Responsive WPA 9-Foot Table Container */
+/* Fully Responsive WPA 9-Foot Table Container (110" x 60" Footprint, 11:6 Aspect Ratio) */
 .modern-pool-table {
   width: 100%;
   max-width: 1100px;
   max-height: calc(100vh - 32px);
-  aspect-ratio: 2 / 1;
+  aspect-ratio: 110 / 60;
   position: relative;
   box-sizing: border-box;
   margin: auto;
-  background: linear-gradient(135deg, #2e1c12, #4a2e1d 30%, #3a2214 50%, #4f3220 80%, #20120a);
-  border-radius: 18px;
-  border: 4px solid #1a0f08;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(0, 0, 0, 0.6);
-}
-
-/* Light Beach Blond / Sand Playing Surface */
-.felt-surface {
-  position: absolute;
-  top: 8%;
-  bottom: 8%;
-  left: 4%;
-  right: 4%;
-  background: radial-gradient(circle at center, #d8caaf 0%, #c5b294 60%, #a89678 100%);
-  border-radius: 6px;
-  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.5), 0 0 0 3px #a89678;
+  border-radius: 12px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.85);
   overflow: hidden;
 }
 
-/* Pockets */
-.pocket {
+.table-svg-frame {
   position: absolute;
-  width: clamp(24px, 4vw, 42px);
-  height: clamp(24px, 4vw, 42px);
-  border-radius: 50%;
-  background: radial-gradient(circle, #0a0806 20%, #181410 70%, #3a2b20 100%);
-  border: 2px solid #221912;
-  box-shadow: inset 0 2px 8px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.5);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Light Beach Blond / Sand Playing Surface Bed (100" x 50" Active Area) */
+.felt-surface {
+  position: absolute;
+  top: 8.333333%;
+  bottom: 8.333333%;
+  left: 4.545455%;
+  right: 4.545455%;
+  background: radial-gradient(circle at center, #d8caaf 0%, #c5b294 60%, #a89678 100%);
+  border-radius: 2px;
+  box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
   z-index: 2;
-  transform: translate(-50%, -50%);
 }
-
-.pocket.tl { top: 8%; left: 4%; }
-.pocket.tc { top: 8%; left: 50%; }
-.pocket.tr { top: 8%; left: 96%; }
-.pocket.bl { top: 92%; left: 4%; }
-.pocket.bc { top: 92%; left: 50%; }
-.pocket.br { top: 92%; left: 96%; }
-
-/* Ruby Red Diamond Sights */
-.diamond {
-  position: absolute;
-  width: clamp(6px, 1vw, 10px);
-  height: clamp(6px, 1vw, 10px);
-  background: linear-gradient(135deg, #ff4d6d, #e0115f, #800020);
-  transform: translate(-50%, -50%) rotate(45deg);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 6px rgba(224, 17, 95, 0.6);
-  z-index: 3;
-}
-
-/* Diamond placements along rails */
-.diamond.top-1 { top: 4%; left: 15.5%; }
-.diamond.top-2 { top: 4%; left: 27.0%; }
-.diamond.top-3 { top: 4%; left: 38.5%; }
-.diamond.top-4 { top: 4%; left: 61.5%; }
-.diamond.top-5 { top: 4%; left: 73.0%; }
-.diamond.top-6 { top: 4%; left: 84.5%; }
-
-.diamond.bottom-1 { top: 96%; left: 15.5%; }
-.diamond.bottom-2 { top: 96%; left: 27.0%; }
-.diamond.bottom-3 { top: 96%; left: 38.5%; }
-.diamond.bottom-4 { top: 96%; left: 61.5%; }
-.diamond.bottom-5 { top: 96%; left: 73.0%; }
-.diamond.bottom-6 { top: 96%; left: 84.5%; }
-
-.diamond.left-1 { top: 29.0%; left: 2%; }
-.diamond.left-2 { top: 50.0%; left: 2%; }
-.diamond.left-3 { top: 71.0%; left: 2%; }
-
-.diamond.right-1 { top: 29.0%; left: 98%; }
-.diamond.right-2 { top: 50.0%; left: 98%; }
-.diamond.right-3 { top: 71.0%; left: 98%; }
 
 #ui-sidebar {
   width: 20vw !important;
