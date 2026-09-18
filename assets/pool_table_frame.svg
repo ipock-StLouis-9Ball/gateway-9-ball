@@ -91,10 +91,9 @@
 
     <!--
       Main transparency mask:
-      - Uniform radius r="28" for all six pockets.
-      - Corner pockets shifted diagonally outward into rail corners.
-      - Top side pocket moved up towards outer rail edge.
-      - Bottom side pocket moved down towards outer rail edge.
+      - Uniform radius r="28" for all pockets.
+      - Corner pockets shifted diagonally outward into rails (edges touch playfield corners at 145,130 etc.).
+      - Side pockets shifted into rails (edges touch playfield top/bottom edges at y=130 and y=570).
     -->
     <mask id="tableCutouts"
           maskUnits="userSpaceOnUse"
@@ -107,14 +106,15 @@
       <!-- Fully transparent playfield -->
       <rect x="145" y="130" width="910" height="440" rx="8" fill="black"/>
 
-      <!-- Uniform r="28" pocket openings -->
-      <circle cx="115" cy="100" r="28" fill="black"/>
-      <circle cx="600" cy="95" r="28" fill="black"/>
-      <circle cx="1085" cy="100" r="28" fill="black"/>
+      <!-- Corner Pockets (r=28, centers offset diagonally into rails) -->
+      <circle cx="125" cy="110" r="28" fill="black"/>
+      <circle cx="1075" cy="110" r="28" fill="black"/>
+      <circle cx="125" cy="590" r="28" fill="black"/>
+      <circle cx="1075" cy="590" r="28" fill="black"/>
 
-      <circle cx="115" cy="600" r="28" fill="black"/>
-      <circle cx="600" cy="605" r="28" fill="black"/>
-      <circle cx="1085" cy="600" r="28" fill="black"/>
+      <!-- Side Pockets (r=28, centers offset vertically into rails) -->
+      <circle cx="600" cy="102" r="28" fill="black"/>
+      <circle cx="600" cy="598" r="28" fill="black"/>
     </mask>
 
     <!-- Keeps the centers of pocket depth rings transparent -->
@@ -126,13 +126,13 @@
           height="700">
       <rect width="1200" height="700" fill="white"/>
 
-      <circle cx="115" cy="100" r="21" fill="black"/>
-      <circle cx="600" cy="95" r="21" fill="black"/>
-      <circle cx="1085" cy="100" r="21" fill="black"/>
+      <circle cx="125" cy="110" r="21" fill="black"/>
+      <circle cx="1075" cy="110" r="21" fill="black"/>
+      <circle cx="125" cy="590" r="21" fill="black"/>
+      <circle cx="1075" cy="590" r="21" fill="black"/>
 
-      <circle cx="115" cy="600" r="21" fill="black"/>
-      <circle cx="600" cy="605" r="21" fill="black"/>
-      <circle cx="1085" cy="600" r="21" fill="black"/>
+      <circle cx="600" cy="102" r="21" fill="black"/>
+      <circle cx="600" cy="598" r="21" fill="black"/>
     </mask>
 
     <!-- Grain clips -->
@@ -277,69 +277,83 @@
     </g>
   </g>
 
-  <!-- Cushion Assembly with WPA-compliant mitered cuts and precise segment trims -->
+  <!-- Cushion Assembly -->
   <g id="cushion-inset"
      mask="url(#tableCutouts)"
      filter="url(#cushionInset)">
 
-    <!-- Shadow Seam Segments -->
-    <line x1="143" y1="130" x2="572" y2="130" stroke="#1F1A14" stroke-width="28" stroke-linecap="square"/>
-    <line x1="628" y1="130" x2="1057" y2="130" stroke="#1F1A14" stroke-width="28" stroke-linecap="square"/>
-    <line x1="143" y1="570" x2="572" y2="570" stroke="#1F1A14" stroke-width="28" stroke-linecap="square"/>
-    <line x1="628" y1="570" x2="1057" y2="570" stroke="#1F1A14" stroke-width="28" stroke-linecap="square"/>
-    <line x1="145" y1="128" x2="145" y2="572" stroke="#1F1A14" stroke-width="28" stroke-linecap="square"/>
-    <line x1="1055" y1="128" x2="1055" y2="572" stroke="#1F1A14" stroke-width="28" stroke-linecap="square"/>
+    <!-- Dark shadow seam backing -->
+    <rect
+      x="118"
+      y="104"
+      width="964"
+      height="492"
+      rx="16"
+      fill="none"
+      stroke="#1F1A14"
+      stroke-width="28"/>
 
-    <!-- Matte Beach-Blond Cushion Segments -->
-    <line x1="143" y1="130" x2="572" y2="130" stroke="url(#cushion)" stroke-width="18" stroke-linecap="square"/>
-    <line x1="628" y1="130" x2="1057" y2="130" stroke="url(#cushion)" stroke-width="18" stroke-linecap="square"/>
-    <line x1="143" y1="570" x2="572" y2="570" stroke="url(#cushion)" stroke-width="18" stroke-linecap="square"/>
-    <line x1="628" y1="570" x2="1057" y2="570" stroke="url(#cushion)" stroke-width="18" stroke-linecap="square"/>
-    <line x1="145" y1="128" x2="145" y2="572" stroke="url(#cushion)" stroke-width="18" stroke-linecap="square"/>
-    <line x1="1055" y1="128" x2="1055" y2="572" stroke="url(#cushion)" stroke-width="18" stroke-linecap="square"/>
+    <!-- Matte beach-blond rubber cushion -->
+    <rect
+      x="133"
+      y="119"
+      width="934"
+      height="462"
+      rx="10"
+      fill="none"
+      stroke="url(#cushion)"
+      stroke-width="18"/>
 
     <!-- Blue LED Glow -->
-    <line x1="143" y1="130" x2="572" y2="130" stroke="#00E5FF" stroke-width="8" opacity="0.30"/>
-    <line x1="628" y1="130" x2="1057" y2="130" stroke="#00E5FF" stroke-width="8" opacity="0.30"/>
-    <line x1="143" y1="570" x2="572" y2="570" stroke="#00E5FF" stroke-width="8" opacity="0.30"/>
-    <line x1="628" y1="570" x2="1057" y2="570" stroke="#00E5FF" stroke-width="8" opacity="0.30"/>
-    <line x1="145" y1="128" x2="145" y2="572" stroke="#00E5FF" stroke-width="8" opacity="0.30"/>
-    <line x1="1055" y1="128" x2="1055" y2="572" stroke="#00E5FF" stroke-width="8" opacity="0.30"/>
+    <rect
+      x="144"
+      y="130"
+      width="912"
+      height="440"
+      rx="8"
+      fill="none"
+      stroke="#00E5FF"
+      stroke-width="8"
+      opacity="0.30"/>
 
     <!-- Sharp Blue LED Core -->
-    <line x1="143" y1="130" x2="572" y2="130" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
-    <line x1="628" y1="130" x2="1057" y2="130" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
-    <line x1="143" y1="570" x2="572" y2="570" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
-    <line x1="628" y1="570" x2="1057" y2="570" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
-    <line x1="145" y1="128" x2="145" y2="572" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
-    <line x1="1055" y1="128" x2="1055" y2="572" stroke="#00E5FF" stroke-width="2" opacity="0.95"/>
+    <rect
+      x="144"
+      y="130"
+      width="912"
+      height="440"
+      rx="8"
+      fill="none"
+      stroke="#00E5FF"
+      stroke-width="2"
+      opacity="0.95"/>
   </g>
 
-  <!-- Pocket depth rings matching uniform radius 28 at new outward positions -->
+  <!-- Pocket depth rings matching uniform radius 28 at rail-locked positions -->
   <g id="pocket-bevels" mask="url(#pocketCenter)" fill="none">
     <!-- Top-Left -->
-    <circle cx="115" cy="100" r="35" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="115" cy="100" r="28" stroke="#111317" stroke-width="5"/>
+    <circle cx="125" cy="110" r="35" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="125" cy="110" r="28" stroke="#111317" stroke-width="5"/>
 
     <!-- Top-Middle -->
-    <circle cx="600" cy="95" r="35" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="600" cy="95" r="28" stroke="#111317" stroke-width="5"/>
+    <circle cx="600" cy="102" r="35" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="600" cy="102" r="28" stroke="#111317" stroke-width="5"/>
 
     <!-- Top-Right -->
-    <circle cx="1085" cy="100" r="35" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="1085" cy="100" r="28" stroke="#111317" stroke-width="5"/>
+    <circle cx="1075" cy="110" r="35" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="1075" cy="110" r="28" stroke="#111317" stroke-width="5"/>
 
     <!-- Bottom-Left -->
-    <circle cx="115" cy="600" r="35" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="115" cy="600" r="28" stroke="#111317" stroke-width="5"/>
+    <circle cx="125" cy="590" r="35" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="125" cy="590" r="28" stroke="#111317" stroke-width="5"/>
 
     <!-- Bottom-Middle -->
-    <circle cx="600" cy="605" r="35" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="600" cy="605" r="28" stroke="#111317" stroke-width="5"/>
+    <circle cx="600" cy="598" r="35" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="600" cy="598" r="28" stroke="#111317" stroke-width="5"/>
 
     <!-- Bottom-Right -->
-    <circle cx="1085" cy="600" r="35" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="1085" cy="600" r="28" stroke="#111317" stroke-width="5"/>
+    <circle cx="1075" cy="590" r="35" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="1075" cy="590" r="28" stroke="#111317" stroke-width="5"/>
   </g>
 
   <!-- Exactly 18 WPA-compliant ruby sight diamonds -->
