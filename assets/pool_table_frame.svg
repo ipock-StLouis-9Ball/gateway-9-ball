@@ -1,57 +1,55 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">
 
-  <!-- FULLY TRANSPARENT CENTER -->
-  <rect x="0" y="0" width="1000" height="500" fill="none"/>
+  <!-- TRANSPARENT CENTER -->
+  <rect x="0" y="0" width="1200" height="700" fill="none"/>
 
   <!-- METAL OUTER FRAME -->
-  <rect x="50" y="25" width="900" height="450" rx="18" ry="18" fill="#3f3f3f"/>
-  <rect x="70" y="45" width="860" height="410" rx="14" ry="14" fill="#606060"/>
+  <rect x="20" y="20" width="1160" height="660" rx="24" ry="24" fill="#3f3f3f"/>
+  <rect x="40" y="40" width="1120" height="620" rx="20" ry="20" fill="#606060"/>
 
-  <!-- BUMPER CUSHIONS (NO FELT BEHIND THEM) -->
-  <!-- Top cushion -->
-  <rect x="100" y="75" width="800" height="20" fill="#1b1b1b"/>
-  <!-- Bottom cushion -->
-  <rect x="100" y="405" width="800" height="20" fill="#1b1b1b"/>
-  <!-- Left cushion -->
-  <rect x="100" y="95" width="20" height="310" fill="#1b1b1b"/>
-  <!-- Right cushion -->
-  <rect x="880" y="95" width="20" height="310" fill="#1b1b1b"/>
+  <!-- BUMPER CUSHIONS -->
+  <!-- Top -->
+  <rect x="100" y="80" width="1000" height="24" fill="#1b1b1b"/>
+  <!-- Bottom -->
+  <rect x="100" y="596" width="1000" height="24" fill="#1b1b1b"/>
+  <!-- Left -->
+  <rect x="80" y="100" width="24" height="500" fill="#1b1b1b"/>
+  <!-- Right -->
+  <rect x="1096" y="100" width="24" height="500" fill="#1b1b1b"/>
 
-  <!-- POCKET CUTOUTS (TRANSPARENT HOLES) -->
-  <!-- Corners -->
-  <circle cx="100" cy="75" r="26" fill="none"/>
-  <circle cx="900" cy="75" r="26" fill="none"/>
-  <circle cx="100" cy="425" r="26" fill="none"/>
-  <circle cx="900" cy="425" r="26" fill="none"/>
-  <!-- Sides -->
-  <circle cx="500" cy="75" r="26" fill="none"/>
-  <circle cx="500" cy="425" r="26" fill="none"/>
+  <!-- POCKET CUTOUTS -->
+  <circle cx="100" cy="100" r="30" fill="none"/>
+  <circle cx="1100" cy="100" r="30" fill="none"/>
+  <circle cx="100" cy="600" r="30" fill="none"/>
+  <circle cx="1100" cy="600" r="30" fill="none"/>
+  <circle cx="600" cy="100" r="30" fill="none"/>
+  <circle cx="600" cy="600" r="30" fill="none"/>
 
-  <!-- CARDINALS‑RED DIAMONDS (TRUE GRID POSITIONS) -->
-  <g fill="#ff2b3b" stroke="#4b0713" stroke-width="1.2">
+  <!-- BRUNSWICK DIAMONDS -->
+  <g fill="#ff2b3b" stroke="#4b0713" stroke-width="1.5">
 
-    <!-- Top rail diamonds -->
-    <rect x="140" y="52" width="12" height="12" transform="rotate(45 146 58)"/>
-    <rect x="230" y="52" width="12" height="12" transform="rotate(45 236 58)"/>
-    <rect x="320" y="52" width="12" height="12" transform="rotate(45 326 58)"/>
-    <rect x="410" y="52" width="12" height="12" transform="rotate(45 416 58)"/>
-    <rect x="500" y="52" width="12" height="12" transform="rotate(45 506 58)"/>
-    <rect x="590" y="52" width="12" height="12" transform="rotate(45 596 58)"/>
-    <rect x="680" y="52" width="12" height="12" transform="rotate(45 686 58)"/>
+    <!-- LONG RAILS (4 diamonds each) -->
+    <!-- Top rail diamonds at y = 60 -->
+    <rect x="350" y="54" width="12" height="12" transform="rotate(45 356 60)"/>
+    <rect x="600" y="54" width="12" height="12" transform="rotate(45 606 60)"/>
+    <rect x="850" y="54" width="12" height="12" transform="rotate(45 856 60)"/>
 
-    <!-- Bottom rail diamonds -->
-    <rect x="140" y="436" width="12" height="12" transform="rotate(45 146 442)"/>
-    <rect x="230" y="436" width="12" height="12" transform="rotate(45 236 442)"/>
-    <rect x="320" y="436" width="12" height="12" transform="rotate(45 326 442)"/>
-    <rect x="410" y="436" width="12" height="12" transform="rotate(45 416 442)"/>
-    <rect x="500" y="436" width="12" height="12" transform="rotate(45 506 442)"/>
-    <rect x="590" y="436" width="12" height="12" transform="rotate(45 596 442)"/>
-    <rect x="680" y="436" width="12" height="12" transform="rotate(45 686 442)"/>
+    <!-- Bottom rail diamonds at y = 620 -->
+    <rect x="350" y="614" width="12" height="12" transform="rotate(45 356 620)"/>
+    <rect x="600" y="614" width="12" height="12" transform="rotate(45 606 620)"/>
+    <rect x="850" y="614" width="12" height="12" transform="rotate(45 856 620)"/>
 
-    <!-- Left rail diamonds -->
-    <rect x="72" y="150" width="12" height="12" transform="rotate(45 78 156)"/>
-    <rect x="72" y="250" width="12" height="12" transform="rotate(45 78 256)"/>
-    <rect x="72" y="350" width="12" height="12" transform="rotate(45 78 356)"/>
+    <!-- SHORT RAILS (3 diamonds each) -->
+    <!-- Left rail diamonds at x = 60 -->
+    <rect x="54" y="260" width="12" height="12" transform="rotate(45 60 266)"/>
+    <rect x="54" y="350" width="12" height="12" transform="rotate(45 60 356)"/>
+    <rect x="54" y="440" width="12" height="12" transform="rotate(45 60 446)"/>
 
-    <!-- Right rail diamonds -->
-    <rect x="916" y="150" width="12" height="12" transform="rotate(45 922 156)"/>
+    <!-- Right rail diamonds at x = 1140 -->
+    <rect x="1134" y="260" width="12" height="12" transform="rotate(45 1140 266)"/>
+    <rect x="1134" y="350" width="12" height="12" transform="rotate(45 1140 356)"/>
+    <rect x="1134" y="440" width="12" height="12" transform="rotate(45 1140 446)"/>
+
+  </g>
+
+</svg>
