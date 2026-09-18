@@ -150,9 +150,20 @@ function bindProfileModalEvents() {
 // ---------- Screen routing ----------
 const screens = ['menu', 'lobby', 'store', 'wallet', 'game'];
 function show(name) {
-  screens.forEach((s) => document.getElementById('screen-' + s).classList.toggle('hidden', s !== name));
+  screens.forEach((s) => {
+    const el = document.getElementById('screen-' + s);
+    if (el) el.classList.toggle('hidden', s !== name);
+  });
+
+  const canvasContainer = document.getElementById('canvas-container');
+  if (canvasContainer) canvasContainer.classList.toggle('hidden', name !== 'game');
+
+  const uiSidebar = document.getElementById('ui-sidebar');
+  if (uiSidebar) uiSidebar.classList.toggle('hidden', name !== 'game');
+
   const canvas = document.getElementById('game-canvas');
   if (canvas) canvas.classList.toggle('hidden', name !== 'game');
+
   if (name === 'menu') refreshMenu();
   if (name === 'wallet') { document.getElementById('wd-result').textContent = ''; refreshWallet(); }
   if (name === 'store') refreshStore();
@@ -378,9 +389,10 @@ let game = null;
 let renderer = null;
 
 async function startGame(opts) {
+  show('game');
+
   await initRapier();
 
-  show('game');
   const settings = { ...State.settings };
   const canvas = document.getElementById('game-canvas');
   renderer = new Renderer(canvas, settings);
