@@ -1,158 +1,105 @@
-{
-  "table": {
-    "name": "Futuristic 8-Foot Home Table",
-    "type": "pool",
-    "units": "inches",
-    "playing_surface": {
-      "width": 44.0,
-      "length": 88.0,
-      "height_from_floor": 30.0
-    },
-    "overall_dimensions": {
-      "width": 54.0,
-      "length": 98.0
-    },
-    "felt": {
-      "color": "beach_blond_sand",
-      "hex": "#E8D5B5",
-      "type": "worsted",
-      "friction": 0.15
-    },
-    "rails": {
-      "width": 5.0,
-      "material": "brushed_charcoal_metallic",
-      "accent_color": "cyan_glow",
-      "accent_hex": "#00E5FF"
-    },
-    "cushions": {
-      "profile": "K-66",
-      "height": 1.4375,
-      "cloth_covered_width": 1.9,
-      "restitution": 0.85,
-      "friction": 0.12,
-      "color_match_felt": true
-    },
-    "diamonds": {
-      "count": 18,
-      "color": "ruby_red",
-      "hex": "#E0115F",
-      "positions": {
-        "long_rails": 6,
-        "short_rails": 3,
-        "skip_center_long": true
-      }
-    },
-    "pockets": [
-      {
-        "id": "top_left_corner",
-        "type": "corner",
-        "center": { "x": 0.0, "y": 0.0 },
-        "mouth_width": 4.875,
-        "depth": 1.65,
-        "jaw_radius": 0.8,
-        "angle": 142,
-        "trigger_radius": 2.6,
-        "visual": {
-          "style": "transparent_glass",
-          "opacity": 0.35,
-          "depth_shading": true
-        }
-      },
-      {
-        "id": "top_right_corner",
-        "type": "corner",
-        "center": { "x": 88.0, "y": 0.0 },
-        "mouth_width": 4.875,
-        "depth": 1.65,
-        "jaw_radius": 0.8,
-        "angle": 142,
-        "trigger_radius": 2.6,
-        "visual": {
-          "style": "transparent_glass",
-          "opacity": 0.35,
-          "depth_shading": true
-        }
-      },
-      {
-        "id": "bottom_left_corner",
-        "type": "corner",
-        "center": { "x": 0.0, "y": 44.0 },
-        "mouth_width": 4.875,
-        "depth": 1.65,
-        "jaw_radius": 0.8,
-        "angle": 142,
-        "trigger_radius": 2.6,
-        "visual": {
-          "style": "transparent_glass",
-          "opacity": 0.35,
-          "depth_shading": true
-        }
-      },
-      {
-        "id": "bottom_right_corner",
-        "type": "corner",
-        "center": { "x": 88.0, "y": 44.0 },
-        "mouth_width": 4.875,
-        "depth": 1.65,
-        "jaw_radius": 0.8,
-        "angle": 142,
-        "trigger_radius": 2.6,
-        "visual": {
-          "style": "transparent_glass",
-          "opacity": 0.35,
-          "depth_shading": true
-        }
-      },
-      {
-        "id": "top_side",
-        "type": "side",
-        "center": { "x": 44.0, "y": 0.0 },
-        "mouth_width": 5.25,
-        "depth": 2.7,
-        "jaw_radius": 0.3,
-        "angle": 103,
-        "trigger_radius": 2.4,
-        "visual": {
-          "style": "transparent_glass",
-          "opacity": 0.35,
-          "depth_shading": true
-        }
-      },
-      {
-        "id": "bottom_side",
-        "type": "side",
-        "center": { "x": 44.0, "y": 44.0 },
-        "mouth_width": 5.25,
-        "depth": 2.7,
-        "jaw_radius": 0.3,
-        "angle": 103,
-        "trigger_radius": 2.4,
-        "visual": {
-          "style": "transparent_glass",
-          "opacity": 0.35,
-          "depth_shading": true
-        }
-      }
-    ],
-    "balls": {
-      "diameter": 2.25,
-      "radius": 1.125,
-      "mass": 0.17,
-      "restitution": 0.95,
-      "friction": 0.08
-    },
-    "physics": {
-      "gravity": 0,
-      "air_resistance": 0.002,
-      "rolling_friction": 0.015,
-      "cushion_restitution": 0.85,
-      "ball_ball_restitution": 0.96,
-      "continuous_collision": true
-    },
-    "coordinate_system": {
-      "origin": "bottom_left_of_playing_surface",
-      "x_positive": "right",
-      "y_positive": "up"
-    }
-  }
-}
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" width="100%" height="100%">
+  <defs>
+    <!-- White oak wood grain -->
+    <pattern id="whiteOak" patternUnits="userSpaceOnUse" width="220" height="70">
+      <rect width="220" height="70" fill="#F2E8D6"/>
+      <path d="M0,14 Q55,5 110,15 T220,11" stroke="#E2D3B9" stroke-width="2.2" fill="none" opacity="0.85"/>
+      <path d="M0,33 Q65,25 130,35 T220,30" stroke="#D9C9AD" stroke-width="1.7" fill="none" opacity="0.75"/>
+      <path d="M0,52 Q48,43 100,53 T220,49" stroke="#E2D3B9" stroke-width="1.9" fill="none" opacity="0.8"/>
+    </pattern>
+
+    <!-- Realistic drop shadow for cushions overlapping the transparent felt area -->
+    <filter id="cushionShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+
+    <!-- True Neon Glow filter for the cushion under-edge -->
+    <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Mask to make the table center and pocket areas 100% transparent -->
+    <mask id="frameMask">
+      <!-- Make everything visible by default -->
+      <rect x="0" y="0" width="1200" height="640" fill="white" />
+      
+      <!-- Punch out the 1000x500 playable area -->
+      <rect x="100" y="70" width="1000" height="500" fill="black" />
+      
+      <!-- Punch out corner pockets from the wood rail -->
+      <circle cx="100" cy="70" r="42" fill="black" />
+      <circle cx="1100" cy="70" r="42" fill="black" />
+      <circle cx="100" cy="570" r="42" fill="black" />
+      <circle cx="1100" cy="570" r="42" fill="black" />
+      
+      <!-- Punch out proper wide rectangular cuts for side pockets (No ovals) -->
+      <rect x="550" y="20" width="100" height="100" fill="black" />
+      <rect x="550" y="520" width="100" height="100" fill="black" />
+    </mask>
+  </defs>
+
+  <!-- ===== 1. OUTER WHITE OAK RAILS (Masked for transparency) ===== -->
+  <rect x="20" y="20" width="1160" height="600" rx="30" ry="30" 
+        fill="url(#whiteOak)" stroke="#D6C6AA" stroke-width="4" mask="url(#frameMask)"/>
+
+  <!-- ===== 2. INNER BUMPER CUSHIONS (K-66 Straight Angles & Shadow) ===== -->
+  <g filter="url(#cushionShadow)">
+    <!-- Top Left -->
+    <polygon points="135,70 560,70 550,95 155,95" fill="#E8D5B5" />
+    <!-- Top Right -->
+    <polygon points="640,70 1065,70 1045,95 650,95" fill="#E8D5B5" />
+    <!-- Bottom Left -->
+    <polygon points="135,570 560,570 550,545 155,545" fill="#E8D5B5" />
+    <!-- Bottom Right -->
+    <polygon points="640,570 1065,570 1045,545 650,545" fill="#E8D5B5" />
+    <!-- Left short -->
+    <polygon points="100,105 100,535 125,515 125,125" fill="#E8D5B5" />
+    <!-- Right short -->
+    <polygon points="1100,105 1100,535 1075,515 1075,125" fill="#E8D5B5" />
+  </g>
+
+  <!-- ===== 3. CARDINAL RED NEON GLOW (Mapped only to the under-edge) ===== -->
+  <!-- These lines trace the exact inner "nose" coordinates of the K-66 cushions -->
+  <g filter="url(#neonGlow)" stroke="#C41E3A" stroke-width="4" stroke-linecap="round" fill="none">
+    <line x1="155" y1="95" x2="550" y2="95" />
+    <line x1="650" y1="95" x2="1045" y2="95" />
+    <line x1="155" y1="545" x2="550" y2="545" />
+    <line x1="650" y1="545" x2="1045" y2="545" />
+    <line x1="125" y1="125" x2="125" y2="515" />
+    <line x1="1075" y1="125" x2="1075" y2="515" />
+  </g>
+
+  <!-- ===== 4. RUBY RED DIAMONDS (18) ===== -->
+  <g fill="#E0115F">
+    <!-- Top Rail -->
+    <polygon points="215,45 220,40 225,45 220,50" />
+    <polygon points="325,45 330,40 335,45 330,50" />
+    <polygon points="435,45 440,40 445,45 440,50" />
+    <polygon points="765,45 770,40 775,45 770,50" />
+    <polygon points="875,45 880,40 885,45 880,50" />
+    <polygon points="985,45 990,40 995,45 990,50" />
+    
+    <!-- Bottom Rail -->
+    <polygon points="215,595 220,590 225,595 220,600" />
+    <polygon points="325,595 330,590 335,595 330,600" />
+    <polygon points="435,595 440,590 445,595 440,600" />
+    <polygon points="765,595 770,590 775,595 770,600" />
+    <polygon points="875,595 880,590 885,595 880,600" />
+    <polygon points="985,595 990,590 995,595 990,600" />
+    
+    <!-- Left Rail -->
+    <polygon points="60,200 55,205 60,210 65,205" />
+    <polygon points="60,320 55,325 60,330 65,325" />
+    <polygon points="60,440 55,445 60,450 65,445" />
+    
+    <!-- Right Rail -->
+    <polygon points="1140,200 1135,205 1140,210 1145,205" />
+    <polygon points="1140,320 1135,325 1140,330 1145,325" />
+    <polygon points="1140,440 1135,445 1140,450 1145,445" />
+  </g>
+</svg>
