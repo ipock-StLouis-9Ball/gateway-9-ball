@@ -1,14 +1,209 @@
 <!doctype html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>St. Louis 9 Ball Hustle</title><link rel="stylesheet" href="styles.css"><script type="importmap">{"imports":{"@dimforge/rapier2d-compat":"https://cdn.jsdelivr.net/npm/@dimforge/rapier2d-compat@0.12.0/rapier.mjs"}}</script></head><body>
-<div id="compliance-lock" class="compliance-lock hidden"><div class="modal-card"><h2>Compliance Notice</h2><p>Real-money skill gaming is restricted in your state.</p><p class="small">Practice mode and informational content remain unavailable until location eligibility is verified.</p></div></div>
-<div id="rotate-hint"><div class="rh-icon">⟳</div><div>Rotate your device to landscape</div></div>
-<div id="canvas-container" class="hidden"><div class="modern-pool-table"><div class="felt-surface"><canvas id="game-canvas"></canvas></div></div></div>
-<div id="ui-sidebar" class="hidden"><svg viewBox="0 0 400 800"><g id="left-panel"><rect x="20" y="25" width="160" height="750" rx="16" fill="#202934"/><rect id="svg-power-fill" x="38" y="755" width="44" height="0" fill="#00d8f6"/></g><g id="right-panel"><rect x="220" y="25" width="160" height="750" rx="16" fill="#202934"/><text id="svg-p1-name" x="300" y="100">PLAYER 1</text><text id="svg-p1-balance" x="300" y="120">DB$0.00</text><text id="svg-p1-score" x="300" y="150">0</text><text id="svg-p2-name" x="300" y="700">PLAYER 2</text><text id="svg-p2-score" x="300" y="670">0</text><text id="svg-timer" x="300" y="340">00:45</text><g id="spin-controller"><circle cx="300" cy="495" r="55" fill="#d7dee8"/><g id="svg-spin-dot-group" transform="translate(300,495)"><circle r="4" fill="red"/></g></g></g></svg></div>
-<section id="screen-menu" class="screen menu-screen"><div class="menu-inner"><h1>ST. LOUIS 9 BALL HUSTLE</h1><p class="tagline">St. Louis · Real-Table Pool</p><div class="menu-top-bar"><div class="balance-pill"><span>Balance</span><span id="menu-balance" class="bal-value">DB$0.00</span><button id="menu-add" class="bal-add">Wallet</button></div><button id="profile-btn" class="profile-pill"><span id="menu-avatar-preview">JP</span><span id="menu-username">Player</span></button></div><div class="menu-actions"><button class="menu-btn primary" data-goto="lobby"><span class="mb-title">Competition</span><span class="mb-sub">Best of 3 · authoritative match</span></button><button class="menu-btn" data-goto="practice"><span class="mb-title">Practice</span><span class="mb-sub">Free play · zero stakes</span></button><button class="menu-btn" data-goto="store"><span class="mb-title">Pimp My Stick</span><span class="mb-sub">Cues · balls · enhancements</span></button><button class="menu-btn" data-goto="options"><span class="mb-title">Options &amp; Compliance</span><span class="mb-sub">Audio · language · Legal Vault</span></button></div></div></section>
-<div id="profile-modal" class="modal hidden"><div class="modal-card"><h2 id="pm-title">Player Profile</h2><input id="pm-username" placeholder="Username"><div><button class="avatar-chip active" data-avatar="JP">JP</button><button class="avatar-chip" data-avatar="SL">SL</button></div><div id="pm-avatar-preview">JP</div><input id="pm-file-input" type="file" accept="image/*"><p id="pm-error" class="error-text hidden"></p><div class="modal-actions"><button id="pm-save" class="cta">Save Profile</button><button id="pm-cancel" class="ghost-btn">Cancel</button></div></div></div>
-<section id="screen-lobby" class="screen hidden"><div class="panel"><button class="back-btn" data-goto="menu">‹ Menu</button><h2>Competition</h2><p>Best of 3 · first to two racks wins</p><div id="tier-grid" class="tier-grid"></div><div id="lobby-summary" class="lobby-summary"></div><button id="find-match" class="cta">Find Match</button></div></section>
-<section id="screen-store" class="screen hidden"><div class="panel"><button class="back-btn" data-goto="menu">‹ Menu</button><h2>Pimp My Stick</h2><div class="store-tabs"><button class="tab" data-tab="tables">Tables</button><button class="tab" data-tab="cues">Cues</button><button class="tab" data-tab="balls">Balls</button></div><span id="store-balance"></span><div id="store-grid" class="store-grid"></div></div></section>
-<section id="screen-wallet" class="screen hidden"><div class="panel"><button class="back-btn" data-goto="menu">‹ Menu</button><h2>Wallet</h2><strong id="wallet-balance">DB$0.00</strong><div id="dep-grid" class="dep-grid"></div><input id="wd-amount" type="number"><button id="wd-btn" class="cta small">Withdraw</button><p id="wd-vault-note"></p><p id="wd-result"></p><div id="history-list"></div></div></section>
-<section id="screen-options" class="screen hidden"><div class="panel"><button class="back-btn" data-goto="menu">‹ Menu</button><h2>Options &amp; Compliance</h2><label><input id="sound-toggle" type="checkbox" checked> Sound effects</label><label>Master volume <input id="master-volume" type="range" min="0" max="1" step=".01" value="1"></label><label>Language <select id="language-select"><option>English</option><option>Español</option></select></label><div class="legal-vault"><h3>Legal &amp; Compliance Vault</h3><p>Terms of Service · Privacy Policy · Age and geo-compliance restricted states: AR, CT, DE, LA, SD · AML/KYC disclosures.</p></div></div></section>
-<section id="screen-game" class="screen hidden game-screen"><button id="game-menu" class="icon-btn">☰</button><button id="pushout-btn" class="pushout-pill hidden">Push Out</button><div id="push-decision" class="modal hidden"><div class="modal-card"><button id="pd-take" class="cta">Take Shot</button><button id="pd-pass" class="ghost-btn">Pass Back</button></div></div><div id="msg-banner" class="msg-banner hidden"></div><div id="match-modal" class="modal hidden"><div class="modal-card"><h2 id="mm-title">Match Over</h2><p id="mm-detail"></p><button class="cta" data-goto="lobby">Rematch</button><button class="ghost-btn" data-goto="menu">Main Menu</button></div></div></section>
-<script type="module" src="js/app.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>St. Louis 9 Ball Hustle</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "@dimforge/rapier2d-compat": "https://cdn.jsdelivr.net/npm/@dimforge/rapier2d-compat@0.12.0/rapier.mjs"
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- Compliance Lock Banner -->
+  <div id="compliance-lock" class="compliance-lock hidden">
+    <div class="modal-card">
+      <h2>Compliance Notice</h2>
+      <p>Real-money skill gaming is restricted in your state.</p>
+      <p class="small">Practice mode and informational content remain unavailable until location eligibility is verified.</p>
+    </div>
+  </div>
+
+  <!-- Device Orientation Hint -->
+  <div id="rotate-hint">
+    <div class="rh-icon">⟳</div>
+    <div>Rotate your device to landscape</div>
+  </div>
+
+  <!-- Main Canvas Container for Physics & Table Rendering -->
+  <div id="canvas-container" class="hidden">
+    <div class="modern-pool-table">
+      <div class="felt-surface">
+        <canvas id="game-canvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- UI HUD Sidebar -->
+  <div id="ui-sidebar" class="hidden">
+    <svg viewBox="0 0 400 800">
+      <g id="left-panel">
+        <rect x="20" y="25" width="160" height="750" rx="16" fill="#202934"/>
+        <rect id="svg-power-fill" x="38" y="755" width="44" height="0" fill="#00d8f6"/>
+      </g>
+      <g id="right-panel">
+        <rect x="220" y="25" width="160" height="750" rx="16" fill="#202934"/>
+        <text id="svg-p1-name" x="300" y="100">PLAYER 1</text>
+        <text id="svg-p1-balance" x="300" y="120">DB$0.00</text>
+        <text id="svg-p1-score" x="300" y="150">0</text>
+        <text id="svg-p2-name" x="300" y="700">PLAYER 2</text>
+        <text id="svg-p2-score" x="300" y="670">0</text>
+        <text id="svg-timer" x="300" y="340">00:45</text>
+        <g id="spin-controller">
+          <circle cx="300" cy="495" r="55" fill="#d7dee8"/>
+          <g id="svg-spin-dot-group" transform="translate(300,495)">
+            <circle r="4" fill="red"/>
+          </g>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Main Menu Screen (4-button Menu & St. Louis Arch visual container) -->
+  <section id="screen-menu" class="screen menu-screen">
+    <div class="menu-inner">
+      <h1>ST. LOUIS 9 BALL HUSTLE</h1>
+      <p class="tagline">St. Louis · Real-Table Pool</p>
+
+      <div class="menu-top-bar">
+        <div class="balance-pill">
+          <span>Balance</span>
+          <span id="menu-balance" class="bal-value">DB$0.00</span>
+          <button id="menu-add" class="bal-add">Wallet</button>
+        </div>
+        <button id="profile-btn" class="profile-pill">
+          <span id="menu-avatar-preview">JP</span>
+          <span id="menu-username">Player</span>
+        </button>
+      </div>
+
+      <div class="menu-actions">
+        <button class="menu-btn primary" data-goto="lobby">
+          <span class="mb-title">Competition</span>
+          <span class="mb-sub">Best of 3 · authoritative match</span>
+        </button>
+        <button class="menu-btn" data-goto="practice">
+          <span class="mb-title">Practice</span>
+          <span class="mb-sub">Free play · zero stakes</span>
+        </button>
+        <button class="menu-btn" data-goto="store">
+          <span class="mb-title">Pimp My Stick</span>
+          <span class="mb-sub">Cues · balls · enhancements</span>
+        </button>
+        <button class="menu-btn" data-goto="options">
+          <span class="mb-title">Options &amp; Compliance</span>
+          <span class="mb-sub">Audio · language · Legal Vault</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Player Profile Modal -->
+  <div id="profile-modal" class="modal hidden">
+    <div class="modal-card">
+      <h2 id="pm-title">Player Profile</h2>
+      <input id="pm-username" placeholder="Username">
+      <div>
+        <button class="avatar-chip active" data-avatar="JP">JP</button>
+        <button class="avatar-chip" data-avatar="SL">SL</button>
+      </div>
+      <div id="pm-avatar-preview">JP</div>
+      <input id="pm-file-input" type="file" accept="image/*">
+      <p id="pm-error" class="error-text hidden"></p>
+      <div class="modal-actions">
+        <button id="pm-save" class="cta">Save Profile</button>
+        <button id="pm-cancel" class="ghost-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Competition Lobby Screen -->
+  <section id="screen-lobby" class="screen hidden">
+    <div class="panel">
+      <button class="back-btn" data-goto="menu">‹ Menu</button>
+      <h2>Competition</h2>
+      <p>Best of 3 · first to two racks wins</p>
+      <div id="tier-grid" class="tier-grid"></div>
+      <div id="lobby-summary" class="lobby-summary"></div>
+      <button id="find-match" class="cta">Find Match</button>
+    </div>
+  </section>
+
+  <!-- Store Screen (Pimp My Stick) -->
+  <section id="screen-store" class="screen hidden">
+    <div class="panel">
+      <button class="back-btn" data-goto="menu">‹ Menu</button>
+      <h2>Pimp My Stick</h2>
+      <div class="store-tabs">
+        <button class="tab" data-tab="tables">Tables</button>
+        <button class="tab" data-tab="cues">Cues</button>
+        <button class="tab" data-tab="balls">Balls</button>
+      </div>
+      <span id="store-balance"></span>
+      <div id="store-grid" class="store-grid"></div>
+    </div>
+  </section>
+
+  <!-- Wallet Screen -->
+  <section id="screen-wallet" class="screen hidden">
+    <div class="panel">
+      <button class="back-btn" data-goto="menu">‹ Menu</button>
+      <h2>Wallet</h2>
+      <strong id="wallet-balance">DB$0.00</strong>
+      <div id="dep-grid" class="dep-grid"></div>
+      <input id="wd-amount" type="number">
+      <button id="wd-btn" class="cta small">Withdraw</button>
+      <p id="wd-vault-note"></p>
+      <p id="wd-result"></p>
+      <div id="history-list"></div>
+    </div>
+  </section>
+
+  <!-- Options & Compliance Screen -->
+  <section id="screen-options" class="screen hidden">
+    <div class="panel">
+      <button class="back-btn" data-goto="menu">‹ Menu</button>
+      <h2>Options &amp; Compliance</h2>
+      <label><input id="sound-toggle" type="checkbox" checked> Sound effects</label>
+      <label>Master volume <input id="master-volume" type="range" min="0" max="1" step=".01" value="1"></label>
+      <label>Language
+        <select id="language-select">
+          <option>English</option>
+          <option>Español</option>
+        </select>
+      </label>
+      <div class="legal-vault">
+        <h3>Legal &amp; Compliance Vault</h3>
+        <p>Terms of Service · Privacy Policy · Age and geo-compliance restricted states: AR, CT, DE, LA, SD · AML/KYC disclosures.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Game Canvas Screen -->
+  <section id="screen-game" class="screen hidden game-screen">
+    <button id="game-menu" class="icon-btn">☰</button>
+    <button id="pushout-btn" class="pushout-pill hidden">Push Out</button>
+    <div id="push-decision" class="modal hidden">
+      <div class="modal-card">
+        <button id="pd-take" class="cta">Take Shot</button>
+        <button id="pd-pass" class="ghost-btn">Pass Back</button>
+      </div>
+    </div>
+    <div id="msg-banner" class="msg-banner hidden"></div>
+    <div id="match-modal" class="modal hidden">
+      <div class="modal-card">
+        <h2 id="mm-title">Match Over</h2>
+        <p id="mm-detail"></p>
+        <button class="cta" data-goto="lobby">Rematch</button>
+        <button class="ghost-btn" data-goto="menu">Main Menu</button>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
