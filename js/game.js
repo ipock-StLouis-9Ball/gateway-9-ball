@@ -1,28 +1,20 @@
 // ============================================================================
-// game.js — Game loop, input (aim/power/english/shoot), turn handling, the
-// push-out + three-foul rules, a simple AI opponent, and best-of-3 match flow.
-//
-// Shot resolution goes through resolverClient.resolveShotRemote(), which runs
-// the authoritative resolver on the backend in the sandbox preview and falls
-// back to the in-browser resolver on a static host (e.g. GitHub Pages). The
-// resolver returns trajectory frames + a rule outcome; the client replays the
-// frames for animation and applies the (server-authoritative) outcome.
+// game.js — Game loop, input, aiming via Rapier2D shape-casting, replay loop.
 // ============================================================================
 
-import { Physics } from './physics.js';
 import { createRack, speedForPower, stateHash } from './rules.js';
 import { TABLE } from './config.js';
 import { resolveShotRemote, hasBackend } from './resolverClient.js';
-
-const CUE_ID = 0;
+import { queuePocketDropAnimation } from './renderer.js';
+import { RapierPoolWorld, CUE_ID, initRapier } from './rapierPhysics.js';
+import { audioManager } from './audioManager.js';
 
 export class Game {
   constructor(canvas, renderer, opts = {}) {
     this.canvas = canvas;
     this.renderer = renderer;
     this.ctx = canvas.getContext('2d');
-    this.physics = new Physics();
-    this.opts = opts; // { practice, pot, buyIn, onHud, onMatchOver, wallet }
+    this.opts = opts;
     this.balls = [];
     this.state = 'IDLE';
     this.currentPlayer = 0; // 0 = you, 1 = AI
@@ -31,18 +23,35 @@ export class Game {
     this.english = { x: 0, y: 0 };
     this.shotTimer = 45;
     this.lastTime = 0;
-    this.accumulator = 0;
     this.running = false;
     this.aiTimer = 0;
     this.message = '';
     // Rules state
     this.isBreakShot = true;
     this.pushOutAvailable = false;
-    this.pendingPushDecision = null; // { pusher, chooser }
+    this.pendingPushDecision = null;
     this.consecutiveFouls = [0, 0];
     // Replay state
-    this.replay = null; // { frames, outcome, finalBalls }
+    this.replay = null;
     this.replayElapsed = 0;
+
+    this.rapierWorld = null;
+
+    this._setupUserGestureAudio();
+  }
+
+  _setupUserGestureAudio() {
+    const handleGesture = () => {
+      audioManager.init();
+      audioManager.resume();
+    };
+    window.addEventListener('pointerdown', handleGesture, { once: true });
+    window.addEventListener('keydown', handleGesture, { once: true });
+  }
+
+  async asyncInit() {
+    await initRapier();
+    audioManager.init();
   }
 
   start() {
@@ -54,6 +63,10 @@ export class Game {
 
   stop() {
     this.running = false;
+    if (this.rapierWorld) {
+      this.rapierWorld.destroy();
+      this.rapierWorld = null;
+    }
   }
 
   newRack(firstRack = false) {
@@ -71,14 +84,26 @@ export class Game {
     this.state = this.currentPlayer === 1 ? 'AI_THINKING' : 'AIMING';
     this.message = this.currentPlayer === 0 ? 'Your break' : 'Opponent breaks';
     if (this.state === 'AI_THINKING') this.aiTimer = 1.2;
+
+    this._syncRapierAimWorld();
     this._updateAim();
     this._pushHud();
   }
 
-  // --- HUD bridge ---
+  _syncRapierAimWorld() {
+    if (this.rapierWorld) {
+      this.rapierWorld.destroy();
+    }
+    this.rapierWorld = new RapierPoolWorld();
+    for (const b of this.balls) {
+      this.rapierWorld.addBall(b.id, b.x, b.y, b.pocketed);
+    }
+  }
+
   _pushHud() {
     if (this.opts.onHud) this.opts.onHud(this.hud());
   }
+
   hud() {
     const m = this.opts.match || null;
     return {
@@ -98,15 +123,16 @@ export class Game {
     };
   }
 
-  // --- Input setters (called by app.js controls) ---
   setPower(p) {
     this.power = Math.max(0, Math.min(1, p));
     this._pushHud();
   }
+
   setEnglish(ex, ey) {
     this.english = { x: Math.max(-1, Math.min(1, ex)), y: Math.max(-1, Math.min(1, ey)) };
     this._pushHud();
   }
+
   setAimFromPoint(px, py) {
     if (this.state !== 'AIMING') return;
     const cue = this.balls.find((b) => b.id === CUE_ID && !b.pocketed);
@@ -122,122 +148,29 @@ export class Game {
       return;
     }
     const cue = this.balls.find((b) => b.id === CUE_ID && !b.pocketed);
-    if (!cue) { this.renderer.aim = null; return; }
-    const r = TABLE.ballRadius;
-    const ghost = this._ghostBall(cue, this.aimAngle, r);
+    if (!cue) {
+      this.renderer.aim = null;
+      return;
+    }
+
+    this._syncRapierAimWorld();
+    const castRes = this.rapierWorld.castAimLine(cue.x, cue.y, this.aimAngle);
+
     this.renderer.aim = {
       angle: this.aimAngle,
       power: this.power,
-      ghost: ghost ? ghost.pos : null,
-      target: ghost ? ghost.target : null,
-      isCushion: ghost ? ghost.isCushion : false,
-      reflectedDir: ghost ? ghost.reflectedDir : null,
+      ghost: castRes.ghost,
+      target: castRes.target,
+      isCushion: castRes.isCushion,
+      reflectedDir: castRes.reflectedDir,
     };
   }
 
-  _ghostBall(cue, angle, r) {
-    const dx = Math.cos(angle);
-    const dy = Math.sin(angle);
-    let bestT = Infinity;
-    let target = null;
-    let isCushion = false;
-    let cushionNormal = null;
-
-    // Ball-ball collision ray
-    for (const b of this.balls) {
-      if (b.pocketed || b.id === CUE_ID) continue;
-      const ex = b.x - cue.x;
-      const ey = b.y - cue.y;
-      const proj = ex * dx + ey * dy;
-      if (proj < 0) continue;
-      const disc = proj * proj - (ex * ex + ey * ey - (2 * r) * (2 * r));
-      if (disc < 0) continue;
-      const t = proj - Math.sqrt(disc);
-      if (t > 0 && t < bestT) {
-        bestT = t;
-        target = b;
-        isCushion = false;
-      }
-    }
-
-    // Cushion bounds check (where ball center stops)
-    if (dx < 0) {
-      const t = (r - cue.x) / dx;
-      if (t > 0 && t < bestT) {
-        const hitY = cue.y + dy * t;
-        if (hitY >= 0 && hitY <= TABLE.height) {
-          bestT = t;
-          target = null;
-          isCushion = true;
-          cushionNormal = { x: 1, y: 0 };
-        }
-      }
-    }
-    if (dx > 0) {
-      const t = (TABLE.width - r - cue.x) / dx;
-      if (t > 0 && t < bestT) {
-        const hitY = cue.y + dy * t;
-        if (hitY >= 0 && hitY <= TABLE.height) {
-          bestT = t;
-          target = null;
-          isCushion = true;
-          cushionNormal = { x: -1, y: 0 };
-        }
-      }
-    }
-    if (dy < 0) {
-      const t = (r - cue.y) / dy;
-      if (t > 0 && t < bestT) {
-        const hitX = cue.x + dx * t;
-        if (hitX >= 0 && hitX <= TABLE.width) {
-          bestT = t;
-          target = null;
-          isCushion = true;
-          cushionNormal = { x: 0, y: 1 };
-        }
-      }
-    }
-    if (dy > 0) {
-      const t = (TABLE.height - r - cue.y) / dy;
-      if (t > 0 && t < bestT) {
-        const hitX = cue.x + dx * t;
-        if (hitX >= 0 && hitX <= TABLE.width) {
-          bestT = t;
-          target = null;
-          isCushion = true;
-          cushionNormal = { x: 0, y: -1 };
-        }
-      }
-    }
-
-    if (bestT === Infinity) return null;
-
-    const ghostPos = { x: cue.x + dx * bestT, y: cue.y + dy * bestT };
-
-    if (isCushion && cushionNormal) {
-      const dot = dx * cushionNormal.x + dy * cushionNormal.y;
-      const refX = dx - 2 * dot * cushionNormal.x;
-      const refY = dy - 2 * dot * cushionNormal.y;
-      return {
-        pos: ghostPos,
-        target: null,
-        isCushion: true,
-        reflectedDir: { x: refX, y: refY },
-      };
-    }
-
-    return {
-      pos: ghostPos,
-      target: { x: target.x, y: target.y },
-      isCushion: false,
-    };
-  }
-
-  // --- Shot execution (async: resolver may be remote) ---
   shoot() {
     if (this.state !== 'AIMING') return;
     this._executeShot('NORMAL');
   }
+
   pushOut() {
     if (this.state !== 'AIMING' || !this.pushOutAvailable) return;
     this._executeShot('PUSH_OUT');
@@ -246,26 +179,34 @@ export class Game {
   async _executeShot(shotMode) {
     const cue = this.balls.find((b) => b.id === CUE_ID && !b.pocketed);
     if (!cue) return;
-    // Snapshot the pre-shot state for the authoritative resolver.
+
     const shotInput = {
       balls: this.balls.map((b) => ({ ...b })),
       angle: this.aimAngle,
       power: this.power,
-      english: { ...this.english },
       cueBallId: CUE_ID,
       shotMode,
     };
-    this.pushOutAvailable = false; // push-out option is consumed by this shot
+
+    this.pushOutAvailable = false;
     this.state = 'REPLAYING';
     this.message = '';
     this.renderer.aim = null;
     this._pushHud();
 
+    audioManager.playCueStrike(speedForPower(this.power));
+
     const result = await resolveShotRemote(shotInput);
     if (!this.running) return;
-    this.replay = { frames: result.frames, outcome: result, finalBalls: result.balls };
+
+    this.replay = {
+      frames: result.frames,
+      outcome: result,
+      finalBalls: result.balls,
+      events: result.events || [],
+      playedEvents: new Set(),
+    };
     this.replayElapsed = 0;
-    // Snap to frame 0 immediately so the cue ball doesn't visually jump.
     if (result.frames && result.frames.length) this._applyFrame(result.frames[0]);
     this._pushHud();
   }
@@ -275,28 +216,39 @@ export class Game {
     for (const fb of frame.balls) {
       const b = this.balls.find((x) => x.id === fb.id);
       if (!b) continue;
-      b.x = fb.x; b.y = fb.y; b.pocketed = fb.pocketed;
+      if (fb.pocketed && !b.pocketed) {
+        const pockets = TABLE.pockets || [];
+        const pIdx = fb.pocketIndex ?? 0;
+        const pocket = pockets[pIdx] || { center: { x: fb.x, y: fb.y } };
+        queuePocketDropAnimation(b, pocket);
+      }
+      b.x = fb.x;
+      b.y = fb.y;
+      b.pocketed = fb.pocketed;
     }
   }
 
   _finishShot() {
-    // Snap to the resolver's final ball state (authoritative).
     const finalBalls = this.replay.finalBalls;
     if (finalBalls) {
       for (const fb of finalBalls) {
         const b = this.balls.find((x) => x.id === fb.id);
         if (!b) continue;
-        b.x = fb.x; b.y = fb.y; b.pocketed = fb.pocketed;
-        b.vx = 0; b.vy = 0; b.englishX = 0; b.englishY = 0;
+        b.x = fb.x;
+        b.y = fb.y;
+        b.pocketed = fb.pocketed;
+        b.vx = 0;
+        b.vy = 0;
       }
     }
     const outcome = this.replay.outcome;
     this.replay = null;
     this.replayElapsed = 0;
+
+    this._syncRapierAimWorld();
     this._applyOutcome(outcome);
   }
 
-  // --- Main loop ---
   _loop = (now = performance.now()) => {
     if (!this.running) return;
     const dt = Math.min((now - this.lastTime) / 1000, 0.05);
@@ -310,10 +262,27 @@ export class Game {
     if (this.state === 'REPLAYING') {
       if (!this.replay) return;
       this.replayElapsed += dt;
-      // Replay long shots faster so every shot animates in ~2.5s, not 8s.
       const fps = Math.max(60, this.replay.frames.length / 2.5);
       const idx = Math.min(this.replay.frames.length - 1, Math.floor(this.replayElapsed * fps));
       this._applyFrame(this.replay.frames[idx]);
+
+      // Play audio events corresponding to current replay elapsed time
+      if (this.replay.events) {
+        for (let i = 0; i < this.replay.events.length; i++) {
+          const e = this.replay.events[i];
+          if (!this.replay.playedEvents.has(i) && e.t <= this.replayElapsed) {
+            this.replay.playedEvents.add(i);
+            if (e.type === 'hit') {
+              audioManager.playBallHit(e.speed || 10);
+            } else if (e.type === 'rail') {
+              audioManager.playCushionHit(e.speed || 10);
+            } else if (e.type === 'pocket') {
+              audioManager.playPocketDrop();
+            }
+          }
+        }
+      }
+
       if (this.replayElapsed * fps >= this.replay.frames.length - 1) {
         this._finishShot();
       }
@@ -334,7 +303,6 @@ export class Game {
       this.shotTimer -= dt;
       if (this.shotTimer <= 0) this._endTurn(true, 'Shot time expired');
     }
-    // PUSH_DECISION: no timer pressure (waits for player choice)
   }
 
   _applyOutcome(outcome) {
@@ -345,7 +313,6 @@ export class Game {
       return;
     }
 
-    // Push-out (clean, no scratch): opponent chooses take or pass-back.
     if (outcome.pushOut && !outcome.foul) {
       const pusher = shooter;
       const chooser = 1 - shooter;
@@ -370,11 +337,8 @@ export class Game {
       return;
     }
 
-    // Legal shot: reset this shooter's foul count.
     this.consecutiveFouls[shooter] = 0;
 
-    // After a legal break, the shooter who comes to the table next may exercise
-    // a push-out (only on the shot immediately following the break).
     if (this.isBreakShot) {
       this.isBreakShot = false;
       this.pushOutAvailable = true;
@@ -402,7 +366,8 @@ export class Game {
         cue.pocketed = false;
         cue.x = TABLE.width * 0.25;
         cue.y = TABLE.height / 2;
-        cue.vx = 0; cue.vy = 0;
+        cue.vx = 0;
+        cue.vy = 0;
       }
       this.state = this.currentPlayer === 1 ? 'AI_THINKING' : 'BALL_IN_HAND';
       this.aiTimer = 1.2;
@@ -416,7 +381,6 @@ export class Game {
     this._pushHud();
   }
 
-  // Push-out decision (human chooser): take the shot or pass it back.
   takePush() {
     if (this.state !== 'PUSH_DECISION' || !this.pendingPushDecision) return;
     this.pendingPushDecision = null;
@@ -426,6 +390,7 @@ export class Game {
     this._updateAim();
     this._pushHud();
   }
+
   passPush() {
     if (this.state !== 'PUSH_DECISION' || !this.pendingPushDecision) return;
     const pusher = this.pendingPushDecision.pusher;
@@ -439,7 +404,6 @@ export class Game {
     this._pushHud();
   }
 
-  // Ball-in-hand: player places cue ball (app.js drag calls this).
   placeCueBall(tx, ty) {
     if (this.state !== 'BALL_IN_HAND') return;
     const r = TABLE.ballRadius;
@@ -448,7 +412,8 @@ export class Game {
     const cue = this.balls.find((b) => b.id === CUE_ID);
     const ok = this.balls.every((b) => b.id === CUE_ID || b.pocketed || Math.hypot(b.x - tx, b.y - ty) > r * 2.1);
     if (!ok) return;
-    cue.x = tx; cue.y = ty;
+    cue.x = tx;
+    cue.y = ty;
     this.state = 'AIMING';
     this._updateAim();
     this._pushHud();
@@ -459,21 +424,26 @@ export class Game {
     const why = reason ? ` (${reason})` : '';
     if (!m) {
       this.message = (winner === 0 ? 'Rack won' : 'Opponent won the rack') + why;
-      setTimeout(() => { if (this.running) this.newRack(); }, 1400);
+      setTimeout(() => {
+        if (this.running) this.newRack();
+      }, 1400);
       this.state = 'RACK_OVER';
       this._pushHud();
       return;
     }
-    m.racksWon[winner]++ ;
+    m.racksWon[winner]++;
     const need = Math.ceil(m.bestOf / 2);
     if (m.racksWon[winner] >= need) {
       this._matchOver(winner);
       return;
     }
-    this.message = (winner === 0 ? `Rack won — ${m.racksWon[0]}-${m.racksWon[1]}` : `Opponent won rack — ${m.racksWon[0]}-${m.racksWon[1]}`) + why;
+    this.message =
+      (winner === 0 ? `Rack won — ${m.racksWon[0]}-${m.racksWon[1]}` : `Opponent won rack — ${m.racksWon[0]}-${m.racksWon[1]}`) + why;
     this.state = 'RACK_OVER';
     this._pushHud();
-    setTimeout(() => { if (this.running) this.newRack(); }, 1600);
+    setTimeout(() => {
+      if (this.running) this.newRack();
+    }, 1600);
   }
 
   _matchOver(winner) {
@@ -491,91 +461,39 @@ export class Game {
     if (this.opts.onMatchOver) this.opts.onMatchOver(m);
   }
 
-  // --- Simple AI ---
-  _firstContact(events) {
-    const hit = events.find((e) => e.type === 'hit' && (e.a === CUE_ID || e.b === CUE_ID));
-    if (!hit) return null;
-    return hit.a === CUE_ID ? hit.b : hit.a;
-  }
-  _lowestLive() {
-    const live = this.balls.filter((b) => !b.pocketed && b.id !== CUE_ID);
-    return live.length ? Math.min(...live.map((b) => b.id)) : null;
-  }
-
-  // Does the cue ball have a clear line to the target (any pocketable shot)?
-  _aiHasLineToTarget(cue, target) {
-    const r = TABLE.ballRadius;
-    const dx = target.x - cue.x;
-    const dy = target.y - cue.y;
-    const len = Math.hypot(dx, dy) || 1;
-    const ux = dx / len, uy = dy / len;
-    for (const b of this.balls) {
-      if (b.pocketed || b.id === CUE_ID || b.id === target.id) continue;
-      // perpendicular distance from this ball to the cue->target line
-      const px = b.x - cue.x, py = b.y - cue.y;
-      const proj = px * ux + py * uy;
-      if (proj < 0 || proj > len) continue;
-      const perp = Math.abs(px * uy - py * ux);
-      if (perp < r * 1.9) return false; // blocked
-    }
-    return true;
-  }
-
   _aiShoot() {
     const cue = this.balls.find((b) => b.id === CUE_ID && !b.pocketed);
     if (!cue) return;
     const live = this.balls.filter((b) => !b.pocketed && b.id !== CUE_ID);
     if (!live.length) return;
     const target = live.reduce((a, b) => (a.id < b.id ? a : b));
-    const r = TABLE.ballRadius;
 
-    // Break-shot push-out option: occasionally push out when available.
     if (this.pushOutAvailable) {
-      const wantsPush = !this._aiHasLineToTarget(cue, target) || Math.random() < 0.25;
+      const wantsPush = Math.random() < 0.25;
       if (wantsPush) {
-        // Send the cue ball on a gentle safety into open space.
         this.aimAngle = Math.atan2(-cue.y + TABLE.height / 2, TABLE.width / 2 - cue.x) + (Math.random() - 0.5) * 0.2;
         this.power = 0.5;
-        this.english = { x: 0, y: 0 };
         this._executeShot('PUSH_OUT');
         return;
       }
     }
 
-    const toTarget = Math.atan2(target.y - cue.y, target.x - cue.x);
-    let pk = this.physics.pockets[0], bd = Infinity;
-    for (const p of this.physics.pockets) {
-      const d = Math.hypot(target.x - p.x, target.y - p.y);
-      if (d < bd) { bd = d; pk = p; }
-    }
-    const px = Math.cos(toTarget + Math.PI / 2);
-    const py = Math.sin(toTarget + Math.PI / 2);
-    const cutDir = (target.x - pk.x) * px + (target.y - pk.y) * py;
-    const offset = (cutDir < 0 ? -1 : 1) * r * 0.7;
-    const aimX = target.x + px * offset;
-    const aimY = target.y + py * offset;
-    this.aimAngle = Math.atan2(aimY - cue.y, aimX - cue.x) + (Math.random() - 0.5) * 0.04;
+    this.aimAngle = Math.atan2(target.y - cue.y, target.x - cue.x) + (Math.random() - 0.5) * 0.04;
     const dist = Math.hypot(target.x - cue.x, target.y - cue.y);
     this.power = Math.min(0.95, 0.45 + dist / 120 + Math.random() * 0.15);
-    this.english = { x: 0, y: 0 };
     this._updateAim();
     this._executeShot('NORMAL');
   }
 
-  // AI decides take/pass after the opponent's push-out.
   _aiDecidePush() {
     const dec = this.pendingPushDecision;
     if (!dec) return;
-    const cue = this.balls.find((b) => b.id === CUE_ID && !b.pocketed);
-    const live = this.balls.filter((b) => !b.pocketed && b.id !== CUE_ID);
-    const target = live.length ? live.reduce((a, b) => (a.id < b.id ? a : b)) : null;
-    const take = cue && target && this._aiHasLineToTarget(cue, target);
-    if (take) {
+    if (Math.random() < 0.5) {
       this.pendingPushDecision = null;
       this.state = 'AIMING';
       this._aiShoot();
     } else {
-      this.passPush(); // pass back to the pusher
+      this.passPush();
     }
   }
 }

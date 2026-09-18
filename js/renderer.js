@@ -1,18 +1,36 @@
 // ============================================================================
 // renderer.js — 2D Canvas Pool Table Renderer Engine.
-// Renders 2D layered SVG/PNG table graphics directly onto HTML5 2D Canvas:
-// 1. Base Felt Layer: './assets/felt.png' or './assets/felt.svg' (2:1 playing surface)
-// 2. Pocket Wells & Cushion Shadows Layer
+// Renders 2D table graphics directly onto HTML5 2D Canvas:
+// 1. Table Background Layer: './assets/table_futuristic.jpg'
+// 2. Dropping Balls Animation Layer
 // 3. Ball Shadows Layer: './assets/shadow.svg'
 // 4. Ball Sprites Layer: './assets/ball-0.svg' .. './assets/ball-9.svg'
 // 5. Aim & Cue Stick Overlay Layer
-// 6. Upper Rail Frame Layer: './assets/pool_table_frame.svg'
 // ============================================================================
 
-import { TABLE, BALL_COLORS } from './config.js';
+import { TABLE, BALL_COLORS, BALL_SKINS, CUE_STICKS } from './config.js';
 
 const CUE_ID = 0;
 const ASSET_DIR = './assets';
+
+// Active dropping ball visual transitions
+const droppingBalls = [];
+
+export function queuePocketDropAnimation(ball, pocket) {
+  droppingBalls.push({
+    ballId: ball.id,
+    color: ball.color || BALL_COLORS[ball.id] || "#FFFFFF",
+    number: ball.id || 0,
+    x: ball.x,
+    y: ball.y,
+    targetX: pocket.center ? pocket.center.x : (pocket.x ?? ball.x),
+    targetY: pocket.center ? pocket.center.y : (pocket.y ?? ball.y),
+    scale: 1.0,
+    opacity: 1.0,
+    progress: 0.0,
+    duration: 0.28 // Duration in seconds (280ms)
+  });
+}
 
 export class Renderer {
   constructor(canvas, settings) {
@@ -21,6 +39,7 @@ export class Renderer {
     this.settings = settings;
 
     this.tableRect = { x: 0, y: 0, w: 0, h: 0 };
+    this.playfieldRect = { x: 0, y: 0, w: 0, h: 0 };
     this.playOffset = { x: 0, y: 0 };
     this.playW = 0;
     this.playH = 0;
@@ -28,6 +47,7 @@ export class Renderer {
     this.cssW = 0;
     this.cssH = 0;
     this.aim = null;
+    this.lastTime = performance.now();
 
     this._initAssets();
     this.resize();
@@ -36,7 +56,6 @@ export class Renderer {
   _initAssets() {
     this.imagesLoaded = 0;
 
-    // Helper to load image cleanly
     const loadImg = (path) => {
       const img = new Image();
       img.src = path;
@@ -49,21 +68,52 @@ export class Renderer {
       return img;
     };
 
+    this.tableFuturisticImg = loadImg(`${ASSET_DIR}/table_futuristic.jpg`);
     this.feltImg = loadImg(`${ASSET_DIR}/felt.svg`);
     this.frameImg = loadImg(`${ASSET_DIR}/pool_table_frame.svg`);
     this.shadowImg = loadImg(`${ASSET_DIR}/shadow.svg`);
     this.cushionShadowImg = loadImg(`${ASSET_DIR}/cushion-shadow.svg`);
-    this.pocketWellImg = loadImg(`${ASSET_DIR}/pocket-well.svg`);
 
+    this.cueImgs = {};
+    for (const [id, cueObj] of Object.entries(CUE_STICKS)) {
+      if (cueObj.asset) {
+        this.cueImgs[id] = loadImg(cueObj.asset);
+      }
+    }
+
+    this.currentBallScheme = null;
     this.ballImgs = {};
-    for (let i = 0; i <= 9; i++) {
-      this.ballImgs[i] = loadImg(`${ASSET_DIR}/ball-${i}.svg`);
+    this._loadBallScheme(this.settings ? this.settings.balls : 'classic');
+  }
+
+  _loadBallScheme(schemeId) {
+    const loadImg = (path) => {
+      const img = new Image();
+      img.src = path;
+      img.onerror = (e) => {
+        console.warn(`[Renderer] Ball asset load failed for ${path}`, e);
+      };
+      return img;
+    };
+
+    const schemeInfo = BALL_SKINS[schemeId] || BALL_SKINS.classic;
+    this.currentBallScheme = schemeId;
+
+    // Cue ball (ball 0) is ALWAYS default across all schemes
+    this.ballImgs[0] = loadImg(`${ASSET_DIR}/ball-0.svg`);
+
+    for (let i = 1; i <= 9; i++) {
+      if (schemeInfo && schemeInfo.schemeDir) {
+        this.ballImgs[i] = loadImg(`${schemeInfo.schemeDir}/ball-${i}.svg`);
+      } else {
+        this.ballImgs[i] = loadImg(`${ASSET_DIR}/ball-${i}.svg`);
+      }
     }
   }
 
   resize() {
-    const cssW = this.canvas.clientWidth || (window.innerWidth * 0.8);
-    const cssH = this.canvas.clientHeight || window.innerHeight;
+    const cssW = Math.max(300, this.canvas.clientWidth || Math.round(window.innerWidth * 0.8));
+    const cssH = Math.max(150, this.canvas.clientHeight || window.innerHeight);
     const dpr = window.devicePixelRatio || 1;
     this.cssW = cssW;
     this.cssH = cssH;
@@ -88,16 +138,15 @@ export class Renderer {
     const maxW = availW - margin * 2;
     const maxH = availH - margin * 2;
 
-    const scale = Math.min(maxW / outerW, maxH / outerH);
-    const drawFrameW = outerW * scale;
-    const drawFrameH = outerH * scale;
+    const offsetX = (availW - playW) / 2;
+    const offsetY = (availH - playH) / 2;
 
-    this.scale = scale;
-    this.tableRect = {
-      x: (availW - drawFrameW) / 2,
-      y: (availH - drawFrameH) / 2,
-      w: drawFrameW,
-      h: drawFrameH,
+    this.scale = playW / TABLE.width; // pixels per inch
+    this.playfieldRect = {
+      x: offsetX,
+      y: offsetY,
+      w: playW,
+      h: playH,
     };
     // Playing area cutout starts at x=180, y=180 out of 1240x540 playfield dimensions
     this.playOffset = { x: (180 / 1240) * W * scale, y: (180 / 540) * H * scale };
@@ -105,54 +154,59 @@ export class Renderer {
     this.playH = H * scale;
   }
 
-  toPx(tx, ty) {
+  coordTransform(x, y) {
+    const pf = this.playfieldRect;
     return {
-      x: this.tableRect.x + this.playOffset.x + tx * this.scale,
-      y: this.tableRect.y + this.playOffset.y + ty * this.scale,
+      x: pf.x + (x / TABLE.width) * pf.w,
+      y: pf.y + pf.h - (y / TABLE.height) * pf.h,
     };
   }
 
+  toPx(tx, ty) {
+    return this.coordTransform(tx, ty);
+  }
+
   pxToIn(px, py) {
+    const pf = this.playfieldRect;
     return {
-      x: (px - this.tableRect.x - this.playOffset.x) / this.scale,
-      y: (py - this.tableRect.y - this.playOffset.y) / this.scale,
+      x: ((px - pf.x) / pf.w) * TABLE.width,
+      y: ((pf.y + pf.h - py) / pf.h) * TABLE.height,
     };
   }
 
   ballRadiusPx() {
-    return TABLE.ballRadius * this.scale;
+    return (TABLE.ballRadius / TABLE.width) * this.playfieldRect.w;
   }
 
   draw(balls) {
     if (!this.ctx) return;
     const ctx = this.ctx;
+
+    const cssW = Math.max(300, this.canvas.clientWidth || Math.round(window.innerWidth * 0.8));
+    const cssH = Math.max(150, this.canvas.clientHeight || window.innerHeight);
+    if (Math.abs(cssW - this.cssW) > 2 || Math.abs(cssH - this.cssH) > 2 || this.playfieldRect.w === 0) {
+      this.resize();
+      console.log('[Renderer] Resized! cssW:', cssW, 'cssH:', cssH, 'playfield:', this.playfieldRect);
+    }
+
     const dpr = window.devicePixelRatio || 1;
+    const now = performance.now();
+    const dt = Math.min(0.05, (now - this.lastTime) / 1000);
+    this.lastTime = now;
+
+    if (this.settings && this.settings.balls && this.settings.balls !== this.currentBallScheme) {
+      this._loadBallScheme(this.settings.balls);
+    }
 
     ctx.save();
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, this.cssW, this.cssH);
 
-    const px = this.tableRect.x + this.playOffset.x;
-    const py = this.tableRect.y + this.playOffset.y;
+    // 1. Felt details (head spot, foot spot, head string) and cushion drop shadows
+    this.drawTableFelt(ctx);
 
-    // 1. Felt playing surface
-    if (this.feltImg && this.feltImg.complete && this.feltImg.naturalWidth > 0) {
-      // flet.svg has viewBox 1920x1080 with felt rect x=80..1840 (w=1760) & y=80..1000 (h=920).
-      // Scale flet.svg so the inner felt rect aligns exactly with px, py, playW, playH.
-      const svgW = this.playW * (1920 / 1760);
-      const svgH = this.playH * (1080 / 920);
-      const svgX = px - this.playW * (80 / 1760);
-      const svgY = py - this.playH * (80 / 920);
-      ctx.drawImage(this.feltImg, svgX, svgY, svgW, svgH);
-    } else {
-      ctx.fillStyle = '#6b1f2b'; // maroon felt fallback
-      ctx.fillRect(px, py, this.playW, this.playH);
-    }
-
-    // 2. Cushion shadow overlay over felt bed
-    if (this.cushionShadowImg && this.cushionShadowImg.complete && this.cushionShadowImg.naturalWidth > 0) {
-      ctx.drawImage(this.cushionShadowImg, px, py, this.playW, this.playH);
-    }
+    // 2. Render Dropping Balls animation
+    this.renderDroppingBalls(ctx, dt);
 
     // 3. Ball shadows (under active balls)
     const rp = this.ballRadiusPx();
@@ -187,16 +241,55 @@ export class Renderer {
     // 5. Aim Overlay (cue stick, aiming vector, ghost ball, target lines)
     this._drawAim(ctx, balls);
 
-    // 6. Upper Pool Table Frame Overlay
-    if (this.frameImg && this.frameImg.complete && this.frameImg.naturalWidth > 0) {
-      ctx.drawImage(this.frameImg, this.tableRect.x, this.tableRect.y, this.tableRect.w, this.tableRect.h);
-    } else {
-      ctx.lineWidth = 12 * this.scale;
-      ctx.strokeStyle = '#5c2d16';
-      ctx.strokeRect(this.tableRect.x, this.tableRect.y, this.tableRect.w, this.tableRect.h);
-    }
-
     ctx.restore();
+  }
+
+  renderDroppingBalls(ctx, dt) {
+    for (let i = droppingBalls.length - 1; i >= 0; i--) {
+      const drop = droppingBalls[i];
+      drop.progress += dt / drop.duration;
+
+      if (drop.progress >= 1.0) {
+        droppingBalls.splice(i, 1);
+        continue;
+      }
+
+      // Cubic ease-in to simulate accelerating downward pull into the cup
+      const t = drop.progress;
+      const easeIn = t * t * t;
+
+      // Interpolate towards pocket center while shrinking
+      const currentX = drop.x + (drop.targetX - drop.x) * easeIn;
+      const currentY = drop.y + (drop.targetY - drop.y) * easeIn;
+      drop.scale = 1.0 - (0.55 * easeIn);     // Shrink down to 45% of original radius
+      drop.opacity = 1.0 - (0.85 * easeIn);   // Fade down to 15% opacity inside the cup
+
+      // Convert simulation inches to canvas pixels
+      const canvasPos = this.toPx(currentX, currentY);
+      const radiusPx = ((TABLE.ballRadius * drop.scale) / TABLE.width) * this.playfieldRect.w;
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, drop.opacity);
+
+      // Ball Body
+      const ballImg = this.ballImgs[drop.number];
+      if (ballImg && ballImg.complete && ballImg.naturalWidth > 0) {
+        ctx.drawImage(ballImg, canvasPos.x - radiusPx, canvasPos.y - radiusPx, radiusPx * 2, radiusPx * 2);
+      } else {
+        ctx.beginPath();
+        ctx.arc(canvasPos.x, canvasPos.y, radiusPx, 0, Math.PI * 2);
+        ctx.fillStyle = drop.color;
+        ctx.fill();
+      }
+
+      // Dark falloff vignette on top of dropping ball
+      ctx.beginPath();
+      ctx.arc(canvasPos.x, canvasPos.y, radiusPx, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0, 0, 0, ${easeIn * 0.65})`;
+      ctx.fill();
+
+      ctx.restore();
+    }
   }
 
   _drawBallFallback(ctx, id, x, y, rp) {
@@ -250,28 +343,46 @@ export class Renderer {
 
     ctx.save();
 
-    const stickLen = rp * 11;
+    const equippedCueId = this.settings ? this.settings.cue : 'maple';
+    const cueImg = this.cueImgs ? this.cueImgs[equippedCueId] : null;
+
     const gap = rp * 1.15;
     const sx = p.x - dir.x * gap;
     const sy = p.y - dir.y * gap;
-    const bx = sx - dir.x * stickLen;
-    const by = sy - dir.y * stickLen;
-    const sg = ctx.createLinearGradient(sx, sy, bx, by);
-    sg.addColorStop(0, '#e8e2d0');
-    sg.addColorStop(0.1, '#c98a4a');
-    sg.addColorStop(1, '#5a2f18');
-    ctx.strokeStyle = sg;
-    ctx.lineWidth = rp * 0.5;
-    ctx.lineCap = 'round';
-    ctx.shadowColor = 'rgba(0,0,0,0.35)';
-    ctx.shadowBlur = 6;
-    ctx.shadowOffsetY = 3;
-    ctx.beginPath();
-    ctx.moveTo(sx, sy);
-    ctx.lineTo(bx, by);
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetY = 0;
+
+    if (cueImg && cueImg.complete && cueImg.naturalWidth > 0) {
+      const stickLen = rp * 14;
+      const stickHeight = rp * 0.875; // Maintains 800:50 (16:1) aspect ratio
+
+      ctx.save();
+      ctx.translate(sx, sy);
+      ctx.rotate(ang + Math.PI);
+      ctx.shadowColor = 'rgba(0,0,0,0.4)';
+      ctx.shadowBlur = 6;
+      ctx.shadowOffsetY = 3;
+      ctx.drawImage(cueImg, 0, -stickHeight / 2, stickLen, stickHeight);
+      ctx.restore();
+    } else {
+      const stickLen = rp * 11;
+      const bx = sx - dir.x * stickLen;
+      const by = sy - dir.y * stickLen;
+      const sg = ctx.createLinearGradient(sx, sy, bx, by);
+      sg.addColorStop(0, '#e8e2d0');
+      sg.addColorStop(0.1, '#c98a4a');
+      sg.addColorStop(1, '#5a2f18');
+      ctx.strokeStyle = sg;
+      ctx.lineWidth = rp * 0.5;
+      ctx.lineCap = 'round';
+      ctx.shadowColor = 'rgba(0,0,0,0.35)';
+      ctx.shadowBlur = 6;
+      ctx.shadowOffsetY = 3;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+    }
 
     if (ghost) {
       const gp = this.toPx(ghost.x, ghost.y);
@@ -335,6 +446,36 @@ export class Renderer {
     ctx.restore();
   }
 
-  drawTableFelt() {}
-  drawBeveledRails() {}
+  drawTableFelt(ctx) {
+    // Draws head spot and foot spot on the felt surface
+    const headPx = this.toPx(25.0, 25.0);
+    const footPx = this.toPx(75.0, 25.0);
+    const spotR = Math.max(2, this.ballRadiusPx() * 0.18);
+
+    ctx.save();
+    // Head Spot
+    ctx.beginPath();
+    ctx.arc(headPx.x, headPx.y, spotR, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(20, 20, 20, 0.6)';
+    ctx.fill();
+
+    // Foot Spot
+    ctx.beginPath();
+    ctx.arc(footPx.x, footPx.y, spotR, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(20, 20, 20, 0.6)';
+    ctx.fill();
+
+    // Subtle Head String line
+    const pTopHead = this.toPx(25.0, 50.0);
+    const pBotHead = this.toPx(25.0, 0.0);
+    ctx.beginPath();
+    ctx.moveTo(pTopHead.x, pTopHead.y);
+    ctx.lineTo(pBotHead.x, pBotHead.y);
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
 }

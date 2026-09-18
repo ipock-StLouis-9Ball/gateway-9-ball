@@ -23,19 +23,19 @@ def gen_felt_svg():
     return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" width="100%" height="100%">
   <defs>
     <radialGradient id="feltVignette" cx="50%" cy="50%" r="70%">
-      <stop offset="0%" stop-color="#7c2635" />
-      <stop offset="50%" stop-color="#6b1f2b" />
-      <stop offset="85%" stop-color="#521621" />
-      <stop offset="100%" stop-color="#3a0e16" />
+      <stop offset="0%" stop-color="#F2E3CA" />
+      <stop offset="60%" stop-color="#E8D5B5" />
+      <stop offset="88%" stop-color="#D8C2A0" />
+      <stop offset="100%" stop-color="#C5AF8D" />
     </radialGradient>
-    <filter id="clothGrain" x="0%" y="0%" width="100%" height="100%">
+    <filter id="clothGrain" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
       <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" result="noise" />
-      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.05 0" />
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.04 0" />
       <feBlend mode="multiply" in="SourceGraphic" result="blend" />
     </filter>
   </defs>
   <rect width="1000" height="500" fill="url(#feltVignette)" />
-  <rect width="1000" height="500" fill="#000" filter="url(#clothGrain)" opacity="0.6" style="mix-blend-mode: overlay;" />
+  <rect width="1000" height="500" fill="#000" filter="url(#clothGrain)" opacity="0.4" style="mix-blend-mode: overlay;" />
 </svg>"""
 
 def gen_rail_wood_svg():
@@ -139,305 +139,94 @@ def gen_shadow_svg():
 def gen_frame_svg():
     return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6400 3600" width="100%" height="100%" shape-rendering="geometricPrecision">
   <defs>
-    <linearGradient id="polishedBrass" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#2b1800"/>
-      <stop offset="0.08" stop-color="#8e5100"/>
-      <stop offset="0.18" stop-color="#f6ba20"/>
-      <stop offset="0.29" stop-color="#fff9c8"/>
-      <stop offset="0.39" stop-color="#ffd750"/>
-      <stop offset="0.57" stop-color="#a45d00"/>
-      <stop offset="0.73" stop-color="#3b2000"/>
-      <stop offset="0.88" stop-color="#d68b08"/>
-      <stop offset="1" stop-color="#ffde64"/>
+    <!-- Brushed Charcoal Metallic Rail Gradient -->
+    <linearGradient id="charcoalMetal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1c1e22"/>
+      <stop offset="20%" stop-color="#2e3238"/>
+      <stop offset="40%" stop-color="#181a1d"/>
+      <stop offset="60%" stop-color="#3a3e46"/>
+      <stop offset="80%" stop-color="#22252a"/>
+      <stop offset="100%" stop-color="#121316"/>
     </linearGradient>
 
-    <linearGradient id="mapleHorizontal" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#4c2b13"/>
-      <stop offset="0.035" stop-color="#d5a861"/>
-      <stop offset="0.090" stop-color="#fff7d2"/>
-      <stop offset="0.245" stop-color="#f3d79a"/>
-      <stop offset="0.430" stop-color="#8e5b28"/>
-      <stop offset="0.525" stop-color="#e9c783"/>
-      <stop offset="0.690" stop-color="#fff3c7"/>
-      <stop offset="0.835" stop-color="#b1783a"/>
-      <stop offset="0.950" stop-color="#f8dda0"/>
-      <stop offset="1" stop-color="#43230f"/>
+    <!-- Cyan Glow Gradient for Inner Rail Accents -->
+    <linearGradient id="cyanGlowGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00E5FF" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#80F3FF" stop-opacity="1.0"/>
+      <stop offset="100%" stop-color="#00E5FF" stop-opacity="0.9"/>
     </linearGradient>
 
-    <linearGradient id="mapleVertical" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#43230f"/>
-      <stop offset="0.040" stop-color="#d6a960"/>
-      <stop offset="0.105" stop-color="#fff7d1"/>
-      <stop offset="0.255" stop-color="#efd497"/>
-      <stop offset="0.460" stop-color="#8e5b28"/>
-      <stop offset="0.560" stop-color="#e8c27a"/>
-      <stop offset="0.715" stop-color="#fff3c5"/>
-      <stop offset="0.865" stop-color="#a66c32"/>
-      <stop offset="0.955" stop-color="#f1d497"/>
-      <stop offset="1" stop-color="#43230f"/>
-    </linearGradient>
+    <!-- Transparent Glass Pocket Depth Radial Gradient -->
+    <radialGradient id="glassPocketGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.95"/>
+      <stop offset="50%" stop-color="#00E5FF" stop-opacity="0.25"/>
+      <stop offset="80%" stop-color="#001824" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#00E5FF" stop-opacity="0.8"/>
+    </radialGradient>
 
-    <filter id="microWoodGrain" x="-5%" y="-10%" width="110%" height="120%" color-interpolation-filters="sRGB">
-      <feTurbulence type="fractalNoise" baseFrequency="0.013 1.8" numOctaves="2" seed="831" result="noise"/>
-      <feColorMatrix in="noise" type="matrix" values="
-        0.38 0 0 0 0.28
-        0 0.18 0 0 0.10
-        0 0 0.06 0 0.02
-        0 0 0 0.26 0" result="grain"/>
-      <feComposite in="grain" in2="SourceGraphic" operator="in"/>
-      <feBlend in="SourceGraphic" in2="grain" mode="multiply"/>
-    </filter>
-
-    <clipPath id="clipTopLeftRail">
-      <path d="M1040 420 H3080 V950 H1040 Z"/>
-    </clipPath>
-    <clipPath id="clipTopRightRail">
-      <path d="M3320 420 H5360 V950 H3320 Z"/>
-    </clipPath>
-    <clipPath id="clipBottomLeftRail">
-      <path d="M1040 2650 H3080 V3180 H1040 Z"/>
-    </clipPath>
-    <clipPath id="clipBottomRightRail">
-      <path d="M3320 2650 H5360 V3180 H3320 Z"/>
-    </clipPath>
-    <clipPath id="clipLeftUpperRail">
-      <path d="M420 1040 H950 V2560 H420 Z"/>
-    </clipPath>
-    <clipPath id="clipRightUpperRail">
-      <path d="M5450 1040 H5980 V2560 H5450 Z"/>
-    </clipPath>
-
-    <!-- Horizontal Vector Wood Grain -->
-    <g id="horizontalRailGrain">
-      <g fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M980 514 C1390 476 1640 548 2050 510 S2720 474 3200 525 S4070 475 4580 518 S4970 492 5315 522" stroke="#75431c" stroke-width="9" opacity="0.64"/>
-        <path d="M980 569 C1320 606 1670 526 1990 574 S2630 612 3120 550 S3940 528 4420 584 S4920 604 5315 560" stroke="#fff2c4" stroke-width="7" opacity="0.58"/>
-        <path d="M980 647 C1440 590 1720 683 2200 634 S3040 586 3530 659 S4410 686 4810 628 S5110 608 5315 650" stroke="#6e3c18" stroke-width="13" opacity="0.69"/>
-        <path d="M980 703 C1240 747 1600 658 1970 714 S2720 764 3180 700 S3970 657 4430 726 S4920 742 5315 704" stroke="#b97836" stroke-width="16" opacity="0.52"/>
-        <path d="M980 783 C1380 739 1840 826 2310 765 S3030 718 3480 792 S4270 835 4720 772 S5050 746 5315 786" stroke="#623313" stroke-width="8" opacity="0.60"/>
-        <path d="M980 858 C1300 813 1540 895 1930 846 S2670 811 3100 876 S3960 902 4370 842 S4950 818 5315 864" stroke="#fff6d4" stroke-width="10" opacity="0.48"/>
-      </g>
-      <g fill="none" stroke-linecap="round">
-        <path d="M1170 470 C1580 450 1710 620 2080 560 C2440 500 2730 470 3040 584 C3420 720 3780 522 4210 576 C4550 620 4830 498 5140 520" stroke="#865022" stroke-width="29" opacity="0.38"/>
-        <path d="M1080 742 C1440 668 1640 800 1960 730 C2320 652 2600 800 2920 748 C3340 680 3590 814 3930 750 C4310 677 4620 808 5130 724" stroke="#704019" stroke-width="21" opacity="0.42"/>
-        <path d="M1220 606 C1500 580 1690 670 1940 626 C2230 576 2480 636 2740 612 C3030 584 3290 660 3570 618 C3910 566 4230 666 4510 615" stroke="#fff8d9" stroke-width="15" opacity="0.43"/>
-      </g>
-    </g>
-
-    <!-- Vertical Vector Wood Grain -->
-    <g id="verticalRailGrain">
-      <g fill="none" stroke-linecap="round">
-        <path d="M530 1030 C484 1370 558 1650 510 2040 S474 2700 526 2990" stroke="#6d3b17" stroke-width="11" opacity="0.65"/>
-        <path d="M600 1010 C648 1360 566 1650 620 1980 S654 2600 605 2990" stroke="#fff3cc" stroke-width="8" opacity="0.58"/>
-        <path d="M690 1020 C642 1410 730 1700 672 2070 S640 2650 700 2990" stroke="#714018" stroke-width="16" opacity="0.60"/>
-        <path d="M790 1040 C836 1350 752 1710 816 2060 S850 2640 790 2990" stroke="#b87937" stroke-width="18" opacity="0.50"/>
-      </g>
-      <g fill="none" stroke-linecap="round">
-        <path d="M493 1160 C470 1450 602 1670 528 1970 C456 2260 598 2550 506 2900" stroke="#7d481d" stroke-width="27" opacity="0.38"/>
-        <path d="M750 1100 C812 1410 680 1680 770 1980 C846 2240 694 2570 788 2880" stroke="#61320f" stroke-width="22" opacity="0.43"/>
-      </g>
-    </g>
-
-    <!-- Ruby Diamond Inlay Marker -->
+    <!-- Ruby Red Diamond Inlay -->
     <g id="ruby-diamond">
-      <polygon points="0,-22 14,0 0,22 -14,0" fill="#d68b08" stroke="#3b2000" stroke-width="3"/>
-      <polygon points="0,-17 10,0 0,17 -10,0" fill="#d61c24"/>
-      <polygon points="0,-14 7,-2 0,0 -5,-7" fill="#ff8890" opacity="0.85"/>
+      <polygon points="0,-24 16,0 0,24 -16,0" fill="#00E5FF" opacity="0.6"/>
+      <polygon points="0,-20 13,0 0,20 -13,0" fill="#E0115F"/>
+      <polygon points="0,-16 8,-2 0,0 -6,-8" fill="#FF7BA9" opacity="0.9"/>
     </g>
   </defs>
 
-  <!-- Layer 1: Outer Soft Frame Cast Shadow -->
-  <rect x="220" y="120" width="5960" height="3360" rx="140" ry="140" fill="#000000" opacity="0.65" filter="blur(24px)"/>
+  <!-- Layer 1: Outer Soft Shadow -->
+  <rect x="220" y="120" width="5960" height="3360" rx="180" ry="180" fill="#000000" opacity="0.7" filter="blur(20px)"/>
 
-  <!-- Layer 2: Heavy Black Structural Base with Central Cutout -->
-  <path d="M 400 200 H 6000 Q 6200 200 6200 400 V 3200 Q 6200 3400 6000 3400 H 400 Q 200 3400 200 3200 V 400 Q 200 200 400 200 Z M 1200 1000 H 5200 V 2600 H 1200 Z" fill="#120904" fill-rule="evenodd"/>
+  <!-- Layer 2: Outer Brushed Charcoal Metallic Frame Body with Playing Area Cutout -->
+  <path d="M 400 200 H 6000 Q 6200 200 6200 400 V 3200 Q 6200 3400 6000 3400 H 400 Q 200 3400 200 3200 V 400 Q 200 200 400 200 Z M 1200 1000 H 5200 V 2600 H 1200 Z" fill="url(#charcoalMetal)" fill-rule="evenodd" stroke="#101214" stroke-width="16"/>
 
-  <!-- Layer 3: Deep Red Recessed Rail Reveal -->
-  <path d="M 440 240 H 5960 Q 6160 240 6160 440 V 3160 Q 6160 3360 5960 3360 H 440 Q 240 3360 240 3160 V 440 Q 240 240 440 240 Z M 1180 980 H 5220 V 2620 H 1180 Z" fill="#351009" stroke="#ef1927" stroke-width="12" opacity="0.92" fill-rule="evenodd"/>
+  <!-- Layer 3: Cyan Glow Accent Lines along Rail-Felt Junction -->
+  <path d="M 1200 985 H 3080 M 3320 985 H 5200" stroke="#00E5FF" stroke-width="12" fill="none"/>
+  <path d="M 1200 2615 H 3080 M 3320 2615 H 5200" stroke="#00E5FF" stroke-width="12" fill="none"/>
+  <path d="M 1185 1000 V 2600 M 5215 1000 V 2600" stroke="#00E5FF" stroke-width="12" fill="none"/>
 
-  <!-- Layer 4: Broad Wood Rail-Cap Sections (Maple) -->
-  <!-- Top Left Wood Rail -->
-  <g id="topLeftWoodRail">
-    <path d="M1040 420 H3080 V950 H1040 Z" fill="#321907" stroke="#170b03" stroke-width="32"/>
-    <path d="M1070 447 H3050 V916 H1070 Z" fill="url(#mapleHorizontal)" stroke="#b17a37" stroke-width="8"/>
-    <g clip-path="url(#clipTopLeftRail)">
-      <use href="#horizontalRailGrain"/>
-    </g>
-    <path d="M1070 447 H3050 V916 H1070 Z" fill="url(#mapleHorizontal)" opacity="0.14" filter="url(#microWoodGrain)"/>
-    <path d="M1095 473 H3025" fill="none" stroke="#fff8d9" stroke-width="18" stroke-linecap="round" opacity="0.74"/>
-    <path d="M1070 924 H3050" fill="none" stroke="#351009" stroke-width="42"/>
-    <path d="M1080 921 H3040" fill="none" stroke="#ef1927" stroke-width="12" opacity="0.90"/>
-  </g>
+  <!-- Layer 4: Transparent Glass Pockets with Depth Shading -->
+  <!-- Top-Left Corner -->
+  <circle cx="1100" cy="900" r="140" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
+  <!-- Top-Right Corner -->
+  <circle cx="5300" cy="900" r="140" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
+  <!-- Bottom-Left Corner -->
+  <circle cx="1100" cy="2700" r="140" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
+  <!-- Bottom-Right Corner -->
+  <circle cx="5300" cy="2700" r="140" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
+  <!-- Top-Center Side -->
+  <circle cx="3200" cy="880" r="130" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
+  <!-- Bottom-Center Side -->
+  <circle cx="3200" cy="2720" r="130" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
 
-  <!-- Top Right Wood Rail -->
-  <g id="topRightWoodRail">
-    <path d="M3320 420 H5360 V950 H3320 Z" fill="#321907" stroke="#170b03" stroke-width="32"/>
-    <path d="M3350 447 H5330 V916 H3350 Z" fill="url(#mapleHorizontal)" stroke="#b17a37" stroke-width="8"/>
-    <g clip-path="url(#clipTopRightRail)">
-      <use href="#horizontalRailGrain"/>
-    </g>
-    <path d="M3350 447 H5330 V916 H3350 Z" fill="url(#mapleHorizontal)" opacity="0.14" filter="url(#microWoodGrain)"/>
-    <path d="M3375 473 H5305" fill="none" stroke="#fff8d9" stroke-width="18" stroke-linecap="round" opacity="0.74"/>
-    <path d="M3350 924 H5330" fill="none" stroke="#351009" stroke-width="42"/>
-    <path d="M3360 921 H5320" fill="none" stroke="#ef1927" stroke-width="12" opacity="0.90"/>
-  </g>
-
-  <!-- Bottom Left Wood Rail -->
-  <g id="bottomLeftWoodRail">
-    <path d="M1040 2650 H3080 V3180 H1040 Z" fill="#321907" stroke="#170b03" stroke-width="32"/>
-    <path d="M1070 2684 H3050 V3153 H1070 Z" fill="url(#mapleHorizontal)" stroke="#b17a37" stroke-width="8"/>
-    <g clip-path="url(#clipBottomLeftRail)">
-      <use href="#horizontalRailGrain"/>
-    </g>
-    <path d="M1070 2684 H3050 V3153 H1070 Z" fill="url(#mapleHorizontal)" opacity="0.14" filter="url(#microWoodGrain)"/>
-    <path d="M1095 3127 H3025" fill="none" stroke="#fff8d9" stroke-width="18" stroke-linecap="round" opacity="0.74"/>
-    <path d="M1070 2676 H3050" fill="none" stroke="#351009" stroke-width="42"/>
-    <path d="M1080 2679 H3040" fill="none" stroke="#ef1927" stroke-width="12" opacity="0.90"/>
-  </g>
-
-  <!-- Bottom Right Wood Rail -->
-  <g id="bottomRightWoodRail">
-    <path d="M3320 2650 H5360 V3180 H3320 Z" fill="#321907" stroke="#170b03" stroke-width="32"/>
-    <path d="M3350 2684 H5330 V3153 H3350 Z" fill="url(#mapleHorizontal)" stroke="#b17a37" stroke-width="8"/>
-    <g clip-path="url(#clipBottomRightRail)">
-      <use href="#horizontalRailGrain"/>
-    </g>
-    <path d="M3350 2684 H5330 V3153 H3350 Z" fill="url(#mapleHorizontal)" opacity="0.14" filter="url(#microWoodGrain)"/>
-    <path d="M3375 3127 H5305" fill="none" stroke="#fff8d9" stroke-width="18" stroke-linecap="round" opacity="0.74"/>
-    <path d="M3350 2676 H5330" fill="none" stroke="#351009" stroke-width="42"/>
-    <path d="M3360 2679 H5320" fill="none" stroke="#ef1927" stroke-width="12" opacity="0.90"/>
-  </g>
-
-  <!-- Left Wood Rail -->
-  <g id="leftWoodRail">
-    <path d="M420 1040 V2560 H950 V1040 Z" fill="#321907" stroke="#170b03" stroke-width="32"/>
-    <path d="M447 1070 V2530 H916 V1070 Z" fill="url(#mapleVertical)" stroke="#b17a37" stroke-width="8"/>
-    <g clip-path="url(#clipLeftUpperRail)">
-      <use href="#verticalRailGrain"/>
-    </g>
-    <path d="M447 1070 V2530 H916 V1070 Z" fill="url(#mapleVertical)" opacity="0.14" filter="url(#microWoodGrain)"/>
-    <path d="M473 1095 V2505" fill="none" stroke="#fff8d9" stroke-width="18" stroke-linecap="round" opacity="0.74"/>
-    <path d="M924 1070 V2530" fill="none" stroke="#351009" stroke-width="42"/>
-    <path d="M921 1080 V2520" fill="none" stroke="#ef1927" stroke-width="12" opacity="0.90"/>
-  </g>
-
-  <!-- Right Wood Rail -->
-  <g id="rightWoodRail">
-    <path d="M5450 1040 V2560 H5980 V1040 Z" fill="#321907" stroke="#170b03" stroke-width="32"/>
-    <path d="M5484 1070 V2530 H5953 V1070 Z" fill="url(#mapleVertical)" stroke="#b17a37" stroke-width="8"/>
-    <g clip-path="url(#clipRightUpperRail)">
-      <use href="#verticalRailGrain"/>
-    </g>
-    <path d="M5484 1070 V2530 H5953 V1070 Z" fill="url(#mapleVertical)" opacity="0.14" filter="url(#microWoodGrain)"/>
-    <path d="M5927 1095 V2505" fill="none" stroke="#fff8d9" stroke-width="18" stroke-linecap="round" opacity="0.74"/>
-    <path d="M5476 1070 V2530" fill="none" stroke="#351009" stroke-width="42"/>
-    <path d="M5479 1080 V2520" fill="none" stroke="#ef1927" stroke-width="12" opacity="0.90"/>
-  </g>
-
-  <!-- Layer 5: Dark Red Cushion-Nose Strip Precisely Broken at Pocket Mouths -->
-  <path d="M 1200 970 H 3080 M 3320 970 H 5200 M 5230 1000 V 2600 M 3320 2630 H 5200 M 1200 2630 H 3080 M 1170 1000 V 2600" stroke="#7a0e14" stroke-width="28" stroke-linecap="square" fill="none"/>
-  <path d="M 1200 982 H 3080 M 3320 982 H 5200 M 5218 1000 V 2600 M 3320 2618 H 5200 M 1200 2618 H 3080 M 1182 1000 V 2600" stroke="#ef1927" stroke-width="8" stroke-linecap="square" opacity="0.9" fill="none"/>
-
-  <!-- Layer 6: Pocket Voids, Facings, and Top-View Shelf Regions -->
-  <!-- Top-Left Corner Pocket -->
-  <circle cx="1100" cy="900" r="130" fill="#050203"/>
-  <path d="M 1020 950 L 1100 900 L 1150 980" stroke="#1f0a0d" stroke-width="24" fill="none"/>
-  <!-- Top-Right Corner Pocket -->
-  <circle cx="5300" cy="900" r="130" fill="#050203"/>
-  <path d="M 5380 950 L 5300 900 L 5250 980" stroke="#1f0a0d" stroke-width="24" fill="none"/>
-  <!-- Bottom-Left Corner Pocket -->
-  <circle cx="1100" cy="2700" r="130" fill="#050203"/>
-  <path d="M 1020 2650 L 1100 2700 L 1150 2620" stroke="#1f0a0d" stroke-width="24" fill="none"/>
-  <!-- Bottom-Right Corner Pocket -->
-  <circle cx="5300" cy="2700" r="130" fill="#050203"/>
-  <path d="M 5380 2650 L 5300 2700 L 5250 2620" stroke="#1f0a0d" stroke-width="24" fill="none"/>
-  <!-- Top-Center Side Pocket -->
-  <circle cx="3200" cy="880" r="120" fill="#050203"/>
-  <path d="M 3080 960 L 3200 900 L 3320 960" stroke="#1f0a0d" stroke-width="24" fill="none"/>
-  <!-- Bottom-Center Side Pocket -->
-  <circle cx="3200" cy="2720" r="120" fill="#050203"/>
-  <path d="M 3080 2640 L 3200 2700 L 3320 2640" stroke="#1f0a0d" stroke-width="24" fill="none"/>
-
-  <!-- Layer 7: Heavy Polished Brass Corner Elbows over Outer Corner Transitions -->
-  <!-- Top-Left Brass Corner Elbow -->
-  <g id="topLeftBrassElbow">
-    <!-- Faint soft dark shadow where brass meets wood -->
-    <path d="M 380 180 C 380 180 1060 180 1120 440 L 1020 980 C 800 800 440 600 380 180 Z" fill="#000000" opacity="0.35" filter="blur(10px)"/>
-    <!-- Main Polished Brass Body -->
-    <path d="M 400 200 C 400 200 1040 200 1100 420 L 1020 950 C 780 780 420 580 400 200 Z" fill="url(#polishedBrass)" stroke="#3b2000" stroke-width="12"/>
-    <!-- Key-light streak following outer upper-left curve -->
-    <path d="M 430 220 C 520 220 980 230 1060 410" fill="none" stroke="#fff8d9" stroke-width="18" stroke-linecap="round" opacity="0.88"/>
-    <!-- Narrow deep-brown line on lower/right edge -->
-    <path d="M 1010 930 C 770 760 440 570 420 220" fill="none" stroke="#2b1800" stroke-width="14"/>
-    <!-- Apex concentrated highlight -->
-    <ellipse cx="680" cy="270" rx="28" ry="16" fill="#ffffff" opacity="0.92" transform="rotate(-15 680 270)"/>
-  </g>
-
-  <!-- Top-Right Brass Corner Elbow -->
-  <g id="topRightBrassElbow">
-    <path d="M 6020 180 C 6020 180 5340 180 5280 440 L 5380 980 C 5600 800 5960 600 6020 180 Z" fill="#000000" opacity="0.35" filter="blur(10px)"/>
-    <path d="M 6000 200 C 6000 200 5360 200 5300 420 L 5380 950 C 5620 780 5980 580 6000 200 Z" fill="url(#polishedBrass)" stroke="#3b2000" stroke-width="12"/>
-    <path d="M 5970 220 C 5880 220 5420 230 5340 410" fill="none" stroke="#fff8d9" stroke-width="18" stroke-linecap="round" opacity="0.88"/>
-    <path d="M 5390 930 C 5630 760 5960 570 5980 220" fill="none" stroke="#2b1800" stroke-width="14"/>
-    <ellipse cx="5720" cy="270" rx="28" ry="16" fill="#ffffff" opacity="0.92" transform="rotate(15 5720 270)"/>
-  </g>
-
-  <!-- Bottom-Left Brass Corner Elbow -->
-  <g id="bottomLeftBrassElbow">
-    <path d="M 380 3420 C 380 3420 1060 3420 1120 3160 L 1020 2620 C 800 2800 440 3000 380 3420 Z" fill="#000000" opacity="0.35" filter="blur(10px)"/>
-    <path d="M 400 3400 C 400 3400 1040 3400 1100 3180 L 1020 2650 C 780 2820 420 3020 400 3400 Z" fill="url(#polishedBrass)" stroke="#3b2000" stroke-width="12"/>
-    <path d="M 430 3380 C 520 3380 980 3370 1060 3190" fill="none" stroke="#fff8d9" stroke-width="18" stroke-linecap="round" opacity="0.88"/>
-    <path d="M 1010 2670 C 770 2840 440 3030 420 3380" fill="none" stroke="#2b1800" stroke-width="14"/>
-    <ellipse cx="680" cy="3330" rx="28" ry="16" fill="#ffffff" opacity="0.92" transform="rotate(15 680 3330)"/>
-  </g>
-
-  <!-- Bottom-Right Brass Corner Elbow -->
-  <g id="bottomRightBrassElbow">
-    <path d="M 6020 3420 C 6020 3420 5340 3420 5280 3160 L 5380 2620 C 5600 2800 5960 3000 6020 3420 Z" fill="#000000" opacity="0.35" filter="blur(10px)"/>
-    <path d="M 6000 3400 C 6000 3400 5360 3400 5300 3180 L 5380 2650 C 5620 2820 5980 3020 6000 3400 Z" fill="url(#polishedBrass)" stroke="#3b2000" stroke-width="12"/>
-    <path d="M 5970 3380 C 5880 3380 5420 3370 5340 3190" fill="none" stroke="#fff8d9" stroke-width="18" stroke-linecap="round" opacity="0.88"/>
-    <path d="M 5390 2670 C 5630 2840 5960 3030 5980 3380" fill="none" stroke="#2b1800" stroke-width="14"/>
-    <ellipse cx="5720" cy="3330" rx="28" ry="16" fill="#ffffff" opacity="0.92" transform="rotate(-15 5720 3330)"/>
-  </g>
-
-  <!-- Top Side Pocket Brass Casting -->
-  <path d="M 3060 420 L 3340 420 L 3310 950 L 3090 950 Z" fill="url(#polishedBrass)" stroke="#3b2000" stroke-width="8"/>
-  <line x1="3070" y1="440" x2="3330" y2="440" stroke="#fff8d9" stroke-width="12" stroke-linecap="round" opacity="0.85"/>
-
-  <!-- Bottom Side Pocket Brass Casting -->
-  <path d="M 3060 3180 L 3340 3180 L 3310 2650 L 3090 2650 Z" fill="url(#polishedBrass)" stroke="#3b2000" stroke-width="8"/>
-  <line x1="3070" y1="3160" x2="3330" y2="3160" stroke="#fff8d9" stroke-width="12" stroke-linecap="round" opacity="0.85"/>
-
-  <!-- Layer 8: Ruby Diamond Inlays and High-Gloss Highlights -->
+  <!-- Layer 5: Ruby Diamond Inlays (18 Total) -->
   <!-- Top Left Rail Diamonds -->
-  <use href="#ruby-diamond" x="1550" y="680"/>
-  <use href="#ruby-diamond" x="2060" y="680"/>
-  <use href="#ruby-diamond" x="2570" y="680"/>
+  <use href="#ruby-diamond" x="1550" y="600"/>
+  <use href="#ruby-diamond" x="2060" y="600"/>
+  <use href="#ruby-diamond" x="2570" y="600"/>
 
   <!-- Top Right Rail Diamonds -->
-  <use href="#ruby-diamond" x="3830" y="680"/>
-  <use href="#ruby-diamond" x="4340" y="680"/>
-  <use href="#ruby-diamond" x="4850" y="680"/>
+  <use href="#ruby-diamond" x="3830" y="600"/>
+  <use href="#ruby-diamond" x="4340" y="600"/>
+  <use href="#ruby-diamond" x="4850" y="600"/>
 
   <!-- Bottom Left Rail Diamonds -->
-  <use href="#ruby-diamond" x="1550" y="2920"/>
-  <use href="#ruby-diamond" x="2060" y="2920"/>
-  <use href="#ruby-diamond" x="2570" y="2920"/>
+  <use href="#ruby-diamond" x="1550" y="3000"/>
+  <use href="#ruby-diamond" x="2060" y="3000"/>
+  <use href="#ruby-diamond" x="2570" y="3000"/>
 
   <!-- Bottom Right Rail Diamonds -->
-  <use href="#ruby-diamond" x="3830" y="2920"/>
-  <use href="#ruby-diamond" x="4340" y="2920"/>
-  <use href="#ruby-diamond" x="4850" y="2920"/>
+  <use href="#ruby-diamond" x="3830" y="3000"/>
+  <use href="#ruby-diamond" x="4340" y="3000"/>
+  <use href="#ruby-diamond" x="4850" y="3000"/>
 
   <!-- Left Rail Diamonds -->
-  <use href="#ruby-diamond" x="680" y="1420"/>
-  <use href="#ruby-diamond" x="680" y="1800"/>
-  <use href="#ruby-diamond" x="680" y="2180"/>
+  <use href="#ruby-diamond" x="600" y="1420"/>
+  <use href="#ruby-diamond" x="600" y="1800"/>
+  <use href="#ruby-diamond" x="600" y="2180"/>
 
   <!-- Right Rail Diamonds -->
-  <use href="#ruby-diamond" x="5720" y="1420"/>
-  <use href="#ruby-diamond" x="5720" y="1800"/>
-  <use href="#ruby-diamond" x="5720" y="2180"/>
+  <use href="#ruby-diamond" x="5800" y="1420"/>
+  <use href="#ruby-diamond" x="5800" y="1800"/>
+  <use href="#ruby-diamond" x="5800" y="2180"/>
 </svg>"""
 
 def gen_ui_sidebar_svg():
@@ -488,7 +277,7 @@ def gen_ball_svg(bid):
     is_cue = (bid == 0)
     is_stripe = (bid == 9)
 
-    svg = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="100%" height="100%">']
+    svg = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="100%" height="100%" shape-rendering="geometricPrecision">']
     svg.append('  <defs>')
     svg.append('    <radialGradient id="ballShade" cx="35%" cy="30%" r="65%">')
     svg.append('      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4" />')
@@ -527,8 +316,429 @@ def gen_ball_svg(bid):
 
     return "\n".join(svg)
 
+# --- NEW BALL SCHEMES (1-9) ---
+
+# 1. High Roller Ball Scheme
+def gen_high_roller_ball_svg(bid):
+    base_color = BALL_COLORS[bid]
+    is_stripe = (bid == 9)
+
+    svg = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="100%" height="100%" shape-rendering="geometricPrecision">']
+    svg.append('  <defs>')
+    svg.append('    <radialGradient id="goldCoinGrad" cx="35%" cy="35%" r="65%">')
+    svg.append('      <stop offset="0%" stop-color="#fff4cc" />')
+    svg.append('      <stop offset="40%" stop-color="#e8c258" />')
+    svg.append('      <stop offset="80%" stop-color="#b88a28" />')
+    svg.append('      <stop offset="100%" stop-color="#6e4f10" />')
+    svg.append('    </radialGradient>')
+    svg.append('    <radialGradient id="ballShade" cx="35%" cy="30%" r="65%">')
+    svg.append('      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35" />')
+    svg.append('      <stop offset="60%" stop-color="#ffffff" stop-opacity="0.0" />')
+    svg.append('      <stop offset="85%" stop-color="#000000" stop-opacity="0.4" />')
+    svg.append('      <stop offset="100%" stop-color="#000000" stop-opacity="0.8" />')
+    svg.append('    </radialGradient>')
+    svg.append('    <radialGradient id="specular" cx="32%" cy="25%" r="28%">')
+    svg.append('      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.75" />')
+    svg.append('      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.15" />')
+    svg.append('      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />')
+    svg.append('    </radialGradient>')
+    if is_stripe:
+        svg.append('    <clipPath id="ballClip">')
+        svg.append('      <circle cx="128" cy="128" r="120" />')
+        svg.append('    </clipPath>')
+    svg.append('  </defs>')
+
+    # Outer Clay Chip Body
+    if is_stripe:
+        svg.append('  <circle cx="128" cy="128" r="120" fill="#181818" />')
+        svg.append(f'  <rect x="0" y="68" width="256" height="120" fill="{base_color}" clip-path="url(#ballClip)" />')
+    else:
+        svg.append(f'  <circle cx="128" cy="128" r="120" fill="{base_color}" />')
+
+    # Poker Chip Outer Edge Notches / Dashed Rim
+    svg.append('  <circle cx="128" cy="128" r="108" fill="none" stroke="#ffffff" stroke-width="12" stroke-dasharray="18 18" opacity="0.8" />')
+    svg.append('  <circle cx="128" cy="128" r="98" fill="none" stroke="#000000" stroke-width="3" opacity="0.4" />')
+
+    # Central Metallic Gold Coin Inlay
+    svg.append('  <circle cx="128" cy="128" r="54" fill="url(#goldCoinGrad)" stroke="#3a2808" stroke-width="3" />')
+    svg.append('  <circle cx="128" cy="128" r="46" fill="none" stroke="#fff1bd" stroke-width="1.5" opacity="0.8" />')
+
+    # Number
+    svg.append(f'  <text x="128" y="142" font-family="Inter, system-ui, sans-serif" font-weight="900" font-size="48" fill="#261a05" text-anchor="middle">{bid}</text>')
+    if bid in (6, 9):
+        svg.append('  <line x1="108" y1="152" x2="148" y2="152" stroke="#261a05" stroke-width="4" stroke-linecap="round" />')
+
+    svg.append('  <circle cx="128" cy="128" r="120" fill="url(#ballShade)" />')
+    svg.append('  <ellipse cx="90" cy="80" rx="50" ry="28" fill="url(#specular)" transform="rotate(-20 90 80)" />')
+    svg.append('</svg>')
+
+    return "\n".join(svg)
+
+
+# 2. Polished Metallic Ball Scheme
+METALLIC_COLORS = {
+    1: "#e6c622", # Anodized Gold
+    2: "#226be6", # Titanium Cobalt
+    3: "#e62232", # Anodized Crimson
+    4: "#8022e6", # Deep Purple Metallic
+    5: "#e66822", # Copper Orange
+    6: "#22a652", # Emerald Metallic
+    7: "#8e2632", # Metallic Ruby
+    8: "#282a30", # Metallic Onyx
+    9: "#e6c622", # Metallic Gold Stripe
+}
+
+def gen_metallic_ball_svg(bid):
+    base_color = METALLIC_COLORS[bid]
+    is_stripe = (bid == 9)
+
+    svg = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="100%" height="100%" shape-rendering="geometricPrecision">']
+    svg.append('  <defs>')
+    svg.append('    <linearGradient id="metalBody" x1="0%" y1="0%" x2="100%" y2="100%">')
+    svg.append(f'      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6" />')
+    svg.append(f'      <stop offset="30%" stop-color="{base_color}" />')
+    svg.append(f'      <stop offset="70%" stop-color="#10141a" />')
+    svg.append(f'      <stop offset="100%" stop-color="{base_color}" />')
+    svg.append('    </linearGradient>')
+    svg.append('    <radialGradient id="chromePlate" cx="35%" cy="35%" r="65%">')
+    svg.append('      <stop offset="0%" stop-color="#ffffff" />')
+    svg.append('      <stop offset="50%" stop-color="#d0d8e0" />')
+    svg.append('      <stop offset="80%" stop-color="#707880" />')
+    svg.append('      <stop offset="100%" stop-color="#202428" />')
+    svg.append('    </radialGradient>')
+    svg.append('    <radialGradient id="sharpSpecular" cx="30%" cy="22%" r="22%">')
+    svg.append('      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />')
+    svg.append('      <stop offset="35%" stop-color="#ffffff" stop-opacity="0.5" />')
+    svg.append('      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />')
+    svg.append('    </radialGradient>')
+    if is_stripe:
+        svg.append('    <clipPath id="ballClip">')
+        svg.append('      <circle cx="128" cy="128" r="120" />')
+        svg.append('    </clipPath>')
+    svg.append('  </defs>')
+
+    if is_stripe:
+        svg.append('  <circle cx="128" cy="128" r="120" fill="url(#chromePlate)" />')
+        svg.append(f'  <rect x="0" y="70" width="256" height="116" fill="url(#metalBody)" clip-path="url(#ballClip)" />')
+    else:
+        svg.append('  <circle cx="128" cy="128" r="120" fill="url(#metalBody)" />')
+
+    # Titanium Chrome Ring & Etched Number Plate
+    svg.append('  <circle cx="128" cy="128" r="54" fill="url(#chromePlate)" stroke="#11151a" stroke-width="3" />')
+    svg.append('  <circle cx="128" cy="128" r="46" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.9" />')
+
+    # Etched Metallic Number
+    svg.append(f'  <text x="128" y="142" font-family="Inter, system-ui, sans-serif" font-weight="900" font-size="48" fill="#0d1117" text-anchor="middle">{bid}</text>')
+    if bid in (6, 9):
+        svg.append('  <line x1="108" y1="152" x2="148" y2="152" stroke="#0d1117" stroke-width="4" stroke-linecap="round" />')
+
+    svg.append('  <ellipse cx="85" cy="72" rx="45" ry="22" fill="url(#sharpSpecular)" transform="rotate(-25 85 72)" />')
+    svg.append('</svg>')
+
+    return "\n".join(svg)
+
+
+# 3. Pearlescent Ball Scheme
+PEARL_COLORS = {
+    1: "#f0d556",
+    2: "#4a83f0",
+    3: "#f04a56",
+    4: "#9b4af0",
+    5: "#f0854a",
+    6: "#38b865",
+    7: "#b83848",
+    8: "#282a36",
+    9: "#f0d556",
+}
+
+def gen_pearl_ball_svg(bid):
+    base_color = PEARL_COLORS[bid]
+    is_stripe = (bid == 9)
+
+    svg = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="100%" height="100%" shape-rendering="geometricPrecision">']
+    svg.append('  <defs>')
+    svg.append('    <radialGradient id="pearlBody" cx="30%" cy="25%" r="75%">')
+    svg.append('      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />')
+    svg.append(f'      <stop offset="35%" stop-color="{base_color}" />')
+    svg.append('      <stop offset="70%" stop-color="#181c2b" />')
+    svg.append(f'      <stop offset="100%" stop-color="{base_color}" />')
+    svg.append('    </radialGradient>')
+    svg.append('    <radialGradient id="pearlInlay" cx="35%" cy="35%" r="65%">')
+    svg.append('      <stop offset="0%" stop-color="#ffffff" />')
+    svg.append('      <stop offset="60%" stop-color="#f0f4f8" />')
+    svg.append('      <stop offset="100%" stop-color="#c8d2de" />')
+    svg.append('    </radialGradient>')
+    svg.append('    <radialGradient id="softPearlGlow" cx="32%" cy="25%" r="40%">')
+    svg.append('      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85" />')
+    svg.append('      <stop offset="50%" stop-color="#e8f4ff" stop-opacity="0.3" />')
+    svg.append('      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />')
+    svg.append('    </radialGradient>')
+    if is_stripe:
+        svg.append('    <clipPath id="ballClip">')
+        svg.append('      <circle cx="128" cy="128" r="120" />')
+        svg.append('    </clipPath>')
+    svg.append('  </defs>')
+
+    if is_stripe:
+        svg.append('  <circle cx="128" cy="128" r="120" fill="url(#pearlInlay)" />')
+        svg.append(f'  <rect x="0" y="70" width="256" height="116" fill="url(#pearlBody)" clip-path="url(#ballClip)" />')
+    else:
+        svg.append('  <circle cx="128" cy="128" r="120" fill="url(#pearlBody)" />')
+
+    # Pearl Central Inlay
+    svg.append('  <circle cx="128" cy="128" r="52" fill="url(#pearlInlay)" stroke="#8090a0" stroke-width="2" />')
+    svg.append('  <circle cx="128" cy="128" r="46" fill="none" stroke="#ffffff" stroke-width="1.5" />')
+
+    # Typography
+    svg.append(f'  <text x="128" y="142" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="48" fill="#1e2430" text-anchor="middle">{bid}</text>')
+    if bid in (6, 9):
+        svg.append('  <line x1="108" y1="152" x2="148" y2="152" stroke="#1e2430" stroke-width="4" stroke-linecap="round" />')
+
+    svg.append('  <ellipse cx="90" cy="78" rx="52" ry="28" fill="url(#softPearlGlow)" transform="rotate(-20 90 78)" />')
+    svg.append('</svg>')
+
+    return "\n".join(svg)
+
+
+# --- STORE CUE STICKS (viewBox="0 0 800 50", horizontal layout, Tip at x=0..20, Butt at x=800) ---
+
+# 1. The Newtonian (`cue_newtonian`) — Solid oak wood grain gradient with inlaid brass-gold physics equations.
+def gen_cue_newtonian_svg():
+    return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 50" width="100%" height="100%" shape-rendering="geometricPrecision">
+  <defs>
+    <linearGradient id="oakGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f2d199" />
+      <stop offset="35%" stop-color="#dca868" />
+      <stop offset="70%" stop-color="#9e662c" />
+      <stop offset="100%" stop-color="#54300c" />
+    </linearGradient>
+    <linearGradient id="brassGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff1b0" />
+      <stop offset="50%" stop-color="#d4af37" />
+      <stop offset="100%" stop-color="#806214" />
+    </linearGradient>
+    <linearGradient id="cueSheen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4" />
+      <stop offset="30%" stop-color="#ffffff" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.35" />
+    </linearGradient>
+  </defs>
+
+  <!-- Cue Stick Tapered Body (Tip height ~8px at x=15 to Butt height ~28px at x=795) -->
+  <polygon points="15,21 795,11 795,39 15,29" fill="url(#oakGrad)" />
+  <polygon points="15,21 795,11 795,39 15,29" fill="url(#cueSheen)" />
+
+  <!-- Leather Tip & Ferrule (x=0..15) -->
+  <rect x="0" y="21.5" width="5" height="7" rx="1" fill="#4a2e1b" />
+  <rect x="5" y="21" width="10" height="8" fill="#f8f8f0" stroke="#d0d0c0" stroke-width="0.5" />
+
+  <!-- Inlaid Brass Physics Equations on Forearm & Butt -->
+  <text x="120" y="27" font-family="serif" font-style="italic" font-size="9" fill="url(#brassGold)" opacity="0.85">F = ma</text>
+  <text x="220" y="27" font-family="serif" font-style="italic" font-size="9" fill="url(#brassGold)" opacity="0.85">p = mv</text>
+  <text x="340" y="28" font-family="serif" font-style="italic" font-size="10" fill="url(#brassGold)" opacity="0.85">E = ½mv²</text>
+  <text x="500" y="29" font-family="serif" font-style="italic" font-size="11" fill="url(#brassGold)" opacity="0.9">L = r × p</text>
+  <text x="640" y="30" font-family="serif" font-style="italic" font-size="12" fill="url(#brassGold)" opacity="0.9">τ = r × F</text>
+
+  <!-- Brass Accent Rings -->
+  <rect x="420" y="17" width="6" height="16" fill="url(#brassGold)" />
+  <rect x="580" y="14" width="8" height="22" fill="url(#brassGold)" />
+
+  <!-- Rubber Butt Cap -->
+  <rect x="795" y="10" width="5" height="30" rx="2" fill="#151515" />
+</svg>"""
+
+# 2. The Hustler (`cue_hustler`) — Distressed wood texture, silver-gray duct-taped grip, slightly offset/misaligned ferrule.
+def gen_cue_hustler_svg():
+    return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 50" width="100%" height="100%" shape-rendering="geometricPrecision">
+  <defs>
+    <linearGradient id="distressedWood" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#b08453" />
+      <stop offset="30%" stop-color="#734d28" />
+      <stop offset="65%" stop-color="#523418" />
+      <stop offset="100%" stop-color="#301c0a" />
+    </linearGradient>
+    <linearGradient id="ductTapeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e0e0e0" />
+      <stop offset="50%" stop-color="#a0a8b0" />
+      <stop offset="100%" stop-color="#606870" />
+    </linearGradient>
+  </defs>
+
+  <!-- Tapered Main Shaft Body -->
+  <polygon points="15,21 795,11 795,39 15,29" fill="url(#distressedWood)" />
+
+  <!-- Distressed Wood Scratches & Wear Stains -->
+  <path d="M 80,22 L 200,24 M 140,20 L 280,22 M 350,18 L 450,21" stroke="#221205" stroke-width="1.2" opacity="0.6" />
+
+  <!-- Misaligned / Slightly Offset Ferrule (x=5..15 tilted slightly) -->
+  <rect x="0" y="21" width="5" height="7" fill="#3a2215" transform="rotate(1.5 5 24)" />
+  <polygon points="5,20.5 15,22 15,30 5,28.5" fill="#e8e0d0" stroke="#807868" stroke-width="0.5" />
+
+  <!-- Duct-Taped Textured Silver-Gray Grip Wrap (x=480..680) -->
+  <g id="duct-tape-wrap">
+    <polygon points="480,16 680,13 680,37 480,34" fill="url(#ductTapeGrad)" />
+    <!-- Wrinkle & Seam Lines on Tape -->
+    <path d="M 500,16 L 515,34 M 540,15 L 555,35 M 580,15 L 595,36 M 620,14 L 635,36 M 660,13 L 672,37" stroke="#ffffff" stroke-width="1.5" opacity="0.6" />
+    <path d="M 508,16 L 523,34 M 548,15 L 563,35 M 588,15 L 603,36 M 628,14 L 643,36" stroke="#404850" stroke-width="1" opacity="0.5" />
+  </g>
+
+  <!-- Chipped Rubber Butt Cap -->
+  <polygon points="795,11 800,12 798,38 795,39" fill="#202020" />
+</svg>"""
+
+# 3. The Sovereign (`cue_sovereign`) — Deep royal finish with ornate golden filigree scrolls and a micro-dot crushed velvet wrap.
+def gen_cue_sovereign_svg():
+    return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 50" width="100%" height="100%" shape-rendering="geometricPrecision">
+  <defs>
+    <linearGradient id="royalFinish" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f5e6cc" />
+      <stop offset="30%" stop-color="#5a1224" />
+      <stop offset="65%" stop-color="#2b050e" />
+      <stop offset="100%" stop-color="#120105" />
+    </linearGradient>
+    <linearGradient id="goldFiligree" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff3b0" />
+      <stop offset="40%" stop-color="#ffd700" />
+      <stop offset="80%" stop-color="#da9100" />
+      <stop offset="100%" stop-color="#7a5000" />
+    </linearGradient>
+    <pattern id="crushedVelvet" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect width="8" height="8" fill="#3b0813" />
+      <circle cx="2" cy="2" r="1.2" fill="#8a1830" opacity="0.8" />
+      <circle cx="6" cy="6" r="1.2" fill="#e03050" opacity="0.5" />
+    </pattern>
+    <linearGradient id="sovereignSheen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5" />
+      <stop offset="40%" stop-color="#ffffff" stop-opacity="0.0" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.5" opacity="0.8" />
+    </linearGradient>
+  </defs>
+
+  <!-- Main Body -->
+  <polygon points="15,21 795,11 795,39 15,29" fill="url(#royalFinish)" />
+
+  <!-- Ivory Ferrule with Gold Ring -->
+  <rect x="0" y="21.5" width="4" height="7" fill="#1f1008" />
+  <rect x="4" y="21" width="11" height="8" fill="#fffdfa" />
+  <rect x="15" y="21" width="3" height="8" fill="url(#goldFiligree)" />
+
+  <!-- Gold Filigree Scroll Points on Forearm (x=200..450) -->
+  <path d="M 220,23 Q 260,18 300,24 T 380,20 L 380,30 Q 300,32 260,26 Z" fill="url(#goldFiligree)" opacity="0.85" />
+  <path d="M 250,22 Q 280,20 310,23 L 310,27 Q 280,30 250,28 Z" fill="#2b050e" />
+
+  <!-- Crushed Velvet Wrap (x=480..680) -->
+  <polygon points="480,16 680,13 680,37 480,34" fill="url(#crushedVelvet)" stroke="url(#goldFiligree)" stroke-width="1.5" />
+
+  <!-- Ornate Butt Filigree Rings -->
+  <rect x="690" y="12.5" width="8" height="25" fill="url(#goldFiligree)" />
+  <rect x="750" y="11.5" width="12" height="27" fill="url(#goldFiligree)" />
+
+  <polygon points="15,21 795,11 795,39 15,29" fill="url(#sovereignSheen)" />
+
+  <!-- Crowned Gold Butt Cap -->
+  <rect x="795" y="10" width="5" height="30" rx="2" fill="url(#goldFiligree)" />
+</svg>"""
+
+# 4. The Void (`cue_void`) — Ultra-matte reflectionless dark charcoal body with stealth grip grooves and zero specular glare.
+def gen_cue_void_svg():
+    return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 50" width="100%" height="100%" shape-rendering="geometricPrecision">
+  <defs>
+    <linearGradient id="voidBody" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2a2d32" />
+      <stop offset="40%" stop-color="#181a1d" />
+      <stop offset="100%" stop-color="#0a0b0d" />
+    </linearGradient>
+  </defs>
+
+  <!-- Ultra-Matte Dark Body -->
+  <polygon points="15,21 795,11 795,39 15,29" fill="url(#voidBody)" />
+
+  <!-- Stealth Black Tip & Carbon Ferrule -->
+  <rect x="0" y="21.5" width="5" height="7" fill="#0d0d0d" />
+  <rect x="5" y="21" width="10" height="8" fill="#1c1e24" stroke="#000000" stroke-width="0.5" />
+
+  <!-- Stealth Precision Grip Grooves (x=460..680) -->
+  <g stroke="#050506" stroke-width="2">
+    <line x1="470" y1="16" x2="470" y2="34" />
+    <line x1="485" y1="16" x2="485" y2="34" />
+    <line x1="500" y1="15" x2="500" y2="35" />
+    <line x1="515" y1="15" x2="515" y2="35" />
+    <line x1="530" y1="15" x2="530" y2="35" />
+    <line x1="545" y1="15" x2="545" y2="35" />
+    <line x1="560" y1="14" x2="560" y2="36" />
+    <line x1="575" y1="14" x2="575" y2="36" />
+    <line x1="590" y1="14" x2="590" y2="36" />
+    <line x1="605" y1="14" x2="605" y2="36" />
+    <line x1="620" y1="13" x2="620" y2="37" />
+    <line x1="635" y1="13" x2="635" y2="37" />
+    <line x1="650" y1="13" x2="650" y2="37" />
+    <line x1="665" y1="13" x2="665" y2="37" />
+  </g>
+
+  <!-- Matte Dark Charcoal Ring Accents -->
+  <rect x="420" y="17" width="4" height="16" fill="#121317" />
+  <rect x="720" y="12" width="6" height="26" fill="#121317" />
+
+  <!-- Flat Black Rubber Cap -->
+  <rect x="795" y="10" width="5" height="30" rx="1" fill="#050505" />
+</svg>"""
+
+# 5. The Industrialist (`cue_industrialist`) — Brushed industrial steel shaft, rivet accents, and a tight cross-hatched raw leather wrap.
+def gen_cue_industrialist_svg():
+    return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 50" width="100%" height="100%" shape-rendering="geometricPrecision">
+  <defs>
+    <linearGradient id="brushedSteel" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="20%" stop-color="#b0b8c0" />
+      <stop offset="50%" stop-color="#788088" />
+      <stop offset="80%" stop-color="#a0a8b0" />
+      <stop offset="100%" stop-color="#404850" />
+    </linearGradient>
+    <pattern id="rawLeatherCrosshatch" width="10" height="10" patternUnits="userSpaceOnUse">
+      <rect width="10" height="10" fill="#6e4a28" />
+      <path d="M 0,0 L 10,10 M 10,0 L 0,10" stroke="#3b2410" stroke-width="1.2" />
+    </pattern>
+    <radialGradient id="rivetGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="60%" stop-color="#808890" />
+      <stop offset="100%" stop-color="#202428" />
+    </radialGradient>
+  </defs>
+
+  <!-- Brushed Industrial Steel Tapered Shaft -->
+  <polygon points="15,21 795,11 795,39 15,29" fill="url(#brushedSteel)" />
+
+  <!-- Hardened Steel Ferrule & Tip -->
+  <rect x="0" y="21.5" width="5" height="7" fill="#202020" />
+  <rect x="5" y="21" width="10" height="8" fill="#d8e0e8" stroke="#505860" stroke-width="0.5" />
+
+  <!-- Exposed Steel Joint & Rivet Accents (x=380..420) -->
+  <rect x="380" y="17.5" width="30" height="15" fill="#303840" />
+  <circle cx="390" cy="21" r="2" fill="url(#rivetGrad)" />
+  <circle cx="390" cy="29" r="2" fill="url(#rivetGrad)" />
+  <circle cx="400" cy="21" r="2" fill="url(#rivetGrad)" />
+  <circle cx="400" cy="29" r="2" fill="url(#rivetGrad)" />
+  <circle cx="410" cy="21" r="2" fill="url(#rivetGrad)" />
+  <circle cx="410" cy="29" r="2" fill="url(#rivetGrad)" />
+
+  <!-- Cross-Hatched Raw Leather Grip Wrap (x=480..680) -->
+  <polygon points="480,16 680,13 680,37 480,34" fill="url(#rawLeatherCrosshatch)" stroke="#382010" stroke-width="1.5" />
+
+  <!-- Steel Butt Collar with Rivet Ring -->
+  <rect x="710" y="12" width="20" height="26" fill="#303840" />
+  <circle cx="720" cy="18" r="2.2" fill="url(#rivetGrad)" />
+  <circle cx="720" cy="25" r="2.2" fill="url(#rivetGrad)" />
+  <circle cx="720" cy="32" r="2.2" fill="url(#rivetGrad)" />
+
+  <!-- Heavy Steel End Cap -->
+  <rect x="795" y="10" width="5" height="30" rx="1" fill="#252a30" />
+</svg>"""
+
+
 def build_all():
     os.makedirs(ASSETS_DIR, exist_ok=True)
+
+    # Root Assets
     files = {
         "felt.svg": gen_felt_svg(),
         "rail-wood.svg": gen_rail_wood_svg(),
@@ -550,6 +760,39 @@ def build_all():
         with open(path, "w", encoding="utf-8") as f:
             f.write(content)
         print(f"Generated {path}")
+
+    # Subdirectory Ball Schemes (1 to 9 only)
+    schemes = {
+        "high_roller": gen_high_roller_ball_svg,
+        "balls_metallic": gen_metallic_ball_svg,
+        "balls_pearl": gen_pearl_ball_svg,
+    }
+
+    for scheme_name, gen_fn in schemes.items():
+        scheme_dir = os.path.join(ASSETS_DIR, "balls", scheme_name)
+        os.makedirs(scheme_dir, exist_ok=True)
+        for b in range(1, 10):
+            ball_path = os.path.join(scheme_dir, f"ball-{b}.svg")
+            with open(ball_path, "w", encoding="utf-8") as f:
+                f.write(gen_fn(b))
+            print(f"Generated {ball_path}")
+
+    # Subdirectory Cue Stick SVGs
+    cues_dir = os.path.join(ASSETS_DIR, "cues")
+    os.makedirs(cues_dir, exist_ok=True)
+    cues = {
+        "cue_newtonian.svg": gen_cue_newtonian_svg(),
+        "cue_hustler.svg": gen_cue_hustler_svg(),
+        "cue_sovereign.svg": gen_cue_sovereign_svg(),
+        "cue_void.svg": gen_cue_void_svg(),
+        "cue_industrialist.svg": gen_cue_industrialist_svg(),
+    }
+
+    for cue_filename, cue_content in cues.items():
+        cue_path = os.path.join(cues_dir, cue_filename)
+        with open(cue_path, "w", encoding="utf-8") as f:
+            f.write(cue_content)
+        print(f"Generated {cue_path}")
 
 if __name__ == "__main__":
     build_all()
