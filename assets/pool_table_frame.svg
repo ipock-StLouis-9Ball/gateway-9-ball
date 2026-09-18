@@ -33,42 +33,6 @@
       <stop offset="1" stop-color="#7A000D"/>
     </linearGradient>
 
-    <!-- Horizontal grain -->
-    <filter id="metalGrain" x="-5%" y="-10%" width="110%" height="120%">
-      <feTurbulence
-        type="fractalNoise"
-        baseFrequency="0.012 0.42"
-        numOctaves="2"
-        seed="18"
-        result="noise"/>
-      <feColorMatrix
-        in="noise"
-        type="matrix"
-        values="
-          0.36 0    0    0 0.23
-          0    0.25 0    0 0.14
-          0    0    0.13 0 0.05
-          0    0    0    0.24 0"/>
-    </filter>
-
-    <!-- Vertical grain -->
-    <filter id="metalGrainVertical" x="-10%" y="-5%" width="120%" height="110%">
-      <feTurbulence
-        type="fractalNoise"
-        baseFrequency="0.42 0.012"
-        numOctaves="2"
-        seed="27"
-        result="noise"/>
-      <feColorMatrix
-        in="noise"
-        type="matrix"
-        values="
-          0.36 0    0    0 0.23
-          0    0.25 0    0 0.14
-          0    0    0.13 0 0.05
-          0    0    0    0.24 0"/>
-    </filter>
-
     <!-- Cushion drop shadow -->
     <filter id="cushionShadow" x="-10%" y="-10%" width="120%" height="120%">
       <feDropShadow
@@ -88,25 +52,6 @@
         flood-color="#110000"
         flood-opacity="0.95"/>
     </filter>
-
-    <!-- Grain clips -->
-    <clipPath id="topBottomClip">
-      <path
-        fill-rule="evenodd"
-        d="
-          M 85 58 H 1115 V 142 H 85 Z
-          M 85 558 H 1115 V 642 H 85 Z
-        "/>
-    </clipPath>
-
-    <clipPath id="sideClip">
-      <path
-        fill-rule="evenodd"
-        d="
-          M 58 85 H 142 V 615 H 58 Z
-          M 1058 85 H 1142 V 615 H 1058 Z
-        "/>
-    </clipPath>
 
     <!-- Reusable inset ruby diamond -->
     <g id="diamond">
@@ -142,7 +87,7 @@
     (Built with fill-rule="evenodd" to natively cut out playfield and all 6 pockets with zero masks)
   -->
   <path fill="url(#metalEdge)" fill-rule="evenodd" d="
-    <!-- Outer Frame Base (40 to 1160, 40 to 660, rx=45) -->
+    <!-- Outer Frame Base -->
     M 85 40 H 1115 A 45 45 0 0 1 1160 85 V 615 A 45 45 0 0 1 1115 660 H 85 A 45 45 0 0 1 40 615 V 85 A 45 45 0 0 1 85 40 Z
     
     <!-- Inner Playfield Cutout -->
@@ -177,18 +122,6 @@
   <rect x="57" y="57" width="1086" height="586" rx="32" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.50"/>
   <rect x="68" y="68" width="1064" height="564" rx="25" fill="none" stroke="#111317" stroke-width="8" opacity="0.80"/>
   <rect x="74" y="74" width="1052" height="552" rx="20" fill="none" stroke="#A8B2C1" stroke-width="2" opacity="0.70"/>
-
-  <!-- Faint metal brushing texture -->
-  <g id="metal-grain" opacity="0.08">
-    <g clip-path="url(#topBottomClip)">
-      <rect x="55" y="54" width="1090" height="105" fill="#111317" filter="url(#metalGrain)"/>
-      <rect x="55" y="541" width="1090" height="105" fill="#111317" filter="url(#metalGrain)"/>
-    </g>
-    <g clip-path="url(#sideClip)">
-      <rect x="54" y="55" width="105" height="590" fill="#111317" filter="url(#metalGrainVertical)"/>
-      <rect x="1041" y="55" width="105" height="590" fill="#111317" filter="url(#metalGrainVertical)"/>
-    </g>
-  </g>
 
   <!-- 
     2. Cushion Assembly with Clean Mitered Angle Cuts (No Masks)
