@@ -1,91 +1,158 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6400 3600" width="100%" height="100%" shape-rendering="geometricPrecision">
-  <defs>
-    <!-- Brushed Charcoal Metallic Rail Gradient -->
-    <linearGradient id="charcoalMetal" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1c1e22"/>
-      <stop offset="20%" stop-color="#2e3238"/>
-      <stop offset="40%" stop-color="#181a1d"/>
-      <stop offset="60%" stop-color="#3a3e46"/>
-      <stop offset="80%" stop-color="#22252a"/>
-      <stop offset="100%" stop-color="#121316"/>
-    </linearGradient>
-
-    <!-- Cyan Glow Gradient for Inner Rail Accents -->
-    <linearGradient id="cyanGlowGrad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#00E5FF" stop-opacity="0.9"/>
-      <stop offset="50%" stop-color="#80F3FF" stop-opacity="1.0"/>
-      <stop offset="100%" stop-color="#00E5FF" stop-opacity="0.9"/>
-    </linearGradient>
-
-    <!-- Transparent Glass Pocket Depth Radial Gradient -->
-    <radialGradient id="glassPocketGrad" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#000000" stop-opacity="0.95"/>
-      <stop offset="50%" stop-color="#00E5FF" stop-opacity="0.25"/>
-      <stop offset="80%" stop-color="#001824" stop-opacity="0.6"/>
-      <stop offset="100%" stop-color="#00E5FF" stop-opacity="0.8"/>
-    </radialGradient>
-
-    <!-- Ruby Red Diamond Inlay -->
-    <g id="ruby-diamond">
-      <polygon points="0,-24 16,0 0,24 -16,0" fill="#00E5FF" opacity="0.6"/>
-      <polygon points="0,-20 13,0 0,20 -13,0" fill="#E0115F"/>
-      <polygon points="0,-16 8,-2 0,0 -6,-8" fill="#FF7BA9" opacity="0.9"/>
-    </g>
-  </defs>
-
-  <!-- Layer 1: Outer Soft Shadow -->
-  <rect x="220" y="120" width="5960" height="3360" rx="180" ry="180" fill="#000000" opacity="0.7" filter="blur(20px)"/>
-
-  <!-- Layer 2: Outer Brushed Charcoal Metallic Frame Body with Playing Area Cutout -->
-  <path d="M 400 200 H 6000 Q 6200 200 6200 400 V 3200 Q 6200 3400 6000 3400 H 400 Q 200 3400 200 3200 V 400 Q 200 200 400 200 Z M 1200 1000 H 5200 V 2600 H 1200 Z" fill="url(#charcoalMetal)" fill-rule="evenodd" stroke="#101214" stroke-width="16"/>
-
-  <!-- Layer 3: Cyan Glow Accent Lines along Rail-Felt Junction -->
-  <path d="M 1200 985 H 3080 M 3320 985 H 5200" stroke="#00E5FF" stroke-width="12" fill="none"/>
-  <path d="M 1200 2615 H 3080 M 3320 2615 H 5200" stroke="#00E5FF" stroke-width="12" fill="none"/>
-  <path d="M 1185 1000 V 2600 M 5215 1000 V 2600" stroke="#00E5FF" stroke-width="12" fill="none"/>
-
-  <!-- Layer 4: Transparent Glass Pockets with Depth Shading -->
-  <!-- Top-Left Corner -->
-  <circle cx="1100" cy="900" r="140" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
-  <!-- Top-Right Corner -->
-  <circle cx="5300" cy="900" r="140" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
-  <!-- Bottom-Left Corner -->
-  <circle cx="1100" cy="2700" r="140" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
-  <!-- Bottom-Right Corner -->
-  <circle cx="5300" cy="2700" r="140" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
-  <!-- Top-Center Side -->
-  <circle cx="3200" cy="880" r="130" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
-  <!-- Bottom-Center Side -->
-  <circle cx="3200" cy="2720" r="130" fill="url(#glassPocketGrad)" stroke="#00E5FF" stroke-width="8"/>
-
-  <!-- Layer 5: Ruby Diamond Inlays (18 Total) -->
-  <!-- Top Left Rail Diamonds -->
-  <use href="#ruby-diamond" x="1550" y="600"/>
-  <use href="#ruby-diamond" x="2060" y="600"/>
-  <use href="#ruby-diamond" x="2570" y="600"/>
-
-  <!-- Top Right Rail Diamonds -->
-  <use href="#ruby-diamond" x="3830" y="600"/>
-  <use href="#ruby-diamond" x="4340" y="600"/>
-  <use href="#ruby-diamond" x="4850" y="600"/>
-
-  <!-- Bottom Left Rail Diamonds -->
-  <use href="#ruby-diamond" x="1550" y="3000"/>
-  <use href="#ruby-diamond" x="2060" y="3000"/>
-  <use href="#ruby-diamond" x="2570" y="3000"/>
-
-  <!-- Bottom Right Rail Diamonds -->
-  <use href="#ruby-diamond" x="3830" y="3000"/>
-  <use href="#ruby-diamond" x="4340" y="3000"/>
-  <use href="#ruby-diamond" x="4850" y="3000"/>
-
-  <!-- Left Rail Diamonds -->
-  <use href="#ruby-diamond" x="600" y="1420"/>
-  <use href="#ruby-diamond" x="600" y="1800"/>
-  <use href="#ruby-diamond" x="600" y="2180"/>
-
-  <!-- Right Rail Diamonds -->
-  <use href="#ruby-diamond" x="5800" y="1420"/>
-  <use href="#ruby-diamond" x="5800" y="1800"/>
-  <use href="#ruby-diamond" x="5800" y="2180"/>
-</svg>
+{
+  "table": {
+    "name": "Futuristic 8-Foot Home Table",
+    "type": "pool",
+    "units": "inches",
+    "playing_surface": {
+      "width": 44.0,
+      "length": 88.0,
+      "height_from_floor": 30.0
+    },
+    "overall_dimensions": {
+      "width": 54.0,
+      "length": 98.0
+    },
+    "felt": {
+      "color": "beach_blond_sand",
+      "hex": "#E8D5B5",
+      "type": "worsted",
+      "friction": 0.15
+    },
+    "rails": {
+      "width": 5.0,
+      "material": "brushed_charcoal_metallic",
+      "accent_color": "cyan_glow",
+      "accent_hex": "#00E5FF"
+    },
+    "cushions": {
+      "profile": "K-66",
+      "height": 1.4375,
+      "cloth_covered_width": 1.9,
+      "restitution": 0.85,
+      "friction": 0.12,
+      "color_match_felt": true
+    },
+    "diamonds": {
+      "count": 18,
+      "color": "ruby_red",
+      "hex": "#E0115F",
+      "positions": {
+        "long_rails": 6,
+        "short_rails": 3,
+        "skip_center_long": true
+      }
+    },
+    "pockets": [
+      {
+        "id": "top_left_corner",
+        "type": "corner",
+        "center": { "x": 0.0, "y": 0.0 },
+        "mouth_width": 4.875,
+        "depth": 1.65,
+        "jaw_radius": 0.8,
+        "angle": 142,
+        "trigger_radius": 2.6,
+        "visual": {
+          "style": "transparent_glass",
+          "opacity": 0.35,
+          "depth_shading": true
+        }
+      },
+      {
+        "id": "top_right_corner",
+        "type": "corner",
+        "center": { "x": 88.0, "y": 0.0 },
+        "mouth_width": 4.875,
+        "depth": 1.65,
+        "jaw_radius": 0.8,
+        "angle": 142,
+        "trigger_radius": 2.6,
+        "visual": {
+          "style": "transparent_glass",
+          "opacity": 0.35,
+          "depth_shading": true
+        }
+      },
+      {
+        "id": "bottom_left_corner",
+        "type": "corner",
+        "center": { "x": 0.0, "y": 44.0 },
+        "mouth_width": 4.875,
+        "depth": 1.65,
+        "jaw_radius": 0.8,
+        "angle": 142,
+        "trigger_radius": 2.6,
+        "visual": {
+          "style": "transparent_glass",
+          "opacity": 0.35,
+          "depth_shading": true
+        }
+      },
+      {
+        "id": "bottom_right_corner",
+        "type": "corner",
+        "center": { "x": 88.0, "y": 44.0 },
+        "mouth_width": 4.875,
+        "depth": 1.65,
+        "jaw_radius": 0.8,
+        "angle": 142,
+        "trigger_radius": 2.6,
+        "visual": {
+          "style": "transparent_glass",
+          "opacity": 0.35,
+          "depth_shading": true
+        }
+      },
+      {
+        "id": "top_side",
+        "type": "side",
+        "center": { "x": 44.0, "y": 0.0 },
+        "mouth_width": 5.25,
+        "depth": 2.7,
+        "jaw_radius": 0.3,
+        "angle": 103,
+        "trigger_radius": 2.4,
+        "visual": {
+          "style": "transparent_glass",
+          "opacity": 0.35,
+          "depth_shading": true
+        }
+      },
+      {
+        "id": "bottom_side",
+        "type": "side",
+        "center": { "x": 44.0, "y": 44.0 },
+        "mouth_width": 5.25,
+        "depth": 2.7,
+        "jaw_radius": 0.3,
+        "angle": 103,
+        "trigger_radius": 2.4,
+        "visual": {
+          "style": "transparent_glass",
+          "opacity": 0.35,
+          "depth_shading": true
+        }
+      }
+    ],
+    "balls": {
+      "diameter": 2.25,
+      "radius": 1.125,
+      "mass": 0.17,
+      "restitution": 0.95,
+      "friction": 0.08
+    },
+    "physics": {
+      "gravity": 0,
+      "air_resistance": 0.002,
+      "rolling_friction": 0.015,
+      "cushion_restitution": 0.85,
+      "ball_ball_restitution": 0.96,
+      "continuous_collision": true
+    },
+    "coordinate_system": {
+      "origin": "bottom_left_of_playing_surface",
+      "x_positive": "right",
+      "y_positive": "up"
+    }
+  }
+}
