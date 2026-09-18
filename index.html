@@ -29,40 +29,6 @@
     <div>Rotate your device to landscape</div>
   </div>
 
-  <!-- Main Canvas Container for Physics & Table Rendering -->
-  <div id="canvas-container" class="hidden">
-    <div class="modern-pool-table">
-      <div class="felt-surface">
-        <canvas id="game-canvas"></canvas>
-      </div>
-    </div>
-  </div>
-
-  <!-- UI HUD Sidebar -->
-  <div id="ui-sidebar" class="hidden">
-    <svg viewBox="0 0 400 800">
-      <g id="left-panel">
-        <rect x="20" y="25" width="160" height="750" rx="16" fill="#202934"/>
-        <rect id="svg-power-fill" x="38" y="755" width="44" height="0" fill="#00d8f6"/>
-      </g>
-      <g id="right-panel">
-        <rect x="220" y="25" width="160" height="750" rx="16" fill="#202934"/>
-        <text id="svg-p1-name" x="300" y="100">PLAYER 1</text>
-        <text id="svg-p1-balance" x="300" y="120">DB$0.00</text>
-        <text id="svg-p1-score" x="300" y="150">0</text>
-        <text id="svg-p2-name" x="300" y="700">PLAYER 2</text>
-        <text id="svg-p2-score" x="300" y="670">0</text>
-        <text id="svg-timer" x="300" y="340">00:45</text>
-        <g id="spin-controller">
-          <circle cx="300" cy="495" r="55" fill="#d7dee8"/>
-          <g id="svg-spin-dot-group" transform="translate(300,495)">
-            <circle r="4" fill="red"/>
-          </g>
-        </g>
-      </g>
-    </svg>
-  </div>
-
   <!-- Main Menu Screen (4-button Menu & St. Louis Arch visual container) -->
   <section id="screen-menu" class="screen menu-screen">
     <div class="menu-inner">
@@ -139,8 +105,7 @@
       <button class="back-btn" data-goto="menu">‹ Menu</button>
       <h2>Pimp My Stick</h2>
       <div class="store-tabs">
-        <button class="tab" data-tab="tables">Tables</button>
-        <button class="tab" data-tab="cues">Cues</button>
+        <button class="tab active" data-tab="cues">Cues</button>
         <button class="tab" data-tab="balls">Balls</button>
       </div>
       <span id="store-balance"></span>
@@ -168,23 +133,75 @@
     <div class="panel">
       <button class="back-btn" data-goto="menu">‹ Menu</button>
       <h2>Options &amp; Compliance</h2>
-      <label><input id="sound-toggle" type="checkbox" checked> Sound effects</label>
-      <label>Master volume <input id="master-volume" type="range" min="0" max="1" step=".01" value="1"></label>
-      <label>Language
-        <select id="language-select">
-          <option>English</option>
-          <option>Español</option>
-        </select>
-      </label>
+      <div class="options-group">
+        <label class="toggle-label">
+          <span>Sound effects</span>
+          <div class="switch">
+            <input id="sound-toggle" type="checkbox" checked>
+            <span class="slider"></span>
+          </div>
+        </label>
+        <label>Volume Master (0-100)
+          <input id="master-volume" type="range" min="0" max="100" step="1" value="100">
+        </label>
+        <label>Language
+          <select id="language-select">
+            <option>English</option>
+            <option>Español</option>
+          </select>
+        </label>
+      </div>
       <div class="legal-vault">
         <h3>Legal &amp; Compliance Vault</h3>
         <p>Terms of Service · Privacy Policy · Age and geo-compliance restricted states: AR, CT, DE, LA, SD · AML/KYC disclosures.</p>
+        <div id="vault-docs" class="vault-docs hidden">
+          <h4>Compliance Documents</h4>
+          <p>• Terms of Service (v2.4 - Effective Jan 2025)</p>
+          <p>• Privacy & Data Protection Policy</p>
+          <p>• Responsible Skill Gaming & Location Verification Guidelines</p>
+          <p>• Anti-Money Laundering (AML) & KYC Disclosures</p>
+        </div>
+        <button id="all-docs-btn" class="ghost-btn small-btn">All Documents</button>
       </div>
     </div>
   </section>
 
   <!-- Game Canvas Screen -->
   <section id="screen-game" class="screen hidden game-screen">
+    <!-- Main Canvas Container for Physics & Table Rendering -->
+    <div id="canvas-container">
+      <div class="modern-pool-table">
+        <div class="felt-surface">
+          <canvas id="game-canvas"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- UI HUD Sidebar -->
+    <div id="ui-sidebar">
+      <svg viewBox="0 0 400 800">
+        <g id="left-panel">
+          <rect x="20" y="25" width="160" height="750" rx="16" fill="#202934"/>
+          <rect id="svg-power-fill" x="38" y="755" width="44" height="0" fill="#00d8f6"/>
+        </g>
+        <g id="right-panel">
+          <rect x="220" y="25" width="160" height="750" rx="16" fill="#202934"/>
+          <text id="svg-p1-name" x="300" y="100">PLAYER 1</text>
+          <text id="svg-p1-balance" x="300" y="120">DB$0.00</text>
+          <text id="svg-p1-score" x="300" y="150">0</text>
+          <text id="svg-p2-name" x="300" y="700">PLAYER 2</text>
+          <text id="svg-p2-score" x="300" y="670">0</text>
+          <text id="svg-timer" x="300" y="340">00:45</text>
+          <g id="spin-controller">
+            <circle cx="300" cy="495" r="55" fill="#d7dee8"/>
+            <g id="svg-spin-dot-group" transform="translate(300,495)">
+              <circle r="4" fill="red"/>
+            </g>
+          </g>
+        </g>
+      </svg>
+    </div>
+
     <button id="game-menu" class="icon-btn">☰</button>
     <button id="pushout-btn" class="pushout-pill hidden">Push Out</button>
     <div id="push-decision" class="modal hidden">
