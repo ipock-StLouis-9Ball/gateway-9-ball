@@ -1,187 +1,31 @@
-import fs from 'fs';
-import path from 'path';
 import crypto from 'crypto';
+import { Pool, PoolClient } from 'pg';
 
-export interface TransactionRecord {
-  id: string;
-  type: string;
-  amount: number;
-  fee: number;
-  balanceAfter: number;
-  ts: string;
+export interface TransactionRecord { id: string; type: string; amount: number; fee: number; balanceAfter: number; ts: string; }
+export interface UserProfile { id: string; username: string; avatar: string; token: string; balance: number; history: TransactionRecord[]; createdAt: number; vaultedPaymentMethod?: Record<string, string>; }
+
+if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required; local JSON storage is no longer supported.');
+export const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined });
+let ready: Promise<void> | null = null;
+async function init() {
+  if (ready) return ready;
+  ready = (async () => {
+    await pool.query(`CREATE TABLE IF NOT EXISTS users (id text PRIMARY KEY, username text NOT NULL, avatar text NOT NULL, token_hash text UNIQUE NOT NULL, created_at timestamptz NOT NULL DEFAULT now(), vaulted_payment_method jsonb); CREATE TABLE IF NOT EXISTS accounts (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), user_id text UNIQUE REFERENCES users(id), kind text NOT NULL, name text NOT NULL, match_id text UNIQUE, created_at timestamptz NOT NULL DEFAULT now()); CREATE TABLE IF NOT EXISTS ledger_transactions (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), from_account uuid NOT NULL REFERENCES accounts(id), to_account uuid NOT NULL REFERENCES accounts(id), amount numeric(18,2) NOT NULL CHECK (amount > 0), type text NOT NULL, fee numeric(18,2) NOT NULL DEFAULT 0, metadata jsonb NOT NULL DEFAULT '{}'::jsonb, created_at timestamptz NOT NULL DEFAULT now()); CREATE INDEX IF NOT EXISTS ledger_from_idx ON ledger_transactions(from_account); CREATE INDEX IF NOT EXISTS ledger_to_idx ON ledger_transactions(to_account);`);
+    await pool.query(`CREATE EXTENSION IF NOT EXISTS pgcrypto`);
+  })();
+  return ready;
 }
-
-export interface UserProfile {
-  id: string;
-  username: string;
-  avatar: string; // preset ID (e.g. 'JP', 'avatar1') or base64 data URI
-  token: string;
-  balance: number;
-  history: TransactionRecord[];
-  createdAt: number;
-  vaultedPaymentMethod?: {
-    vaultId: string;
-    cardLast4?: string;
-    cardBrand?: string;
-    payerEmail?: string;
-  };
-}
-
-interface DatabaseSchema {
-  users: Record<string, UserProfile>; // token -> UserProfile
-}
-
-const DB_FILE = path.join(process.cwd(), 'data', 'db.json');
-
-function ensureDataDir() {
-  const dir = path.dirname(DB_FILE);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-}
-
-function loadDb(): DatabaseSchema {
-  ensureDataDir();
-  if (!fs.existsSync(DB_FILE)) {
-    const initial: DatabaseSchema = { users: {} };
-    fs.writeFileSync(DB_FILE, JSON.stringify(initial, null, 2), 'utf8');
-    return initial;
-  }
-  try {
-    const raw = fs.readFileSync(DB_FILE, 'utf8');
-    return JSON.parse(raw);
-  } catch (err) {
-    console.error('Error reading db.json, reinitializing:', err);
-    return { users: {} };
-  }
-}
-
-function saveDb(data: DatabaseSchema) {
-  ensureDataDir();
-  const tmpFile = `${DB_FILE}.tmp.${Date.now()}`;
-  fs.writeFileSync(tmpFile, JSON.stringify(data, null, 2), 'utf8');
-  fs.renameSync(tmpFile, DB_FILE);
-}
-
+const hash = (v: string) => crypto.createHash('sha256').update(v).digest('hex');
+async function system(client: PoolClient) { const r = await client.query(`SELECT id FROM accounts WHERE kind='system' LIMIT 1`); if (r.rowCount) return r.rows[0].id; return (await client.query(`INSERT INTO accounts(kind,name) VALUES('system','System Coffer') RETURNING id`)).rows[0].id; }
+async function userByToken(token: string, client = pool) { if (!token) return null; const r = await client.query(`SELECT * FROM users WHERE token_hash=$1`, [hash(token)]); return r.rows[0] || null; }
+async function balance(account: string, client = pool) { const r = await client.query(`SELECT COALESCE(SUM(CASE WHEN to_account=$1 THEN amount ELSE 0 END),0)-COALESCE(SUM(CASE WHEN from_account=$1 THEN amount ELSE 0 END),0) AS balance FROM ledger_transactions WHERE to_account=$1 OR from_account=$1`, [account]); return Number(r.rows[0].balance); }
+async function history(account: string, client = pool): Promise<TransactionRecord[]> { const r = await client.query(`SELECT id,type,amount,fee,created_at,metadata FROM ledger_transactions WHERE from_account=$1 OR to_account=$1 ORDER BY created_at DESC LIMIT 100`, [account]); let running = await balance(account, client); return r.rows.map(x => { const amount=Number(x.amount), fee=Number(x.fee); const incoming=x.to_account===account; const after=running; running += incoming ? -amount : amount; return { id:x.id, type:x.type, amount, fee, balanceAfter:after, ts:new Date(x.created_at).toLocaleTimeString() }; }); }
+async function profile(user: any, client = pool): Promise<UserProfile> { const a=(await client.query(`SELECT id FROM accounts WHERE user_id=$1`,[user.id])).rows[0]; const b=await balance(a.id,client); return { id:user.id, username:user.username, avatar:user.avatar, token:user._token || '', balance:b, history:await history(a.id,client), createdAt:new Date(user.created_at).getTime(), vaultedPaymentMethod:user.vaulted_payment_method || undefined }; }
+async function transfer(client: PoolClient, from: string, to: string, amount: number, type: string, fee=0, metadata={}) { await client.query(`INSERT INTO ledger_transactions(from_account,to_account,amount,type,fee,metadata) VALUES($1,$2,$3,$4,$5,$6)`,[from,to,amount,type,fee,metadata]); }
 export class Database {
-  private static db: DatabaseSchema = loadDb();
-
-  public static createUser(username: string, avatar: string): UserProfile {
-    const userId = `usr_${crypto.randomBytes(8).toString('hex')}`;
-    const token = `tok_${crypto.randomBytes(16).toString('hex')}`;
-    const newUser: UserProfile = {
-      id: userId,
-      username: username.trim() || 'Player',
-      avatar: avatar || 'JP',
-      token,
-      balance: 0.0, // Strictly initialized at $0.00
-      history: [],
-      createdAt: Date.now(),
-    };
-    this.db.users[token] = newUser;
-    saveDb(this.db);
-    return newUser;
-  }
-
-  public static getUserByToken(token: string): UserProfile | null {
-    if (!token) return null;
-    return this.db.users[token] || null;
-  }
-
-  public static updateUserProfile(token: string, updates: { username?: string; avatar?: string }): UserProfile | null {
-    const user = this.getUserByToken(token);
-    if (!user) return null;
-    if (updates.username !== undefined && updates.username.trim() !== '') {
-      user.username = updates.username.trim();
-    }
-    if (updates.avatar !== undefined && updates.avatar !== '') {
-      user.avatar = updates.avatar;
-    }
-    saveDb(this.db);
-    return user;
-  }
-
-  public static deposit(
-    token: string,
-    amount: number,
-    fee: number,
-    paymentMethod?: UserProfile['vaultedPaymentMethod']
-  ): { user: UserProfile; tx: TransactionRecord } | null {
-    const user = this.getUserByToken(token);
-    if (!user) return null;
-
-    if (paymentMethod) {
-      user.vaultedPaymentMethod = paymentMethod;
-    }
-
-    user.balance = Math.round((user.balance + amount) * 100) / 100;
-    const tx: TransactionRecord = {
-      id: `tx_${crypto.randomBytes(6).toString('hex')}`,
-      type: 'Deposit',
-      amount,
-      fee,
-      balanceAfter: user.balance,
-      ts: new Date().toLocaleTimeString(),
-    };
-    user.history.unshift(tx);
-    saveDb(this.db);
-    return { user, tx };
-  }
-
-  public static withdraw(token: string, amount: number, fee: number): { user: UserProfile; tx: TransactionRecord; payout: number } | null {
-    const user = this.getUserByToken(token);
-    if (!user) return null;
-    if (user.balance < amount) return null;
-
-    const payout = Math.round((amount - fee) * 100) / 100;
-    user.balance = Math.round((user.balance - amount) * 100) / 100;
-    const tx: TransactionRecord = {
-      id: `tx_${crypto.randomBytes(6).toString('hex')}`,
-      type: 'Withdraw',
-      amount,
-      fee,
-      balanceAfter: user.balance,
-      ts: new Date().toLocaleTimeString(),
-    };
-    user.history.unshift(tx);
-    saveDb(this.db);
-    return { user, tx, payout };
-  }
-
-  public static charge(token: string, amount: number, label: string = 'Buy-in'): { user: UserProfile; tx: TransactionRecord } | null {
-    const user = this.getUserByToken(token);
-    if (!user) return null;
-    if (user.balance < amount) return null;
-
-    user.balance = Math.round((user.balance - amount) * 100) / 100;
-    const tx: TransactionRecord = {
-      id: `tx_${crypto.randomBytes(6).toString('hex')}`,
-      type: label,
-      amount,
-      fee: 0,
-      balanceAfter: user.balance,
-      ts: new Date().toLocaleTimeString(),
-    };
-    user.history.unshift(tx);
-    saveDb(this.db);
-    return { user, tx };
-  }
-
-  public static credit(token: string, amount: number, label: string = 'Winnings'): { user: UserProfile; tx: TransactionRecord } | null {
-    const user = this.getUserByToken(token);
-    if (!user) return null;
-
-    user.balance = Math.round((user.balance + amount) * 100) / 100;
-    const tx: TransactionRecord = {
-      id: `tx_${crypto.randomBytes(6).toString('hex')}`,
-      type: label,
-      amount,
-      fee: 0,
-      balanceAfter: user.balance,
-      ts: new Date().toLocaleTimeString(),
-    };
-    user.history.unshift(tx);
-    saveDb(this.db);
-    return { user, tx };
-  }
+ static async createUser(username:string, avatar:string) { await init(); const c=await pool.connect(); try { await c.query('BEGIN'); const token=`tok_${crypto.randomBytes(24).toString('hex')}`, id=`usr_${crypto.randomBytes(8).toString('hex')}`; const u=(await c.query(`INSERT INTO users(id,username,avatar,token_hash) VALUES($1,$2,$3,$4) RETURNING *`,[id,username.trim()||'Player',avatar||'JP',hash(token)])).rows[0]; await c.query(`INSERT INTO accounts(user_id,kind,name) VALUES($1,'user',$2)`,[id,u.username]); await c.query('COMMIT'); u._token=token; return profile(u,c); } catch(e){await c.query('ROLLBACK');throw e} finally{c.release()} }
+ static async getUserByToken(token:string){ await init(); return userByToken(token); }
+ static async updateUserProfile(token:string, updates:any){ await init(); const u=await userByToken(token); if(!u)return null; const r=await pool.query(`UPDATE users SET username=COALESCE(NULLIF($1,''),username), avatar=COALESCE(NULLIF($2,''),avatar) WHERE id=$3 RETURNING *`,[updates.username,updates.avatar,u.id]); return profile(r.rows[0]); }
+ static async mutate(token:string, amount:number, type:string, fee=0, payment?:any, label?:string){ await init(); const c=await pool.connect(); try {await c.query('BEGIN'); const u=await userByToken(token,c); if(!u) {await c.query('ROLLBACK');return null;} const ua=(await c.query(`SELECT id FROM accounts WHERE user_id=$1 FOR UPDATE`,[u.id])).rows[0].id; const sys=await system(c); if(['Withdraw','Buy-in'].includes(type) && await balance(ua,c)<amount){await c.query('ROLLBACK');return null;} if(payment) await c.query(`UPDATE users SET vaulted_payment_method=$1 WHERE id=$2`,[payment,u.id]); const incoming=['Deposit','Winnings'].includes(type); await transfer(c,incoming?sys:ua,incoming?ua:sys,amount,type,fee,{label}); await c.query('COMMIT'); const fresh=(await c.query('SELECT * FROM users WHERE id=$1',[u.id])).rows[0]; return {user:await profile(fresh,c),tx:{type,amount,fee},payout:Math.round((amount-fee)*100)/100}; } catch(e){await c.query('ROLLBACK');throw e} finally{c.release()} }
+ static async deposit(t:string,a:number,f:number,p?:any){return this.mutate(t,a,'Deposit',f,p)} static async withdraw(t:string,a:number,f:number){return this.mutate(t,a,'Withdraw',f)} static async charge(t:string,a:number,l='Buy-in'){return this.mutate(t,a,'Buy-in',0,undefined,l)} static async credit(t:string,a:number,l='Winnings'){return this.mutate(t,a,'Winnings',0,undefined,l)}
 }

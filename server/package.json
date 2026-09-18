@@ -3,23 +3,24 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Authoritative /resolve-shot endpoint for Gateway 9-Ball (Cloud Run).",
+  "main": "dist/index.js",
+  "description": "Authoritative Gateway 9-Ball resolver and PostgreSQL-backed wallet API.",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "start": "tsx src/index.ts",
     "build": "tsc",
-    "serve": "node dist/index.js"
+    "start": "node dist/index.js"
   },
   "dependencies": {
     "@dimforge/rapier2d-compat": "^0.20.0",
     "compression": "^1.7.4",
     "express": "^4.19.2",
-    "tsx": "^4.19.2"
+    "pg": "^8.13.1"
   },
   "devDependencies": {
     "@types/compression": "^1.8.1",
     "@types/express": "^4.17.25",
     "@types/node": "^20.19.43",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2",
     "typescript": "^5.9.3"
   }
 }
