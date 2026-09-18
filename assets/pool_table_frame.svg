@@ -6,7 +6,7 @@
      aria-label="Modern transparent metallic billiard table rail overlay">
 
   <defs>
-    <!-- Brushed Titanium Rail Material (Matches 1839.jpg) -->
+    <!-- Brushed Titanium Rail Material -->
     <linearGradient id="oakBase" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#D0D5DB"/>
       <stop offset="0.48" stop-color="#9BA4B5"/>
@@ -19,7 +19,7 @@
       <stop offset="1" stop-color="#0F1115"/>
     </linearGradient>
 
-    <!-- Matte beach-blond cushion material (Matches 1839.jpg) -->
+    <!-- Matte beach-blond cushion material -->
     <linearGradient id="cushion" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#E8D5B5"/>
       <stop offset="0.6" stop-color="#D4BB94"/>
@@ -33,7 +33,7 @@
       <stop offset="1" stop-color="#7A000D"/>
     </linearGradient>
 
-    <!-- Horizontal grain (Opacity lowered later for brushed metal effect) -->
+    <!-- Horizontal grain -->
     <filter id="oakGrain" x="-5%" y="-10%" width="110%" height="120%">
       <feTurbulence
         type="fractalNoise"
@@ -91,7 +91,9 @@
 
     <!--
       Main transparency mask:
-      - Side pockets (cy=115 and cy=585) pulled back to sit flush inside the metal rails.
+      - Corner pockets shifted diagonally outward into rail corners.
+      - Top side pocket moved up towards outer rail edge.
+      - Bottom side pocket moved down towards outer rail edge.
     -->
     <mask id="tableCutouts"
           maskUnits="userSpaceOnUse"
@@ -104,14 +106,15 @@
       <!-- Fully transparent playfield -->
       <rect x="145" y="130" width="910" height="440" rx="8" fill="black"/>
 
-      <!-- Pocket Openings -->
-      <circle cx="145" cy="130" r="43" fill="black"/>
-      <circle cx="600" cy="115" r="36" fill="black"/>
-      <circle cx="1055" cy="130" r="43" fill="black"/>
+      <!-- Corner Pocket Openings (Moved diagonally outward) -->
+      <circle cx="115" cy="100" r="43" fill="black"/>
+      <circle cx="1085" cy="100" r="43" fill="black"/>
+      <circle cx="115" cy="600" r="43" fill="black"/>
+      <circle cx="1085" cy="600" r="43" fill="black"/>
 
-      <circle cx="145" cy="570" r="43" fill="black"/>
-      <circle cx="600" cy="585" r="36" fill="black"/>
-      <circle cx="1055" cy="570" r="43" fill="black"/>
+      <!-- Side Pocket Openings (Top moved up, Bottom moved down) -->
+      <circle cx="600" cy="95" r="36" fill="black"/>
+      <circle cx="600" cy="605" r="36" fill="black"/>
     </mask>
 
     <!-- Keeps the centers of pocket depth rings transparent -->
@@ -123,13 +126,13 @@
           height="700">
       <rect width="1200" height="700" fill="white"/>
 
-      <circle cx="145" cy="130" r="33" fill="black"/>
-      <circle cx="600" cy="115" r="28" fill="black"/>
-      <circle cx="1055" cy="130" r="33" fill="black"/>
+      <circle cx="115" cy="100" r="33" fill="black"/>
+      <circle cx="1085" cy="100" r="33" fill="black"/>
+      <circle cx="115" cy="600" r="33" fill="black"/>
+      <circle cx="1085" cy="600" r="33" fill="black"/>
 
-      <circle cx="145" cy="570" r="33" fill="black"/>
-      <circle cx="600" cy="585" r="28" fill="black"/>
-      <circle cx="1055" cy="570" r="33" fill="black"/>
+      <circle cx="600" cy="95" r="28" fill="black"/>
+      <circle cx="600" cy="605" r="28" fill="black"/>
     </mask>
 
     <!-- Grain clips -->
@@ -153,7 +156,6 @@
 
     <!-- Reusable inset ruby diamond -->
     <g id="diamond">
-      <!-- Dark routed recess -->
       <rect
         x="-7"
         y="-7"
@@ -164,8 +166,6 @@
         stroke="#444B55"
         stroke-width="0.5"
         transform="rotate(45)"/>
-
-      <!-- Ruby insert -->
       <rect
         x="-5"
         y="-5"
@@ -175,8 +175,6 @@
         fill="url(#ruby)"
         transform="rotate(45)"
         filter="url(#rubyInset)"/>
-
-      <!-- Diamond glint -->
       <path
         d="M 0 -4 L 3 0 L 0 -1 L -3 0 Z"
         fill="#FFFFFF"
@@ -203,7 +201,6 @@
       rx="38"
       fill="url(#oakBase)"/>
 
-    <!-- Outer metallic highlight -->
     <rect
       x="57"
       y="57"
@@ -215,7 +212,6 @@
       stroke-width="2"
       opacity="0.50"/>
 
-    <!-- Inner deep metal groove -->
     <rect
       x="68"
       y="68"
@@ -227,7 +223,6 @@
       stroke-width="8"
       opacity="0.80"/>
 
-    <!-- Inner silver bevel highlight -->
     <rect
       x="74"
       y="74"
@@ -240,7 +235,7 @@
       opacity="0.70"/>
   </g>
 
-  <!-- Faint brushing texture (Opacity lowered to 0.08 for metal effect) -->
+  <!-- Faint brushing texture -->
   <g id="metal-grain" mask="url(#tableCutouts)" opacity="0.08">
     <g clip-path="url(#topBottomClip)">
       <rect
@@ -284,7 +279,6 @@
      mask="url(#tableCutouts)"
      filter="url(#cushionInset)">
 
-    <!-- Dark shadow seam -->
     <rect
       x="118"
       y="104"
@@ -295,7 +289,6 @@
       stroke="#1F1A14"
       stroke-width="28"/>
 
-    <!-- Matte sand cushion -->
     <rect
       x="133"
       y="119"
@@ -306,7 +299,7 @@
       stroke="url(#cushion)"
       stroke-width="18"/>
 
-    <!-- GitHub Safe Blue LED Glow (Wide blurred stroke) -->
+    <!-- Blue LED Glow -->
     <rect
       x="144"
       y="130"
@@ -318,7 +311,6 @@
       stroke-width="8"
       opacity="0.30"/>
 
-    <!-- Sharp Blue LED Core -->
     <rect
       x="144"
       y="130"
@@ -331,34 +323,34 @@
       opacity="0.95"/>
   </g>
 
-  <!-- Modern Dark Pocket Casings with Silver Rims -->
+  <!-- Pocket depth rings matching new outward positions -->
   <g id="pocket-bevels" mask="url(#pocketCenter)" fill="none">
-    <!-- Top-left -->
-    <circle cx="145" cy="130" r="42" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="145" cy="130" r="39" stroke="#111317" stroke-width="6"/>
+    <!-- Top-Left -->
+    <circle cx="115" cy="100" r="42" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="115" cy="100" r="39" stroke="#111317" stroke-width="6"/>
 
-    <!-- Top-middle -->
-    <circle cx="600" cy="115" r="36" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="600" cy="115" r="33" stroke="#111317" stroke-width="6"/>
+    <!-- Top-Middle -->
+    <circle cx="600" cy="95" r="36" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="600" cy="95" r="33" stroke="#111317" stroke-width="6"/>
 
-    <!-- Top-right -->
-    <circle cx="1055" cy="130" r="42" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="1055" cy="130" r="39" stroke="#111317" stroke-width="6"/>
+    <!-- Top-Right -->
+    <circle cx="1085" cy="100" r="42" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="1085" cy="100" r="39" stroke="#111317" stroke-width="6"/>
 
-    <!-- Bottom-left -->
-    <circle cx="145" cy="570" r="42" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="145" cy="570" r="39" stroke="#111317" stroke-width="6"/>
+    <!-- Bottom-Left -->
+    <circle cx="115" cy="600" r="42" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="115" cy="600" r="39" stroke="#111317" stroke-width="6"/>
 
-    <!-- Bottom-middle -->
-    <circle cx="600" cy="585" r="36" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="600" cy="585" r="33" stroke="#111317" stroke-width="6"/>
+    <!-- Bottom-Middle -->
+    <circle cx="600" cy="605" r="36" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="600" cy="605" r="33" stroke="#111317" stroke-width="6"/>
 
-    <!-- Bottom-right -->
-    <circle cx="1055" cy="570" r="42" stroke="#A8B2C1" stroke-width="3"/>
-    <circle cx="1055" cy="570" r="39" stroke="#111317" stroke-width="6"/>
+    <!-- Bottom-Right -->
+    <circle cx="1085" cy="600" r="42" stroke="#A8B2C1" stroke-width="3"/>
+    <circle cx="1085" cy="600" r="39" stroke="#111317" stroke-width="6"/>
   </g>
 
-  <!-- Exactly 18 ruby sights placed to WPA mathematical standards -->
+  <!-- Exactly 18 WPA-compliant ruby sight diamonds -->
   <g id="diamond-sights">
     <!-- Top rail: 6 diamonds -->
     <use href="#diamond" x="258.75" y="86"/>
