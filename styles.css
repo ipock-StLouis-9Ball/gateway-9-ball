@@ -62,12 +62,12 @@ body {
   background: transparent !important;
 }
 
-/* Fully Responsive WPA 9-Foot Table Container (112" x 62" outer frame, 100" x 50" playing bed) */
+/* Fully Responsive WPA 9-Foot Table Container (110" x 60" outer frame, 100" x 50" playing bed) */
 .modern-pool-table {
   width: 100%;
-  max-width: 1120px;
+  max-width: 1100px;
   max-height: calc(100vh - 32px);
-  aspect-ratio: 112 / 62;
+  aspect-ratio: 110 / 60;
   position: relative;
   box-sizing: border-box;
   margin: auto;
@@ -86,13 +86,13 @@ body {
   z-index: 1;
 }
 
-/* Sand / Beach Blond Playing Surface Bed */
+/* Sand / Beach Blond Playing Surface Bed (100" x 50" mapped to 110" x 60" frame) */
 .felt-surface {
   position: absolute;
-  top: 9.6774%;
-  bottom: 9.6774%;
-  left: 5.3571%;
-  right: 5.3571%;
+  top: 8.3333%;   /* 5 / 60 */
+  bottom: 8.3333%;/* 5 / 60 */
+  left: 4.5455%;  /* 5 / 110 */
+  right: 4.5455%; /* 5 / 110 */
   background: radial-gradient(circle at center, #E8D5B5 0%, #d8caaf 65%, #c5b294 100%);
   border-radius: 2px;
   box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.5);

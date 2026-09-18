@@ -35,16 +35,20 @@ export const ECONOMY = {
 };
 
 // --- Regulation-style table & ball geometry (table-space units) -------------
-// A regulation 9-foot table: playing surface ~50" x 100" (2:1 ratio).
-// We work in arbitrary "inches" and scale to pixels at render time.
+// Official WPA / BCA Tournament 9-Foot Pool Table Specification:
+// Playing bed surface: exactly 100" x 50" (2:1 ratio).
+// Rail Assembly: Total Rail Width = 5.0" (Wood Cap: 3 13/16" [3.8125"], Inner Cushion: 1 3/16" [1.1875"]).
+// Overall Table Outer Footprint: 110" x 60".
 export const TABLE = {
   name: "WPA Regulation 9-Foot Tournament Table",
   units: "inches",
   width: 100.0, // playfield length (x-axis), inches
   height: 50.0, // playfield width (y-axis), inches
-  overallWidth: 112.0,
-  overallHeight: 62.0,
-  railWidth: 6.0,
+  overallWidth: 110.0,
+  overallHeight: 60.0,
+  totalRailWidth: 5.0,
+  woodRailWidth: 3.8125, // 3 13/16 inches
+  cushionWidth: 1.1875,  // 1 3/16 inches
   ballRadius: 1.125, // 2.25" diameter
   cushionRestitution: 0.85, // K-66 rubber profile
   ballRestitution: 0.96, // ball-ball restitution
