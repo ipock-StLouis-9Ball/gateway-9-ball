@@ -107,11 +107,11 @@
 
       <!-- Six real transparent pocket openings -->
       <circle cx="145" cy="130" r="43" fill="black"/>
-      <circle cx="600" cy="130" r="36" fill="black"/>
+      <circle cx="600" cy="94" r="36" fill="black"/>
       <circle cx="1055" cy="130" r="43" fill="black"/>
 
       <circle cx="145" cy="570" r="43" fill="black"/>
-      <circle cx="600" cy="570" r="36" fill="black"/>
+      <circle cx="600" cy="606" r="36" fill="black"/>
       <circle cx="1055" cy="570" r="43" fill="black"/>
     </mask>
 
@@ -125,11 +125,11 @@
       <rect width="1200" height="700" fill="white"/>
 
       <circle cx="145" cy="130" r="33" fill="black"/>
-      <circle cx="600" cy="130" r="27" fill="black"/>
+      <circle cx="600" cy="94" r="27" fill="black"/>
       <circle cx="1055" cy="130" r="33" fill="black"/>
 
       <circle cx="145" cy="570" r="33" fill="black"/>
-      <circle cx="600" cy="570" r="27" fill="black"/>
+      <circle cx="600" cy="606" r="27" fill="black"/>
       <circle cx="1055" cy="570" r="33" fill="black"/>
     </mask>
 
@@ -340,8 +340,8 @@
     <circle cx="145" cy="130" r="35" stroke="#4d301d" stroke-width="7"/>
 
     <!-- Top-middle -->
-    <circle cx="600" cy="130" r="35" stroke="#f0d7a0" stroke-width="7"/>
-    <circle cx="600" cy="130" r="29" stroke="#4d301d" stroke-width="7"/>
+    <circle cx="600" cy="94" r="35" stroke="#f0d7a0" stroke-width="7"/>
+    <circle cx="600" cy="94" r="29" stroke="#4d301d" stroke-width="7"/>
 
     <!-- Top-right -->
     <circle cx="1055" cy="130" r="42" stroke="#f0d7a0" stroke-width="7"/>
@@ -352,8 +352,8 @@
     <circle cx="145" cy="570" r="35" stroke="#4d301d" stroke-width="7"/>
 
     <!-- Bottom-middle -->
-    <circle cx="600" cy="570" r="35" stroke="#f0d7a0" stroke-width="7"/>
-    <circle cx="600" cy="570" r="29" stroke="#4d301d" stroke-width="7"/>
+    <circle cx="600" cy="606" r="35" stroke="#f0d7a0" stroke-width="7"/>
+    <circle cx="600" cy="606" r="29" stroke="#4d301d" stroke-width="7"/>
 
     <!-- Bottom-right -->
     <circle cx="1055" cy="570" r="42" stroke="#f0d7a0" stroke-width="7"/>
@@ -361,34 +361,34 @@
   </g>
 
   <!--
-    Exactly 18 ruby sight diamonds:
-    3 top, 3 bottom, 6 left, 6 right.
+    Exactly 18 ruby sight diamonds with correct WPA spacing:
+    6 top, 6 bottom, 3 left, 3 right.
   -->
   <g id="diamond-sights">
-    <!-- Top rail: 3 -->
-    <use href="#diamond" x="259" y="86"/>
-    <use href="#diamond" x="373" y="86"/>
-    <use href="#diamond" x="486" y="86"/>
+    <!-- Top rail: 6 -->
+    <use href="#diamond" x="258.75" y="86"/>
+    <use href="#diamond" x="372.5" y="86"/>
+    <use href="#diamond" x="486.25" y="86"/>
+    <use href="#diamond" x="713.75" y="86"/>
+    <use href="#diamond" x="827.5" y="86"/>
+    <use href="#diamond" x="941.25" y="86"/>
 
-    <!-- Bottom rail: 3 -->
-    <use href="#diamond" x="714" y="614"/>
-    <use href="#diamond" x="827" y="614"/>
-    <use href="#diamond" x="941" y="614"/>
+    <!-- Bottom rail: 6 -->
+    <use href="#diamond" x="258.75" y="614"/>
+    <use href="#diamond" x="372.5" y="614"/>
+    <use href="#diamond" x="486.25" y="614"/>
+    <use href="#diamond" x="713.75" y="614"/>
+    <use href="#diamond" x="827.5" y="614"/>
+    <use href="#diamond" x="941.25" y="614"/>
 
-    <!-- Left rail: 6 -->
-    <use href="#diamond" x="86" y="205"/>
-    <use href="#diamond" x="86" y="280"/>
-    <use href="#diamond" x="86" y="355"/>
-    <use href="#diamond" x="86" y="445"/>
-    <use href="#diamond" x="86" y="520"/>
-    <use href="#diamond" x="86" y="595"/>
+    <!-- Left rail: 3 -->
+    <use href="#diamond" x="86" y="240"/>
+    <use href="#diamond" x="86" y="350"/>
+    <use href="#diamond" x="86" y="460"/>
 
-    <!-- Right rail: 6 -->
-    <use href="#diamond" x="1114" y="205"/>
-    <use href="#diamond" x="1114" y="280"/>
-    <use href="#diamond" x="1114" y="355"/>
-    <use href="#diamond" x="1114" y="445"/>
-    <use href="#diamond" x="1114" y="520"/>
-    <use href="#diamond" x="1114" y="595"/>
+    <!-- Right rail: 3 -->
+    <use href="#diamond" x="1114" y="240"/>
+    <use href="#diamond" x="1114" y="350"/>
+    <use href="#diamond" x="1114" y="460"/>
   </g>
 </svg>
