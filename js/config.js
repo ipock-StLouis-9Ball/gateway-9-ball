@@ -20,15 +20,16 @@ export const ECONOMY = {
   // $5→$0.55, $7→$0.77, $10→$1.10, $15→$1.65, $20→$2.20.
   rakeForPot: (pot) => round2(pot * 0.11),
 
-  // Deposits: lower tiers kept; the Square processor fee (2.9% + $0.30) is
-  // passed to the user at checkout. The full deposit amount is credited.
+  // Deposits via PayPal Checkout
   depositOptions: [2.5, 5.0, 10.0, 20.0],
-  depositFee: (amount) => round2(amount * 0.029 + 0.30),
+  depositFee: (_amount) => 0.0,
 
-  // Withdrawals: $10.00 minimum. Fee = $0.30 + 10% of amount, floored at $1.50
-  // (covers payment-gateway fixed cost on small payouts).
-  withdrawFee: (amount) => Math.max(1.5, round2(0.30 + amount * 0.10)),
+  // Withdrawals: $10.00 minimum.
+  // Standard ACH (2-3 days): $0 fee.
+  // Instant Payout (push-to-card): 1.5% fee.
   withdrawMin: 10.0,
+  withdrawFeeStandard: (_amount) => 0.0,
+  withdrawFeeInstant: (amount) => round2(amount * 0.015),
 
   bestOf: 3, // first to 2 racks wins the match
 };

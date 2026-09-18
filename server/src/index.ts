@@ -6,6 +6,7 @@ import express from 'express';
 import compression from 'compression';
 import { resolveShot } from '../../js/rules.js';
 import { Database } from './db.js';
+import { createPayPalOrder, capturePayPalOrder, createPayPalPayout, getPayPalCredentials } from './paypal.js';
 
 const app = express();
 app.use(compression());
@@ -60,6 +61,7 @@ app.post('/api/profile/register', (req, res) => {
       avatar: user.avatar,
       balance: user.balance,
       history: user.history,
+      vaultedPaymentMethod: user.vaultedPaymentMethod,
     },
   });
 });
@@ -107,54 +109,143 @@ app.post('/api/profile/update', (req, res) => {
 
 // --- Wallet & Financial Ledger Endpoints ---
 
-// POST /api/wallet/deposit { amount }
-app.post('/api/wallet/deposit', (req, res) => {
+// --- PayPal Deposit Endpoints ---
+
+// POST /api/wallet/deposit/create-order { amount }
+app.post('/api/wallet/deposit/create-order', async (req, res) => {
   const token = extractToken(req);
+  const user = Database.getUserByToken(token);
+  if (!user) {
+    res.status(401).json({ ok: false, error: 'Invalid or missing session token' });
+    return;
+  }
+
   const amount = Number(req.body?.amount);
   if (isNaN(amount) || amount <= 0) {
     res.status(400).json({ ok: false, error: 'Invalid deposit amount' });
     return;
   }
-  // Gateway fee formula: (2.9% + $0.30)
-  const fee = Math.round((amount * 0.029 + 0.30) * 100) / 100;
-  const result = Database.deposit(token, amount, fee);
-  if (!result) {
+
+  try {
+    const order = await createPayPalOrder(amount);
+    res.json({ ok: true, orderId: order.orderId, approvalUrl: order.approvalUrl });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ ok: false, error: msg });
+  }
+});
+
+// POST /api/wallet/deposit/capture-order { orderId, amount }
+app.post('/api/wallet/deposit/capture-order', async (req, res) => {
+  const token = extractToken(req);
+  const user = Database.getUserByToken(token);
+  if (!user) {
     res.status(401).json({ ok: false, error: 'Invalid or missing session token' });
     return;
   }
+
+  const { orderId, amount: reqAmount } = req.body || {};
+  let depositAmount = Number(reqAmount) || 0;
+
+  let vaultedPaymentMethod = {
+    vaultId: `vault_card_${Date.now()}`,
+    cardLast4: '4242',
+    cardBrand: 'Visa (PayPal Vaulted)',
+    payerEmail: user.username + '@paypal.com',
+  };
+
+  const { clientId, clientSecret } = getPayPalCredentials();
+
+  if (clientId && clientSecret) {
+    if (!orderId) {
+      res.status(400).json({ ok: false, error: 'Order ID is required' });
+      return;
+    }
+    try {
+      const captured = await capturePayPalOrder(orderId);
+      if (captured.amount > 0) depositAmount = captured.amount;
+      if (captured.vaultedPaymentMethod) {
+        vaultedPaymentMethod = {
+          ...vaultedPaymentMethod,
+          ...captured.vaultedPaymentMethod,
+        };
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.status(400).json({ ok: false, error: `PayPal capture failed: ${msg}` });
+      return;
+    }
+  }
+
+  if (depositAmount <= 0) {
+    res.status(400).json({ ok: false, error: 'Invalid deposit amount' });
+    return;
+  }
+
+  const fee = 0.0; // PayPal deposit fee waived / covered
+  const result = Database.deposit(token, depositAmount, fee, vaultedPaymentMethod);
+  if (!result) {
+    res.status(401).json({ ok: false, error: 'Deposit failed' });
+    return;
+  }
+
   res.json({
     ok: true,
     balance: result.user.balance,
     history: result.user.history,
+    vaultedPaymentMethod: result.user.vaultedPaymentMethod,
     tx: result.tx,
   });
 });
 
-// POST /api/wallet/withdraw { amount }
-app.post('/api/wallet/withdraw', (req, res) => {
+// POST /api/wallet/withdraw { amount, speed: 'standard' | 'instant' }
+app.post('/api/wallet/withdraw', async (req, res) => {
   const token = extractToken(req);
+  const user = Database.getUserByToken(token);
+  if (!user) {
+    res.status(401).json({ ok: false, error: 'Invalid or missing session token' });
+    return;
+  }
+
   const amount = Number(req.body?.amount);
+  const speed = req.body?.speed === 'instant' ? 'instant' : 'standard';
+
   if (isNaN(amount) || amount < 10.0) {
     res.status(400).json({ ok: false, error: 'Minimum withdrawal amount is DB$10.00' });
     return;
   }
-  // Fee formula: $0.30 + 10% (min $1.50)
-  const fee = Math.max(1.50, Math.round((0.30 + amount * 0.10) * 100) / 100);
-  const result = Database.withdraw(token, amount, fee);
-  if (!result) {
-    const user = Database.getUserByToken(token);
-    if (!user) {
-      res.status(401).json({ ok: false, error: 'Invalid or missing session token' });
+
+  // Dual-speed withdrawal fees:
+  // Standard ACH (2-3 days): $0.00 fee
+  // Instant Payout (push-to-card): 1.5% processing fee
+  const fee = speed === 'instant' ? Math.round(amount * 0.015 * 100) / 100 : 0.0;
+  const payoutAmount = Math.round((amount - fee) * 100) / 100;
+
+  const receiverEmail = user.vaultedPaymentMethod?.payerEmail || `${user.username.toLowerCase()}@paypal.com`;
+
+  const { clientId, clientSecret } = getPayPalCredentials();
+  if (clientId && clientSecret) {
+    try {
+      await createPayPalPayout(receiverEmail, payoutAmount, `St. Louis 9 Ball Hustle ${speed.toUpperCase()} Withdrawal`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.status(400).json({ ok: false, error: `PayPal payout failed: ${msg}` });
       return;
     }
+  }
+
+  const result = Database.withdraw(token, amount, fee);
+  if (!result) {
     res.status(400).json({ ok: false, error: 'Insufficient wallet balance' });
     return;
   }
+
   res.json({
     ok: true,
     balance: result.user.balance,
     history: result.user.history,
     payout: result.payout,
+    speed,
     tx: result.tx,
   });
 });

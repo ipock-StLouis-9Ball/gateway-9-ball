@@ -34,6 +34,7 @@ export const State = {
     avatar: 'JP', // initials or base64 data URI
     registered: false,
     hasDeposited: false,
+    vaultedPaymentMethod: null,
   },
   opponent: {
     name: 'Breaker AI',
@@ -133,6 +134,9 @@ export const Auth = {
     State.profile.registered = true;
     State.wallet.balance = prof.balance;
     State.wallet.history = prof.history || [];
+    if (prof.vaultedPaymentMethod) {
+      State.profile.vaultedPaymentMethod = prof.vaultedPaymentMethod;
+    }
     if (State.wallet.history.some((h) => h.type === 'Deposit')) {
       State.profile.hasDeposited = true;
     }
@@ -148,34 +152,48 @@ export const Wallet = {
   },
   async deposit(amount) {
     try {
-      const res = await fetch(`${API_BASE}/api/wallet/deposit`, {
+      // Create PayPal order
+      const orderRes = await fetch(`${API_BASE}/api/wallet/deposit/create-order`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({ amount }),
       });
-      const data = await res.json();
+      const orderData = await orderRes.json();
+
+      const orderId = orderData.orderId || `sim_order_${Date.now()}`;
+
+      // Capture PayPal order and vault card
+      const capRes = await fetch(`${API_BASE}/api/wallet/deposit/capture-order`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ orderId, amount }),
+      });
+      const data = await capRes.json();
       if (data.ok) {
         State.wallet.balance = data.balance;
         State.wallet.history = data.history;
-        return { ok: true, balance: data.balance };
+        if (data.vaultedPaymentMethod) {
+          State.profile.vaultedPaymentMethod = data.vaultedPaymentMethod;
+        }
+        return { ok: true, balance: data.balance, vaultedPaymentMethod: data.vaultedPaymentMethod };
       }
       return { ok: false, error: data.error || 'Deposit failed' };
     } catch (err) {
       return { ok: false, error: 'Network error during deposit' };
     }
   },
-  async withdraw(amount) {
+  async withdraw(amount, speed = 'standard') {
     try {
       const res = await fetch(`${API_BASE}/api/wallet/withdraw`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ amount }),
+        body: JSON.stringify({ amount, speed }),
       });
       const data = await res.json();
       if (data.ok) {
         State.wallet.balance = data.balance;
         State.wallet.history = data.history;
-        return { ok: true, balance: data.balance, payout: data.payout, fee: data.tx.fee };
+        return { ok: true, balance: data.balance, payout: data.payout, fee: data.tx.fee, speed: data.speed };
       }
       return { ok: false, error: data.error || 'Withdrawal failed' };
     } catch (err) {

@@ -19,6 +19,12 @@ export interface UserProfile {
   balance: number;
   history: TransactionRecord[];
   createdAt: number;
+  vaultedPaymentMethod?: {
+    vaultId: string;
+    cardLast4?: string;
+    cardBrand?: string;
+    payerEmail?: string;
+  };
 }
 
 interface DatabaseSchema {
@@ -95,9 +101,18 @@ export class Database {
     return user;
   }
 
-  public static deposit(token: string, amount: number, fee: number): { user: UserProfile; tx: TransactionRecord } | null {
+  public static deposit(
+    token: string,
+    amount: number,
+    fee: number,
+    paymentMethod?: UserProfile['vaultedPaymentMethod']
+  ): { user: UserProfile; tx: TransactionRecord } | null {
     const user = this.getUserByToken(token);
     if (!user) return null;
+
+    if (paymentMethod) {
+      user.vaultedPaymentMethod = paymentMethod;
+    }
 
     user.balance = Math.round((user.balance + amount) * 100) / 100;
     const tx: TransactionRecord = {
