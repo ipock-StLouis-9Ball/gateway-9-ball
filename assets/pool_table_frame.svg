@@ -5,625 +5,682 @@
 
   <defs>
 
-    <!-- =========================================================
-         MODERN WHITE-OAK MATERIAL
-         Soft, contemporary beach-blond oak:
-         long linear pores, restrained contrast, satin-matte look.
-         ========================================================= -->
+    <!-- =====================================================
+         MATERIALS
+         ===================================================== -->
 
-    <linearGradient id="oak-base" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#f5e7c8"/>
-      <stop offset="24%" stop-color="#ead3a6"/>
-      <stop offset="56%" stop-color="#d6b77b"/>
-      <stop offset="100%" stop-color="#ac7b42"/>
+    <linearGradient id="wood-base" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f4e4c0"/>
+      <stop offset="30%" stop-color="#e7c993"/>
+      <stop offset="62%" stop-color="#d4ac6a"/>
+      <stop offset="100%" stop-color="#ac7740"/>
     </linearGradient>
 
-    <linearGradient id="oak-outer-bevel" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#c99a57"/>
-      <stop offset="48%" stop-color="#8c5f32"/>
-      <stop offset="100%" stop-color="#5b391f"/>
+    <linearGradient id="wood-edge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c28d4c"/>
+      <stop offset="45%" stop-color="#89582e"/>
+      <stop offset="100%" stop-color="#59381f"/>
     </linearGradient>
 
-    <linearGradient id="oak-inner-bevel" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#fff1cf"/>
-      <stop offset="50%" stop-color="#efd7a3"/>
-      <stop offset="100%" stop-color="#c18e4e"/>
+    <linearGradient id="cushion-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c9ad75"/>
+      <stop offset="48%" stop-color="#ab8b55"/>
+      <stop offset="100%" stop-color="#765834"/>
     </linearGradient>
 
-    <!-- Matte beach-blond cushion: subtle depth, no shiny plastic -->
-    <linearGradient id="cushion-rubber" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#c4a96f"/>
-      <stop offset="48%" stop-color="#ab8c54"/>
-      <stop offset="100%" stop-color="#795b37"/>
+    <linearGradient id="ruby-fill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff9b85"/>
+      <stop offset="30%" stop-color="#d73739"/>
+      <stop offset="68%" stop-color="#94161d"/>
+      <stop offset="100%" stop-color="#50070c"/>
     </linearGradient>
 
-    <!-- Restrained inset ruby: no neon and no outer glow -->
-    <linearGradient id="ruby-red" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#ff8a7b"/>
-      <stop offset="28%" stop-color="#d43b3c"/>
-      <stop offset="66%" stop-color="#94181d"/>
-      <stop offset="100%" stop-color="#4b080d"/>
-    </linearGradient>
-
-    <!-- Horizontal modern grain for head/foot rails -->
-    <filter id="grain-horizontal"
+    <!-- Contemporary low-contrast oak grain: horizontal -->
+    <filter id="horizontal-grain"
             x="-5%"
             y="-20%"
             width="110%"
             height="140%">
       <feTurbulence type="fractalNoise"
-                    baseFrequency="0.008 0.23"
+                    baseFrequency="0.009 0.18"
                     numOctaves="2"
-                    seed="21"
+                    seed="42"
                     result="grain"/>
       <feColorMatrix in="grain"
                      type="matrix"
                      values="
-                       0.36 0    0    0 0.25
-                       0    0.25 0    0 0.16
-                       0    0    0.14 0 0.08
-                       0    0    0    0.23 0"/>
+                       0.34 0    0    0 0.25
+                       0    0.23 0    0 0.14
+                       0    0    0.12 0 0.06
+                       0    0    0    0.22 0"/>
     </filter>
 
-    <!-- Vertical modern grain for side rails -->
-    <filter id="grain-vertical"
+    <!-- Contemporary low-contrast oak grain: vertical -->
+    <filter id="vertical-grain"
             x="-20%"
             y="-5%"
             width="140%"
             height="110%">
       <feTurbulence type="fractalNoise"
-                    baseFrequency="0.23 0.008"
+                    baseFrequency="0.18 0.009"
                     numOctaves="2"
-                    seed="44"
+                    seed="81"
                     result="grain"/>
       <feColorMatrix in="grain"
                      type="matrix"
                      values="
-                       0.36 0    0    0 0.25
-                       0    0.25 0    0 0.16
-                       0    0    0.14 0 0.08
-                       0    0    0    0.23 0"/>
+                       0.34 0    0    0 0.25
+                       0    0.23 0    0 0.14
+                       0    0    0.12 0 0.06
+                       0    0    0    0.22 0"/>
     </filter>
 
-    <!-- Soft wood pore texture, deliberately subtle -->
-    <filter id="fine-pore"
-            x="-5%"
-            y="-5%"
-            width="110%"
-            height="110%">
-      <feTurbulence type="fractalNoise"
-                    baseFrequency="0.10 0.10"
-                    numOctaves="2"
-                    seed="9"
-                    result="pores"/>
-      <feColorMatrix in="pores"
-                     type="matrix"
-                     values="
-                       0.30 0    0    0 0.24
-                       0    0.19 0    0 0.13
-                       0    0    0.08 0 0.06
-                       0    0    0    0.08 0"/>
-    </filter>
-
-    <!-- Dark inset seam under rubber cushion -->
-    <filter id="cushion-seam-shadow"
-            x="-20%"
-            y="-20%"
-            width="140%"
-            height="140%">
+    <!-- Small inner cushion seam shadow -->
+    <filter id="cushion-shadow"
+            x="-25%"
+            y="-25%"
+            width="150%"
+            height="150%">
       <feDropShadow dx="0"
-                    dy="3"
-                    stdDeviation="1.5"
-                    flood-color="#3c2614"
-                    flood-opacity="0.86"/>
+                    dy="2.5"
+                    stdDeviation="1.25"
+                    flood-color="#372113"
+                    flood-opacity="0.85"/>
     </filter>
 
-    <!-- Ruby sits down inside the routed diamond recess -->
-    <filter id="ruby-recess-shadow"
+    <!-- Ruby inset shadow -->
+    <filter id="ruby-shadow"
             x="-100%"
             y="-100%"
             width="300%"
             height="300%">
       <feDropShadow dx="0"
-                    dy="1.2"
+                    dy="1"
                     stdDeviation="0.6"
-                    flood-color="#2a150c"
+                    flood-color="#2e150d"
                     flood-opacity="0.95"/>
     </filter>
 
-    <!-- =========================================================
-         TRANSPARENT PLAYING OPENING
+    <!-- =====================================================
+         ONE CONNECTED TRANSPARENT OPENING
 
-         Black = transparent.
-         White = visible frame.
+         The bed, corner pockets, and side-pocket notches
+         are all transparent as one physically connected opening.
+         ===================================================== -->
 
-         The center bed is transparent.
-         Six pockets are not separate circles:
-         each is a cut into the cushion/rail and connects to the bed.
-         ========================================================= -->
-
-    <mask id="frame-cutout-mask"
+    <mask id="table-opening-mask"
           maskUnits="userSpaceOnUse"
           x="0"
           y="0"
           width="1200"
           height="700">
 
-      <!-- Default: show frame -->
-      <rect x="0"
-            y="0"
-            width="1200"
+      <!-- White means the frame remains visible -->
+      <rect width="1200"
             height="700"
-            fill="white"/>
+            fill="#ffffff"/>
 
-      <!-- Main transparent felt / slate opening -->
-      <rect x="162"
-            y="142"
-            width="876"
-            height="416"
-            rx="2"
-            fill="black"/>
+      <!-- Central transparent felt/slate bed -->
+      <rect x="170"
+            y="150"
+            width="860"
+            height="400"
+            fill="#000000"/>
 
-      <!-- =====================================================
-           CORNER POCKET CUTOUTS
-           Each is connected to the transparent felt opening.
-           ===================================================== -->
-
-      <!-- Top-left corner pocket -->
+      <!-- Top-left corner transparent pocket mouth -->
       <path d="
-        M 162 142
-        L 223 142
-        C 202 151 183 170 171 192
-        C 165 176 162 159 162 142
+        M 170 150
+        L 235 150
+        C 211 162 192 181 180 206
+        C 173 188 170 170 170 150
         Z"
-        fill="black"/>
+        fill="#000000"/>
 
-      <!-- Top-right corner pocket -->
+      <!-- Top-right corner transparent pocket mouth -->
       <path d="
-        M 1038 142
-        L 977 142
-        C 998 151 1017 170 1029 192
-        C 1035 176 1038 159 1038 142
+        M 1030 150
+        L 965 150
+        C 989 162 1008 181 1020 206
+        C 1027 188 1030 170 1030 150
         Z"
-        fill="black"/>
+        fill="#000000"/>
 
-      <!-- Bottom-left corner pocket -->
+      <!-- Bottom-left corner transparent pocket mouth -->
       <path d="
-        M 162 558
-        L 223 558
-        C 202 549 183 530 171 508
-        C 165 524 162 541 162 558
+        M 170 550
+        L 235 550
+        C 211 538 192 519 180 494
+        C 173 512 170 530 170 550
         Z"
-        fill="black"/>
+        fill="#000000"/>
 
-      <!-- Bottom-right corner pocket -->
+      <!-- Bottom-right corner transparent pocket mouth -->
       <path d="
-        M 1038 558
-        L 977 558
-        C 998 549 1017 530 1029 508
-        C 1035 524 1038 541 1038 558
+        M 1030 550
+        L 965 550
+        C 989 538 1008 519 1020 494
+        C 1027 512 1030 530 1030 550
         Z"
-        fill="black"/>
+        fill="#000000"/>
 
-      <!-- =====================================================
-           SIDE POCKET CUTOUTS
-
-           Top pocket goes UP into top bumper + wood rail.
-           Bottom pocket goes DOWN into bottom bumper + wood rail.
-
-           Neither pocket extends farther into the felt bed.
-           ===================================================== -->
-
-      <!-- Top-middle side pocket -->
+      <!-- Top side pocket cuts upward into rail/cushion -->
       <path d="
-        M 554 142
-        L 554 101
-        C 566 88 581 82 600 82
-        C 619 82 634 88 646 101
-        L 646 142
+        M 556 150
+        L 556 104
+        C 568 91 583 85 600 85
+        C 617 85 632 91 644 104
+        L 644 150
         Z"
-        fill="black"/>
+        fill="#000000"/>
 
-      <!-- Bottom-middle side pocket -->
+      <!-- Bottom side pocket cuts downward into rail/cushion -->
       <path d="
-        M 554 558
-        L 554 599
-        C 566 612 581 618 600 618
-        C 619 618 634 612 646 599
-        L 646 558
+        M 556 550
+        L 556 596
+        C 568 609 583 615 600 615
+        C 617 615 632 609 644 596
+        L 644 550
         Z"
-        fill="black"/>
+        fill="#000000"/>
 
     </mask>
 
-    <!-- Clips grain to broad wood cap surfaces -->
-    <clipPath id="top-bottom-rail-grain">
+    <!-- Top and bottom rail-cap grain clip -->
+    <clipPath id="horizontal-cap-area">
       <path d="
-        M 62 58
-        H 1138
-        V 140
-        H 62
+        M 56 55
+        H 1144
+        V 148
+        H 56
         Z
 
-        M 62 560
-        H 1138
-        V 642
-        H 62
+        M 56 552
+        H 1144
+        V 645
+        H 56
         Z"/>
     </clipPath>
 
-    <clipPath id="left-right-rail-grain">
+    <!-- Left and right rail-cap grain clip -->
+    <clipPath id="vertical-cap-area">
       <path d="
-        M 58 62
-        H 140
-        V 638
-        H 58
+        M 55 56
+        H 148
+        V 644
+        H 55
         Z
 
-        M 1060 62
-        H 1142
-        V 638
-        H 1060
+        M 1052 56
+        H 1145
+        V 644
+        H 1052
         Z"/>
     </clipPath>
 
-    <!-- Reusable ruby diamond: dark routed setting + ruby insert -->
-    <g id="ruby-sight">
-      <!-- Routed recess in wood -->
-      <rect x="-9"
+    <!-- Reusable ruby diamond -->
+    <g id="ruby-diamond">
+      <!-- Routed dark diamond setting -->
+      <rect x="-8"
+            y="-8"
+            width="16"
+            height="16"
+            rx="1.2"
+            fill="#452516"
+            transform="rotate(45)"/>
+
+      <!-- Inner dark-red bezel -->
+      <rect x="-6"
             y="-6"
-            width="18"
+            width="12"
             height="12"
-            rx="1.3"
-            fill="#4a2918"
-            transform="rotate(45)"/>
-
-      <!-- Dark inner setting ring -->
-      <rect x="-7"
-            y="-4.5"
-            width="14"
-            height="9"
-            rx="1"
-            fill="#6c1015"
-            transform="rotate(45)"/>
-
-      <!-- Red ruby face -->
-      <rect x="-5.2"
-            y="-3.3"
-            width="10.4"
-            height="6.6"
             rx="0.8"
-            fill="url(#ruby-red)"
-            transform="rotate(45)"
-            filter="url(#ruby-recess-shadow)"/>
+            fill="#711017"
+            transform="rotate(45)"/>
 
-      <!-- Tiny muted facet highlight -->
+      <!-- Ruby face -->
+      <rect x="-4.5"
+            y="-4.5"
+            width="9"
+            height="9"
+            rx="0.7"
+            fill="url(#ruby-fill)"
+            transform="rotate(45)"
+            filter="url(#ruby-shadow)"/>
+
+      <!-- Restrained internal ruby highlight -->
       <path d="
-        M -2.8 -1.4
-        L 1.8 -1.4
-        L 0 0.5
+        M -2.6 -2.3
+        L 2.2 -2.3
+        L 0 0.2
         Z"
-        fill="#ffd2bd"
+        fill="#ffd5c2"
         opacity="0.30"
         transform="rotate(45)"/>
     </g>
 
   </defs>
 
-  <!-- =========================================================
-       FRAME ASSEMBLY
-       Everything inside this group has the central bed and
-       all six pocket mouths removed by the transparency mask.
-       ========================================================= -->
+  <!-- =======================================================
+       WHITE-OAK FRAME
+       ======================================================= -->
 
-  <g id="modern-white-oak-pool-table-frame"
-     mask="url(#frame-cutout-mask)">
+  <g id="white-oak-frame"
+     mask="url(#table-opening-mask)">
 
-    <!-- Solid-wood thickness / dark outer routed edge -->
-    <rect x="34"
-          y="34"
-          width="1132"
-          height="632"
+    <!-- Deep outer rail edge -->
+    <rect x="32"
+          y="32"
+          width="1136"
+          height="636"
           rx="48"
-          fill="url(#oak-outer-bevel)"/>
+          fill="url(#wood-edge)"/>
 
-    <!-- Broad contemporary white-oak cap -->
-    <rect x="47"
-          y="47"
-          width="1106"
-          height="606"
+    <!-- Main solid-oak rail surface -->
+    <rect x="46"
+          y="46"
+          width="1108"
+          height="608"
           rx="39"
-          fill="url(#oak-base)"/>
+          fill="url(#wood-base)"/>
 
-    <!-- Fine surface pore texture -->
-    <rect x="47"
-          y="47"
-          width="1106"
-          height="606"
-          rx="39"
-          fill="#6f461f"
-          opacity="0.15"
-          filter="url(#fine-pore)"/>
-
-    <!-- Outside rounded bevel highlight -->
+    <!-- Outer top bevel -->
     <rect x="57"
           y="57"
           width="1086"
           height="586"
           rx="31"
           fill="none"
-          stroke="#fff0ca"
+          stroke="#fff0cd"
           stroke-width="4"
-          opacity="0.64"/>
+          opacity="0.62"/>
 
-    <!-- Broad routed shadow surrounding cushion area -->
-    <rect x="78"
-          y="78"
-          width="1044"
-          height="544"
-          rx="24"
+    <!-- Rail-cap routed channel -->
+    <rect x="80"
+          y="80"
+          width="1040"
+          height="540"
+          rx="23"
           fill="none"
-          stroke="#805128"
+          stroke="#825128"
           stroke-width="12"
-          opacity="0.67"/>
+          opacity="0.70"/>
 
-    <!-- Inner oak bevel highlight -->
-    <rect x="87"
-          y="87"
-          width="1026"
-          height="526"
-          rx="18"
+    <!-- Rail-cap inner bevel -->
+    <rect x="89"
+          y="89"
+          width="1022"
+          height="522"
+          rx="17"
           fill="none"
-          stroke="url(#oak-inner-bevel)"
+          stroke="#f8dfac"
           stroke-width="4"
-          opacity="0.82"/>
+          opacity="0.66"/>
 
-    <!-- Modern linear top and bottom oak grain -->
-    <g clip-path="url(#top-bottom-rail-grain)"
-       opacity="0.33">
-      <rect x="56"
-            y="54"
-            width="1088"
-            height="94"
-            fill="#75481e"
-            filter="url(#grain-horizontal)"/>
-
-      <rect x="56"
-            y="552"
-            width="1088"
-            height="94"
-            fill="#75481e"
-            filter="url(#grain-horizontal)"/>
-    </g>
-
-    <!-- Modern linear left and right oak grain -->
-    <g clip-path="url(#left-right-rail-grain)"
+    <!-- Modern horizontal white-oak grain -->
+    <g clip-path="url(#horizontal-cap-area)"
        opacity="0.33">
       <rect x="54"
-            y="56"
-            width="94"
-            height="588"
-            fill="#75481e"
-            filter="url(#grain-vertical)"/>
+            y="52"
+            width="1092"
+            height="105"
+            fill="#76491f"
+            filter="url(#horizontal-grain)"/>
 
-      <rect x="1052"
-            y="56"
-            width="94"
-            height="588"
-            fill="#75481e"
-            filter="url(#grain-vertical)"/>
+      <rect x="54"
+            y="543"
+            width="1092"
+            height="105"
+            fill="#76491f"
+            filter="url(#horizontal-grain)"/>
     </g>
 
-    <!-- =======================================================
-         RUBBER CUSHION SYSTEM
+    <!-- Modern vertical white-oak grain -->
+    <g clip-path="url(#vertical-cap-area)"
+       opacity="0.33">
+      <rect x="52"
+            y="54"
+            width="105"
+            height="592"
+            fill="#76491f"
+            filter="url(#vertical-grain)"/>
 
-         Separate dark cushion bed, matte rubber, and lip.
-         The transparency mask cuts this into six real pockets.
-         ======================================================= -->
-
-    <!-- Dark wood/rubber inset seam -->
-    <rect x="121"
-          y="103"
-          width="958"
-          height="494"
-          rx="14"
-          fill="none"
-          stroke="#54351e"
-          stroke-width="34"
-          filter="url(#cushion-seam-shadow)"/>
-
-    <!-- Main matte beach-blond cushion -->
-    <rect x="137"
-          y="119"
-          width="926"
-          height="462"
-          rx="8"
-          fill="none"
-          stroke="url(#cushion-rubber)"
-          stroke-width="19"/>
-
-    <!-- Cushion nose highlight facing transparent felt opening -->
-    <rect x="151"
-          y="133"
-          width="898"
-          height="434"
-          rx="3"
-          fill="none"
-          stroke="#ead3a0"
-          stroke-width="3"
-          opacity="0.58"/>
-
-    <!-- =======================================================
-         POCKET THROAT BEVELS
-         These strokes sit around the transparent cutout edges.
-         They create depth without filling the pocket centers.
-         ======================================================= -->
-
-    <!-- Top-left pocket -->
-    <path d="
-      M 162 142
-      L 225 142
-      C 202 153 183 172 171 195"
-      fill="none"
-      stroke="#442918"
-      stroke-width="11"
-      stroke-linecap="round"/>
-
-    <path d="
-      M 163 142
-      L 217 142
-      C 198 152 181 169 171 187"
-      fill="none"
-      stroke="#f4dda9"
-      stroke-width="3"
-      stroke-linecap="round"/>
-
-    <!-- Top-right pocket -->
-    <path d="
-      M 1038 142
-      L 975 142
-      C 998 153 1017 172 1029 195"
-      fill="none"
-      stroke="#442918"
-      stroke-width="11"
-      stroke-linecap="round"/>
-
-    <path d="
-      M 1037 142
-      L 983 142
-      C 1002 152 1019 169 1029 187"
-      fill="none"
-      stroke="#f4dda9"
-      stroke-width="3"
-      stroke-linecap="round"/>
-
-    <!-- Bottom-left pocket -->
-    <path d="
-      M 162 558
-      L 225 558
-      C 202 547 183 528 171 505"
-      fill="none"
-      stroke="#442918"
-      stroke-width="11"
-      stroke-linecap="round"/>
-
-    <path d="
-      M 163 558
-      L 217 558
-      C 198 548 181 531 171 513"
-      fill="none"
-      stroke="#f4dda9"
-      stroke-width="3"
-      stroke-linecap="round"/>
-
-    <!-- Bottom-right pocket -->
-    <path d="
-      M 1038 558
-      L 975 558
-      C 998 547 1017 528 1029 505"
-      fill="none"
-      stroke="#442918"
-      stroke-width="11"
-      stroke-linecap="round"/>
-
-    <path d="
-      M 1037 558
-      L 983 558
-      C 1002 548 1019 531 1029 513"
-      fill="none"
-      stroke="#f4dda9"
-      stroke-width="3"
-      stroke-linecap="round"/>
-
-    <!-- Top-middle side pocket:
-         rises UP into cushion and rail, never down into felt -->
-    <path d="
-      M 554 142
-      L 554 102
-      C 566 88 582 81 600 81
-      C 618 81 634 88 646 102
-      L 646 142"
-      fill="none"
-      stroke="#442918"
-      stroke-width="11"
-      stroke-linecap="round"
-      stroke-linejoin="round"/>
-
-    <path d="
-      M 559 142
-      L 559 106
-      C 570 96 583 91 600 91
-      C 617 91 630 96 641 106
-      L 641 142"
-      fill="none"
-      stroke="#f4dda9"
-      stroke-width="3"
-      stroke-linecap="round"
-      stroke-linejoin="round"/>
-
-    <!-- Bottom-middle side pocket:
-         drops DOWN into cushion and rail, never up into felt -->
-    <path d="
-      M 554 558
-      L 554 598
-      C 566 612 582 619 600 619
-      C 618 619 634 612 646 598
-      L 646 558"
-      fill="none"
-      stroke="#442918"
-      stroke-width="11"
-      stroke-linecap="round"
-      stroke-linejoin="round"/>
-
-    <path d="
-      M 559 558
-      L 559 594
-      C 570 604 583 609 600 609
-      C 617 609 630 604 641 594
-      L 641 558"
-      fill="none"
-      stroke="#f4dda9"
-      stroke-width="3"
-      stroke-linecap="round"
-      stroke-linejoin="round"/>
+      <rect x="1043"
+            y="54"
+            width="105"
+            height="592"
+            fill="#76491f"
+            filter="url(#vertical-grain)"/>
+    </g>
 
   </g>
 
-  <!-- =========================================================
-       18 WPA-STYLE RAIL-CAP SIGHTS
+  <!-- =======================================================
+       SIX INDEPENDENT CUSHION RUNS
 
-       6 top + 6 bottom + 3 left + 3 right = 18 total.
-       Long rails: eighth-style reference placement.
-       Short rails: quarter-style reference placement.
-       ========================================================= -->
+       They do not cross any pocket.
+       Each segment physically stops at its pocket mouth.
+       ======================================================= -->
 
-  <g id="ruby-red-wpa-diamond-sights">
+  <g id="separate-cushion-segments">
 
-    <!-- Top long rail: six positions -->
-    <use href="#ruby-sight" x="247.5" y="89"/>
-    <use href="#ruby-sight" x="352.5" y="89"/>
-    <use href="#ruby-sight" x="457.5" y="89"/>
-    <use href="#ruby-sight" x="742.5" y="89"/>
-    <use href="#ruby-sight" x="847.5" y="89"/>
-    <use href="#ruby-sight" x="952.5" y="89"/>
+    <!-- TOP LEFT cushion:
+         runs from top-left corner pocket to top middle pocket -->
+    <path d="
+      M 229 157
+      H 550
+      V 174
+      H 233
+      C 218 174 204 179 190 189
+      Z"
+      fill="#54351f"
+      filter="url(#cushion-shadow)"/>
 
-    <!-- Bottom long rail: six positions -->
-    <use href="#ruby-sight" x="247.5" y="611"/>
-    <use href="#ruby-sight" x="352.5" y="611"/>
-    <use href="#ruby-sight" x="457.5" y="611"/>
-    <use href="#ruby-sight" x="742.5" y="611"/>
-    <use href="#ruby-sight" x="847.5" y="611"/>
-    <use href="#ruby-sight" x="952.5" y="611"/>
+    <path d="
+      M 231 153
+      H 552
+      V 168
+      H 235
+      C 219 168 207 173 193 183
+      Z"
+      fill="url(#cushion-fill)"/>
 
-    <!-- Left short rail: three quarter reference positions -->
-    <use href="#ruby-sight" x="89" y="246"/>
-    <use href="#ruby-sight" x="89" y="350"/>
-    <use href="#ruby-sight" x="89" y="454"/>
+    <!-- TOP RIGHT cushion:
+         runs from top middle pocket to top-right corner pocket -->
+    <path d="
+      M 650 157
+      H 971
+      L 1010 189
+      C 996 179 982 174 967 174
+      H 650
+      Z"
+      fill="#54351f"
+      filter="url(#cushion-shadow)"/>
 
-    <!-- Right short rail: three quarter reference positions -->
-    <use href="#ruby-sight" x="1111" y="246"/>
-    <use href="#ruby-sight" x="1111" y="350"/>
-    <use href="#ruby-sight" x="1111" y="454"/>
+    <path d="
+      M 648 153
+      H 969
+      L 1007 183
+      C 993 173 981 168 965 168
+      H 648
+      Z"
+      fill="url(#cushion-fill)"/>
+
+    <!-- BOTTOM LEFT cushion -->
+    <path d="
+      M 229 543
+      H 550
+      V 526
+      H 233
+      C 218 526 204 521 190 511
+      Z"
+      fill="#54351f"
+      filter="url(#cushion-shadow)"/>
+
+    <path d="
+      M 231 547
+      H 552
+      V 532
+      H 235
+      C 219 532 207 527 193 517
+      Z"
+      fill="url(#cushion-fill)"/>
+
+    <!-- BOTTOM RIGHT cushion -->
+    <path d="
+      M 650 543
+      H 971
+      L 1010 511
+      C 996 521 982 526 967 526
+      H 650
+      Z"
+      fill="#54351f"
+      filter="url(#cushion-shadow)"/>
+
+    <path d="
+      M 648 547
+      H 969
+      L 1007 517
+      C 993 527 981 532 965 532
+      H 648
+      Z"
+      fill="url(#cushion-fill)"/>
+
+    <!-- LEFT TOP cushion:
+         ends at the left-side pocket gap -->
+    <path d="
+      M 177 210
+      C 187 197 196 187 210 178
+      V 341
+      H 194
+      C 194 319 188 296 177 278
+      Z"
+      fill="#54351f"
+      filter="url(#cushion-shadow)"/>
+
+    <path d="
+      M 181 211
+      C 191 199 199 191 205 187
+      V 337
+      H 199
+      C 199 316 192 296 181 278
+      Z"
+      fill="url(#cushion-fill)"/>
+
+    <!-- LEFT BOTTOM cushion:
+         begins below the left-side pocket gap -->
+    <path d="
+      M 177 422
+      C 188 404 194 381 194 359
+      H 210
+      V 522
+      C 196 513 187 503 177 490
+      Z"
+      fill="#54351f"
+      filter="url(#cushion-shadow)"/>
+
+    <path d="
+      M 181 422
+      C 192 404 199 384 199 363
+      H 205
+      V 513
+      C 199 509 191 501 181 489
+      Z"
+      fill="url(#cushion-fill)"/>
+
+    <!-- RIGHT TOP cushion -->
+    <path d="
+      M 1023 210
+      C 1013 197 1004 187 990 178
+      V 341
+      H 1006
+      C 1006 319 1012 296 1023 278
+      Z"
+      fill="#54351f"
+      filter="url(#cushion-shadow)"/>
+
+    <path d="
+      M 1019 211
+      C 1009 199 1001 191 995 187
+      V 337
+      H 1001
+      C 1001 316 1008 296 1019 278
+      Z"
+      fill="url(#cushion-fill)"/>
+
+    <!-- RIGHT BOTTOM cushion -->
+    <path d="
+      M 1023 422
+      C 1012 404 1006 381 1006 359
+      H 990
+      V 522
+      C 1004 513 1013 503 1023 490
+      Z"
+      fill="#54351f"
+      filter="url(#cushion-shadow)"/>
+
+    <path d="
+      M 1019 422
+      C 1008 404 1001 384 1001 363
+      H 995
+      V 513
+      C 1001 509 1009 501 1019 489
+      Z"
+      fill="url(#cushion-fill)"/>
+
+  </g>
+
+  <!-- =======================================================
+       POCKET BEVEL LINES
+       Only outlines around transparent cutouts.
+       They add depth without filling the pocket openings.
+       ======================================================= -->
+
+  <g id="transparent-pocket-bevels"
+     fill="none"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+
+    <!-- Top-left -->
+    <path d="M 170 150 L 235 150 C 211 162 192 181 180 206"
+          stroke="#422817"
+          stroke-width="10"/>
+    <path d="M 172 151 L 224 151 C 203 163 188 180 180 196"
+          stroke="#f5dca7"
+          stroke-width="3"/>
+
+    <!-- Top-right -->
+    <path d="M 1030 150 L 965 150 C 989 162 1008 181 1020 206"
+          stroke="#422817"
+          stroke-width="10"/>
+    <path d="M 1028 151 L 976 151 C 997 163 1012 180 1020 196"
+          stroke="#f5dca7"
+          stroke-width="3"/>
+
+    <!-- Bottom-left -->
+    <path d="M 170 550 L 235 550 C 211 538 192 519 180 494"
+          stroke="#422817"
+          stroke-width="10"/>
+    <path d="M 172 549 L 224 549 C 203 537 188 520 180 504"
+          stroke="#f5dca7"
+          stroke-width="3"/>
+
+    <!-- Bottom-right -->
+    <path d="M 1030 550 L 965 550 C 989 538 1008 519 1020 494"
+          stroke="#422817"
+          stroke-width="10"/>
+    <path d="M 1028 549 L 976 549 C 997 537 1012 520 1020 504"
+          stroke="#f5dca7"
+          stroke-width="3"/>
+
+    <!-- Top side pocket: upward rail/cushion cut -->
+    <path d="
+      M 556 150
+      L 556 104
+      C 568 91 583 85 600 85
+      C 617 85 632 91 644 104
+      L 644 150"
+      stroke="#422817"
+      stroke-width="10"/>
+
+    <path d="
+      M 560 150
+      L 560 107
+      C 570 97 584 92 600 92
+      C 616 92 630 97 640 107
+      L 640 150"
+      stroke="#f5dca7"
+      stroke-width="3"/>
+
+    <!-- Bottom side pocket: downward rail/cushion cut -->
+    <path d="
+      M 556 550
+      L 556 596
+      C 568 609 583 615 600 615
+      C 617 615 632 609 644 596
+      L 644 550"
+      stroke="#422817"
+      stroke-width="10"/>
+
+    <path d="
+      M 560 550
+      L 560 593
+      C 570 603 584 608 600 608
+      C 616 608 630 603 640 593
+      L 640 550"
+      stroke="#f5dca7"
+      stroke-width="3"/>
+
+    <!-- Left side pocket notch -->
+    <path d="
+      M 170 344
+      C 187 350 193 367 193 385
+      C 193 403 187 420 170 426"
+      stroke="#422817"
+      stroke-width="10"/>
+
+    <path d="
+      M 174 347
+      C 185 354 188 368 188 385
+      C 188 402 185 416 174 423"
+      stroke="#f5dca7"
+      stroke-width="3"/>
+
+    <!-- Right side pocket notch -->
+    <path d="
+      M 1030 344
+      C 1013 350 1007 367 1007 385
+      C 1007 403 1013 420 1030 426"
+      stroke="#422817"
+      stroke-width="10"/>
+
+    <path d="
+      M 1026 347
+      C 1015 354 1012 368 1012 385
+      C 1012 402 1015 416 1026 423"
+      stroke="#f5dca7"
+      stroke-width="3"/>
+
+  </g>
+
+  <!-- =======================================================
+       18 WPA-STYLE RUBY SIGHT DIAMONDS
+
+       Long rail positions:
+       1/8, 2/8, 3/8, 5/8, 6/8, and 7/8.
+
+       Short rail positions:
+       1/4, 1/2, and 3/4.
+
+       Total: 6 + 6 + 3 + 3 = 18.
+       ======================================================= -->
+
+  <g id="ruby-red-diamond-sights">
+
+    <!-- Top rail, six sights -->
+    <use href="#ruby-diamond" x="277.5" y="88"/>
+    <use href="#ruby-diamond" x="385" y="88"/>
+    <use href="#ruby-diamond" x="492.5" y="88"/>
+    <use href="#ruby-diamond" x="707.5" y="88"/>
+    <use href="#ruby-diamond" x="815" y="88"/>
+    <use href="#ruby-diamond" x="922.5" y="88"/>
+
+    <!-- Bottom rail, six sights -->
+    <use href="#ruby-diamond" x="277.5" y="612"/>
+    <use href="#ruby-diamond" x="385" y="612"/>
+    <use href="#ruby-diamond" x="492.5" y="612"/>
+    <use href="#ruby-diamond" x="707.5" y="612"/>
+    <use href="#ruby-diamond" x="815" y="612"/>
+    <use href="#ruby-diamond" x="922.5" y="612"/>
+
+    <!-- Left rail, three sights -->
+    <use href="#ruby-diamond" x="88" y="250"/>
+    <use href="#ruby-diamond" x="88" y="350"/>
+    <use href="#ruby-diamond" x="88" y="450"/>
+
+    <!-- Right rail, three sights -->
+    <use href="#ruby-diamond" x="1112" y="250"/>
+    <use href="#ruby-diamond" x="1112" y="350"/>
+    <use href="#ruby-diamond" x="1112" y="450"/>
 
   </g>
 
