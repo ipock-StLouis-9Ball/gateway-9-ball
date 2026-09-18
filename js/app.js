@@ -8,8 +8,23 @@ import { Game } from './game.js';
 import { ECONOMY, STORE_ITEMS, TABLE_COLORS, BALL_SKINS, CUE_STICKS } from './config.js';
 import { initRapier } from './rapierPhysics.js';
 
-// ---------- Profile Modal State ----------
+// ---------- Profile Modal & Deposit Handling ----------
 let selectedAvatarChoice = 'JP'; // preset or base64 string
+let pendingFirstDepositAmount = null;
+
+// Stubbed/placeholder function for handling first deposit and profile registration prompt
+export async function handleFirstDeposit(amount) {
+  if (!State.profile.registered && !State.profile.hasDeposited) {
+    pendingFirstDepositAmount = amount;
+    openProfileModal(false);
+    return { ok: false, registeredPrompted: true, error: 'Registration required for first deposit' };
+  }
+  const res = await Wallet.deposit(amount);
+  if (res.ok) {
+    State.profile.hasDeposited = true;
+  }
+  return res;
+}
 
 function openProfileModal(isEditMode = false) {
   const modal = document.getElementById('profile-modal');
@@ -115,6 +130,20 @@ function bindProfileModalEvents() {
 
     document.getElementById('profile-modal').classList.add('hidden');
     refreshMenu();
+
+    if (pendingFirstDepositAmount !== null) {
+      const amt = pendingFirstDepositAmount;
+      pendingFirstDepositAmount = null;
+      const depRes = await Wallet.deposit(amt);
+      if (depRes.ok) {
+        State.profile.hasDeposited = true;
+        alertMsg(`First deposit of DB$${amt.toFixed(2)} successful!`);
+      } else {
+        alertMsg(depRes.error || 'Deposit failed');
+      }
+      refreshWallet();
+      refreshMenu();
+    }
   });
 }
 
@@ -266,9 +295,9 @@ function refreshWallet() {
     b.innerHTML = `<span class="dep-amt">+ DB$${amt.toFixed(2)}</span><span class="dep-fee">+ DB$${fee.toFixed(2)} fee</span>`;
     b.addEventListener('click', async () => {
       b.disabled = true;
-      const res = await Wallet.deposit(amt);
+      const res = await handleFirstDeposit(amt);
       b.disabled = false;
-      if (!res.ok) alertMsg(res.error);
+      if (!res.ok && !res.registeredPrompted) alertMsg(res.error);
       refreshWallet();
     });
     dg.appendChild(b);
@@ -588,14 +617,10 @@ function alertMsg(msg) {
 async function boot() {
   bindProfileModalEvents();
   await initRapier().catch(console.error);
-  const authenticated = await Auth.initSession();
+  await Auth.initSession();
 
   refreshMenu();
   show('menu');
-
-  if (!authenticated) {
-    openProfileModal(false);
-  }
 }
 
 window.addEventListener('resize', () => { if (renderer) renderer.resize(); });

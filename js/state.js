@@ -32,6 +32,8 @@ export const State = {
     id: '',
     name: 'Player',
     avatar: 'JP', // initials or base64 data URI
+    registered: false,
+    hasDeposited: false,
   },
   opponent: {
     name: 'Breaker AI',
@@ -128,8 +130,12 @@ export const Auth = {
     State.profile.id = prof.id;
     State.profile.name = prof.username;
     State.profile.avatar = prof.avatar;
+    State.profile.registered = true;
     State.wallet.balance = prof.balance;
     State.wallet.history = prof.history || [];
+    if (State.wallet.history.some((h) => h.type === 'Deposit')) {
+      State.profile.hasDeposited = true;
+    }
   },
 };
 
