@@ -94,41 +94,32 @@ export class Renderer {
   }
 
   _computeTableRect() {
-    const W = TABLE.width; // 88 inches
-    const H = TABLE.height; // 44 inches (2:1 aspect ratio)
-    const outerW = TABLE.overallWidth || 98.0; // 98 inches outer frame
-    const outerH = TABLE.overallHeight || 54.0; // 54 inches outer frame
-
+    // The canvas element is now directly positioned inside .felt-surface container
+    // representing the 88" x 44" playing area (2:1 ratio).
     const availW = this.cssW;
     const availH = this.cssH;
 
-    const margin = Math.max(8, Math.min(availW, availH) * 0.025);
-    const maxW = availW - margin * 2;
-    const maxH = availH - margin * 2;
+    // Maintain 2:1 aspect ratio inside the felt-surface container
+    let playW = availW;
+    let playH = availW / 2;
+    if (playH > availH) {
+      playH = availH;
+      playW = availH * 2;
+    }
 
-    const scale = Math.min(maxW / outerW, maxH / outerH);
-    const drawFrameW = outerW * scale;
-    const drawFrameH = outerH * scale;
+    const offsetX = (availW - playW) / 2;
+    const offsetY = (availH - playH) / 2;
 
-    this.scale = scale;
-    this.tableRect = {
-      x: (availW - drawFrameW) / 2,
-      y: (availH - drawFrameH) / 2,
-      w: drawFrameW,
-      h: drawFrameH,
-    };
-
-    const insetX = this.tableRect.w * 0.082; // 8.2% rail margin
-    const insetY = this.tableRect.h * 0.138; // 13.8% rail margin
+    this.scale = playW / TABLE.width;
     this.playfieldRect = {
-      x: this.tableRect.x + insetX,
-      y: this.tableRect.y + insetY,
-      w: this.tableRect.w - insetX * 2,
-      h: this.tableRect.h - insetY * 2,
+      x: offsetX,
+      y: offsetY,
+      w: playW,
+      h: playH,
     };
 
-    // Legacy playOffset / playW / playH for compatibility
-    this.playOffset = { x: insetX, y: insetY };
+    this.tableRect = { ...this.playfieldRect };
+    this.playOffset = { x: 0, y: 0 };
     this.playW = this.playfieldRect.w;
     this.playH = this.playfieldRect.h;
   }
@@ -172,21 +163,7 @@ export class Renderer {
     const px = this.playfieldRect.x;
     const py = this.playfieldRect.y;
 
-    // 1. Table Background Image (table_futuristic.jpg) or fallback
-    if (this.tableFuturisticImg && this.tableFuturisticImg.complete && this.tableFuturisticImg.naturalWidth > 0) {
-      ctx.drawImage(this.tableFuturisticImg, this.tableRect.x, this.tableRect.y, this.tableRect.w, this.tableRect.h);
-    } else if (this.feltImg && this.feltImg.complete && this.feltImg.naturalWidth > 0) {
-      ctx.drawImage(this.feltImg, px, py, this.playfieldRect.w, this.playfieldRect.h);
-      if (this.frameImg && this.frameImg.complete && this.frameImg.naturalWidth > 0) {
-        ctx.drawImage(this.frameImg, this.tableRect.x, this.tableRect.y, this.tableRect.w, this.tableRect.h);
-      }
-    } else {
-      ctx.fillStyle = '#E8D5B5'; // sand felt fallback
-      ctx.fillRect(px, py, this.playfieldRect.w, this.playfieldRect.h);
-      ctx.lineWidth = 12 * this.scale;
-      ctx.strokeStyle = '#2a2d32';
-      ctx.strokeRect(this.tableRect.x, this.tableRect.y, this.tableRect.w, this.tableRect.h);
-    }
+    // 1. Transparent table background layer (allowing HTML/CSS felt-surface gradient & oak frame to show through)
 
     // 2. Render Dropping Balls animation
     this.renderDroppingBalls(ctx, dt);
