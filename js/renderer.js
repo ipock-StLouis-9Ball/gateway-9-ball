@@ -1,7 +1,7 @@
 // ============================================================================
 // renderer.js — 2D Canvas Pool Table Renderer Engine.
 // Renders 2D table graphics directly onto HTML5 2D Canvas:
-// 1. Table Background Layer: './assets/table_futuristic.jpg'
+// 1. Cushion Nose Slope Shading & Felt Details Layer
 // 2. Dropping Balls Animation Layer
 // 3. Ball Shadows Layer: './assets/shadow.svg'
 // 4. Ball Sprites Layer: './assets/ball-0.svg' .. './assets/ball-9.svg'
@@ -68,11 +68,7 @@ export class Renderer {
       return img;
     };
 
-    this.tableFuturisticImg = loadImg(`${ASSET_DIR}/table_futuristic.jpg`);
-    this.feltImg = loadImg(`${ASSET_DIR}/felt.svg`);
-    this.frameImg = loadImg(`${ASSET_DIR}/pool_table_frame.svg`);
     this.shadowImg = loadImg(`${ASSET_DIR}/shadow.svg`);
-    this.cushionShadowImg = loadImg(`${ASSET_DIR}/cushion-shadow.svg`);
 
     this.cueImgs = {};
     for (const [id, cueObj] of Object.entries(CUE_STICKS)) {
@@ -446,22 +442,56 @@ export class Renderer {
   }
 
   drawTableFelt(ctx) {
-    // Draws head spot and foot spot on the felt surface
+    const pf = this.playfieldRect;
+
+    ctx.save();
+
+    // 1. Cushion Nose Slope Depth Shading (Inner Drop Shadow on Felt Edges)
+    const shadowWidth = Math.max(4, pf.w * 0.015);
+
+    // Top Cushion Slope Shadow
+    const topGrad = ctx.createLinearGradient(0, pf.y, 0, pf.y + shadowWidth);
+    topGrad.addColorStop(0, 'rgba(15, 10, 5, 0.45)');
+    topGrad.addColorStop(1, 'rgba(15, 10, 5, 0)');
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(pf.x, pf.y, pf.w, shadowWidth);
+
+    // Bottom Cushion Slope Shadow
+    const botGrad = ctx.createLinearGradient(0, pf.y + pf.h, 0, pf.y + pf.h - shadowWidth);
+    botGrad.addColorStop(0, 'rgba(15, 10, 5, 0.45)');
+    botGrad.addColorStop(1, 'rgba(15, 10, 5, 0)');
+    ctx.fillStyle = botGrad;
+    ctx.fillRect(pf.x, pf.y + pf.h - shadowWidth, pf.w, shadowWidth);
+
+    // Left Cushion Slope Shadow
+    const leftGrad = ctx.createLinearGradient(pf.x, 0, pf.x + shadowWidth, 0);
+    leftGrad.addColorStop(0, 'rgba(15, 10, 5, 0.45)');
+    leftGrad.addColorStop(1, 'rgba(15, 10, 5, 0)');
+    ctx.fillStyle = leftGrad;
+    ctx.fillRect(pf.x, pf.y, shadowWidth, pf.h);
+
+    // Right Cushion Slope Shadow
+    const rightGrad = ctx.createLinearGradient(pf.x + pf.w, 0, pf.x + pf.w - shadowWidth, 0);
+    rightGrad.addColorStop(0, 'rgba(15, 10, 5, 0.45)');
+    rightGrad.addColorStop(1, 'rgba(15, 10, 5, 0)');
+    ctx.fillStyle = rightGrad;
+    ctx.fillRect(pf.x + pf.w - shadowWidth, pf.y, shadowWidth, pf.h);
+
+    // 2. Head spot and Foot spot
     const headPx = this.toPx(25.0, 25.0);
     const footPx = this.toPx(75.0, 25.0);
     const spotR = Math.max(2, this.ballRadiusPx() * 0.18);
 
-    ctx.save();
     // Head Spot
     ctx.beginPath();
     ctx.arc(headPx.x, headPx.y, spotR, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(20, 20, 20, 0.6)';
+    ctx.fillStyle = 'rgba(20, 15, 10, 0.65)';
     ctx.fill();
 
     // Foot Spot
     ctx.beginPath();
     ctx.arc(footPx.x, footPx.y, spotR, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(20, 20, 20, 0.6)';
+    ctx.fillStyle = 'rgba(20, 15, 10, 0.65)';
     ctx.fill();
 
     // Subtle Head String line
@@ -470,7 +500,7 @@ export class Renderer {
     ctx.beginPath();
     ctx.moveTo(pTopHead.x, pTopHead.y);
     ctx.lineTo(pBotHead.x, pBotHead.y);
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
+    ctx.strokeStyle = 'rgba(20, 15, 10, 0.12)';
     ctx.lineWidth = 1;
     ctx.stroke();
 

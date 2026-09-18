@@ -46,12 +46,12 @@ export function getPocketBlueprint(W = TABLE.width, H = TABLE.height) {
     }));
   }
   return [
-    { id: 'bottom_left', type: 'corner', x: -0.4, y: -0.4, trigger_radius: 2.5, index: 0 },
-    { id: 'bottom_right', type: 'corner', x: 88.4, y: -0.4, trigger_radius: 2.5, index: 1 },
-    { id: 'top_left', type: 'corner', x: -0.4, y: 44.4, trigger_radius: 2.5, index: 2 },
-    { id: 'top_right', type: 'corner', x: 88.4, y: 44.4, trigger_radius: 2.5, index: 3 },
-    { id: 'bottom_side', type: 'side', x: 44.0, y: -0.6, trigger_radius: 2.2, index: 4 },
-    { id: 'top_side', type: 'side', x: 44.0, y: 44.6, trigger_radius: 2.2, index: 5 },
+    { id: 'bottom_left', type: 'corner', x: 0.0, y: 0.0, trigger_radius: 2.8, index: 0 },
+    { id: 'bottom_right', type: 'corner', x: 100.0, y: 0.0, trigger_radius: 2.8, index: 1 },
+    { id: 'top_left', type: 'corner', x: 0.0, y: 50.0, trigger_radius: 2.8, index: 2 },
+    { id: 'top_right', type: 'corner', x: 100.0, y: 50.0, trigger_radius: 2.8, index: 3 },
+    { id: 'bottom_side', type: 'side', x: 50.0, y: 0.0, trigger_radius: 2.5, index: 4 },
+    { id: 'top_side', type: 'side', x: 50.0, y: 50.0, trigger_radius: 2.5, index: 5 },
   ];
 }
 
