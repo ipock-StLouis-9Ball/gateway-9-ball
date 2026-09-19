@@ -191,6 +191,12 @@ export class Game {
     this.pushOutAvailable = false;
     this.state = 'REPLAYING';
     this.message = '';
+
+    // Trigger cue stick strike animation on renderer
+    if (this.renderer && typeof this.renderer.triggerStrikeAnimation === 'function') {
+      this.renderer.triggerStrikeAnimation(this.aimAngle, this.power, cue.x, cue.y);
+    }
+
     this.renderer.aim = null;
     this._pushHud();
 
