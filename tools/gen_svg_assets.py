@@ -229,29 +229,6 @@ def gen_frame_svg():
   <use href="#ruby-diamond" x="5800" y="2180"/>
 </svg>"""
 
-def gen_ui_sidebar_svg():
-    return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 1000" preserveAspectRatio="none" width="100%" height="100%">
-  <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#101a2e" />
-      <stop offset="50%" stop-color="#0b1220" />
-      <stop offset="100%" stop-color="#060911" />
-    </linearGradient>
-    <linearGradient id="goldBorder" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#e8b75a" stop-opacity="0.8" />
-      <stop offset="30%" stop-color="#ffe8a8" stop-opacity="0.95" />
-      <stop offset="70%" stop-color="#c4933a" stop-opacity="0.8" />
-      <stop offset="100%" stop-color="#7a5218" stop-opacity="0.6" />
-    </linearGradient>
-    <radialGradient id="sideGlow" cx="0%" cy="50%" r="80%">
-      <stop offset="0%" stop-color="#e8b75a" stop-opacity="0.08" />
-      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
-    </radialGradient>
-  </defs>
-  <rect width="200" height="1000" fill="url(#bgGrad)" />
-  <rect width="200" height="1000" fill="url(#sideGlow)" />
-  <rect x="0" y="0" width="3" height="1000" fill="url(#goldBorder)" />
-</svg>"""
 
 def gen_ball_template_svg():
     return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="100%" height="100%">
@@ -742,14 +719,13 @@ def build_all():
     files = {
         "felt.svg": gen_felt_svg(),
         "rail-wood.svg": gen_rail_wood_svg(),
-        "pocket-well.svg": gen_pocket_well_svg(),
-        "pocket-plate.svg": gen_pocket_plate_svg(),
+        
         "ball-shadow.svg": gen_ball_shadow_svg(),
         "cushion-shadow.svg": gen_cushion_shadow_svg(),
         "shadow.svg": gen_shadow_svg(),
-        "frame.svg": gen_frame_svg(),
-        "pool_table_frame.svg": gen_frame_svg(),
-        "ui_sidebar.svg": gen_ui_sidebar_svg(),
+    
+        
+        "uisidebar.png": gen_uisidebar.png(),
         "ball_template.svg": gen_ball_template_svg(),
     }
     for b in range(10):
