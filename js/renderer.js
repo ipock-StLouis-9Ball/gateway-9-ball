@@ -47,6 +47,7 @@ export class Renderer {
     this.cssW = 0;
     this.cssH = 0;
     this.aim = null;
+    this.strikeAnim = null;
     this.lastTime = performance.now();
 
     this._initAssets();
@@ -171,6 +172,17 @@ export class Renderer {
     return (TABLE.ballRadius / TABLE.width) * this.playfieldRect.w;
   }
 
+  triggerStrikeAnimation(angle, power, cueX, cueY) {
+    this.strikeAnim = {
+      angle,
+      power,
+      x: cueX,
+      y: cueY,
+      progress: 0,
+      duration: 0.12 // 120ms strike forward
+    };
+  }
+
   draw(balls) {
     if (!this.ctx) return;
     const ctx = this.ctx;
@@ -241,6 +253,9 @@ export class Renderer {
 
     // 5. Aim Overlay (cue stick, aiming vector, ghost ball, target lines)
     this._drawAim(ctx, balls);
+
+    // 6. Strike Animation Layer (when shot is released)
+    this._drawStrike(ctx, dt);
 
     ctx.restore();
   }
@@ -347,7 +362,10 @@ export class Renderer {
     const equippedCueId = this.settings ? this.settings.cue : 'maple';
     const cueImg = this.cueImgs ? this.cueImgs[equippedCueId] : null;
 
-    const gap = rp * 1.15;
+    // Drawn 6 pool ball diameters (12 ball radii) away from cue ball at all times while aiming
+    const baseGap = rp * 12;
+    const pullBack = rp * 3 * (this.aim.power || 0);
+    const gap = baseGap + pullBack;
     const sx = p.x - dir.x * gap;
     const sy = p.y - dir.y * gap;
 
@@ -442,6 +460,67 @@ export class Renderer {
           ctx.stroke();
         }
       }
+    }
+
+    ctx.restore();
+  }
+
+  _drawStrike(ctx, dt) {
+    if (!this.strikeAnim) return;
+
+    this.strikeAnim.progress += dt / this.strikeAnim.duration;
+    if (this.strikeAnim.progress >= 1.0) {
+      this.strikeAnim = null;
+      return;
+    }
+
+    const rp = this.ballRadiusPx();
+    const p = this.toPx(this.strikeAnim.x, this.strikeAnim.y);
+    const ang = this.strikeAnim.angle;
+    const dir = { x: Math.cos(ang), y: Math.sin(ang) };
+
+    const t = Math.min(1.0, this.strikeAnim.progress);
+    // Smooth ease-out move forward from 12*rp down to cue ball contact (rp * 1.0)
+    const startGap = rp * 12 + rp * 3 * (this.strikeAnim.power || 0);
+    const endGap = rp * 1.0;
+    const gap = startGap + (endGap - startGap) * Math.sin(t * Math.PI * 0.5);
+
+    const sx = p.x - dir.x * gap;
+    const sy = p.y - dir.y * gap;
+
+    const equippedCueId = this.settings ? this.settings.cue : 'maple';
+    const cueImg = this.cueImgs ? this.cueImgs[equippedCueId] : null;
+
+    ctx.save();
+    ctx.globalAlpha = 1.0 - t * 0.3; // Slight fade at the end of strike
+
+    if (cueImg && cueImg.complete && cueImg.naturalWidth > 0) {
+      const stickLen = rp * 14;
+      const stickHeight = rp * 0.875;
+
+      ctx.save();
+      ctx.translate(sx, sy);
+      ctx.rotate(ang + Math.PI);
+      ctx.shadowColor = 'rgba(0,0,0,0.4)';
+      ctx.shadowBlur = 6;
+      ctx.shadowOffsetY = 3;
+      ctx.drawImage(cueImg, 0, -stickHeight / 2, stickLen, stickHeight);
+      ctx.restore();
+    } else {
+      const stickLen = rp * 11;
+      const bx = sx - dir.x * stickLen;
+      const by = sy - dir.y * stickLen;
+      const sg = ctx.createLinearGradient(sx, sy, bx, by);
+      sg.addColorStop(0, '#e8e2d0');
+      sg.addColorStop(0.1, '#c98a4a');
+      sg.addColorStop(1, '#5a2f18');
+      ctx.strokeStyle = sg;
+      ctx.lineWidth = rp * 0.5;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
     }
 
     ctx.restore();
