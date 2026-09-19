@@ -1,131 +1,95 @@
-<svg width="450" height="800" viewBox="0 0 450 800" xmlns="http://www.w3.org/2000/svg">
-  <!-- Definitions for gradients and textures -->
+<svg width="550" height="1050" viewBox="0 0 550 1050" xmlns="http://www.w3.org/2000/svg">
+  <!-- 
+    WPA REGULATION-COMPLIANT POOL TABLE SCHEMATIC
+    
+    Dimensions are based on a standard 9-foot table (100" x 50" playing surface).
+    The SVG is scaled to 1000px x 500px for the playing surface, with 25px rails.
+    Total SVG canvas: 550px x 1050px.
+    
+    All colors are flat (no gradients or textures).
+  -->
+
+  <!-- Definitions for colors -->
   <defs>
-    <!-- Procedural Vector Wood Grain Pattern (CORS-Safe) -->
-    <!-- This creates a seamless, complex wood texture using SVG filters -->
-    <filter id="noiseFilter">
-      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="5" stitchTiles="stitch"/>
-    </filter>
-    <pattern id="proceduralWood" patternUnits="userSpaceOnUse" width="100" height="100">
-      <!-- Base wood color -->
-      <rect width="100" height="100" fill="#d4a76a"/>
-      <!-- Apply noise filter to create grain texture -->
-      <rect width="100" height="100" filter="url(#noiseFilter)" opacity="0.4" blend-mode="soft-light"/>
-      <!-- Add subtle grain lines -->
-      <path d="M 0 20 Q 25 15 50 20 T 100 20" stroke="#b58950" fill="none" stroke-width="0.5"/>
-      <path d="M 0 50 Q 25 45 50 50 T 100 50" stroke="#b58950" fill="none" stroke-width="0.5"/>
-      <path d="M 0 80 Q 25 75 50 80 T 100 80" stroke="#b58950" fill="none" stroke-width="0.5"/>
-    </pattern>
-    
-    <!-- Felt Color (Tan) -->
-    <linearGradient id="feltGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#d2b48c" />
-      <stop offset="100%" stop-color="#c19a6b" />
-    </linearGradient>
-    
-    <!-- Metal Corner/Pocket Finish -->
-    <linearGradient id="metalGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#d1d5db" />
-      <stop offset="50%" stop-color="#f3f4f6" />
-      <stop offset="100%" stop-color="#d1d5db" />
-    </linearGradient>
-    
-    <!-- Ruby Red Accent Color -->
-    <radialGradient id="rubyRed" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-      <stop offset="0%" stop-color="#ef4444" />
-      <stop offset="100%" stop-color="#991b1b" />
-    </radialGradient>
+    <style type="text/css">
+      .felt { fill: #C19A6B; } /* Flat Tan Felt */
+      .rail { fill: #8B4513; } /* Flat Brown Wood Color */
+      .metal { fill: #B0B0B0; } /* Flat Gray Metal */
+      .pocket { fill: #1A1A1A; } /* Flat Black Pocket */
+      .sight { fill: #FFFFFF; } /* Flat White Sights */
+    </style>
   </defs>
 
   <!-- Background -->
-  <rect width="100%" height="100%" fill="#1a1a1a" />
+  <rect width="100%" height="100%" fill="#222222" />
 
-  <!-- Pool Table Group -->
+  <!-- Main Table Group (Centered) -->
   <g transform="translate(25, 25)">
     
-    <!-- Outer Table Frame (Wood) -->
-    <rect x="0" y="0" width="400" height="750" rx="15" ry="15" fill="url(#proceduralWood)" />
+    <!-- 1. Outer Table Frame (Total width: 500px, Total height: 1000px) -->
+    <rect x="0" y="0" width="500" height="1000" rx="15" ry="15" class="rail" />
 
-    <!-- Inner Felt Area (Corrected to 2:1 ratio: 340x680) -->
-    <rect x="30" y="30" width="340" height="680" fill="url(#feltGradient)" />
+    <!-- 2. Inner Playing Surface (Exact 2:1 Ratio: 450px x 900px) -->
+    <rect x="25" y="25" width="450" height="900" class="felt" />
 
-    <!-- Cushion Rails (Wood) -->
-    <g fill="url(#proceduralWood)">
+    <!-- 3. Cushion Rails (Complex Paths for WPA Pocket Geometry) -->
+    <g class="rail">
       <!-- Top Rail -->
-      <path d="M 30 30 L 370 30 L 355 60 L 95 60 Z" />
-      <!-- Bottom Rail (Adjusted for new felt height) -->
-      <path d="M 30 710 L 370 710 L 355 680 L 95 680 Z" />
+      <path d="M 25 25 L 475 25 L 450 75 L 75 75 Z" />
+      <!-- Bottom Rail -->
+      <path d="M 25 975 L 475 975 L 450 925 L 75 925 Z" />
       <!-- Left Rail -->
-      <path d="M 30 30 L 60 95 L 60 645 L 30 710 Z" />
+      <path d="M 25 25 L 75 75 L 75 925 L 25 975 Z" />
       <!-- Right Rail -->
-      <path d="M 370 30 L 340 95 L 340 645 L 370 710 Z" />
+      <path d="M 475 25 L 450 75 L 450 925 L 475 975 Z" />
     </g>
 
-    <!-- Pocket Liners (Metal) -->
-    <g fill="url(#metalGradient)">
+    <!-- 4. Pocket Liners (Metal Bezels) -->
+    <g class="metal">
       <!-- Top Left -->
-      <path d="M 30 30 A 20 20 0 0 0 10 50 L 30 50 Z" transform="rotate(-45 30 30)" />
+      <path d="M 75 75 A 20 20 0 0 0 35 35 L 75 35 Z" transform="rotate(-45 75 75)" />
       <!-- Top Right -->
-      <path d="M 370 30 A 20 20 0 0 1 390 50 L 370 50 Z" transform="rotate(45 370 30)" />
-      <!-- Bottom Left (Adjusted for new felt height) -->
-      <path d="M 30 710 A 20 20 0 0 1 10 690 L 30 690 Z" transform="rotate(45 30 710)" />
-      <!-- Bottom Right (Adjusted for new felt height) -->
-      <path d="M 370 710 A 20 20 0 0 0 390 690 L 370 690 Z" transform="rotate(-45 370 710)" />
+      <path d="M 425 75 A 20 20 0 0 1 465 35 L 425 35 Z" transform="rotate(45 425 75)" />
+      <!-- Bottom Left -->
+      <path d="M 75 925 A 20 20 0 0 1 35 965 L 75 965 Z" transform="rotate(45 75 925)" />
+      <!-- Bottom Right -->
+      <path d="M 425 925 A 20 20 0 0 0 465 965 L 425 965 Z" transform="rotate(-45 425 925)" />
       <!-- Side Left -->
-      <path d="M 30 370 A 20 20 0 0 0 10 370 L 30 370 Z" />
+      <path d="M 25 500 A 20 20 0 0 0 5 500 L 25 500 Z" />
       <!-- Side Right -->
-      <path d="M 370 370 A 20 20 0 0 1 390 370 L 370 370 Z" />
+      <path d="M 475 500 A 20 20 0 0 1 495 500 L 475 500 Z" />
     </g>
 
-    <!-- Pocket Openings (Dark) -->
-    <g fill="#000">
-      <!-- Top Left -->
-      <circle cx="30" cy="30" r="18" />
-      <!-- Top Right -->
-      <circle cx="370" cy="30" r="18" />
-      <!-- Bottom Left (Adjusted) -->
-      <circle cx="30" cy="710" r="18" />
-      <!-- Bottom Right (Adjusted) -->
-      <circle cx="370" cy="710" r="18" />
-      <!-- Side Left -->
-      <circle cx="30" cy="370" r="18" />
-      <!-- Side Right -->
-      <circle cx="370" cy="370" r="18" />
+    <!-- 5. Pocket Openings (Dark Circles) -->
+    <g class="pocket">
+      <!-- Corner Pockets (Radius: 22.5px) -->
+      <circle cx="25" cy="25" r="22.5" />
+      <circle cx="475" cy="25" r="22.5" />
+      <circle cx="25" cy="975" r="22.5" />
+      <circle cx="475" cy="975" r="22.5" />
+      <!-- Side Pockets (Radius: 25px) -->
+      <circle cx="25" cy="500" r="25" />
+      <circle cx="475" cy="500" r="25" />
     </g>
 
-    <!-- Corner Metal Protectors -->
-    <g fill="url(#metalGradient)">
-      <path d="M 0 0 L 30 0 A 30 30 0 0 0 0 30 Z" />
-      <path d="M 400 0 L 370 0 A 30 30 0 0 1 400 30 Z" />
-      <!-- Bottom Protectors (Adjusted) -->
-      <path d="M 0 750 L 30 750 A 30 30 0 0 1 0 720 Z" />
-      <path d="M 400 750 L 370 750 A 30 30 0 0 0 400 720 Z" />
-    </g>
-
-    <!-- Rail Sights (Ruby Red Dots) -->
-    <g fill="url(#rubyRed)">
-      <!-- Top Rail -->
-      <circle cx="100" cy="15" r="4" />
-      <circle cx="200" cy="15" r="4" />
-      <circle cx="300" cy="15" r="4" />
-      <!-- Bottom Rail (Adjusted for new height) -->
-      <circle cx="100" cy="725" r="4" />
-      <circle cx="200" cy="725" r="4" />
-      <circle cx="300" cy="725" r="4" />
-      <!-- Left Rail (Adjusted for new height) -->
-      <circle cx="15" cy="100" r="4" />
-      <circle cx="15" cy="200" r="4" />
-      <circle cx="15" cy="300" r="4" />
-      <circle cx="15" cy="440" r="4" />
-      <circle cx="15" cy="540" r="4" />
-      <circle cx="15" cy="640" r="4" />
-      <!-- Right Rail (Adjusted for new height) -->
-      <circle cx="385" cy="100" r="4" />
-      <circle cx="385" cy="200" r="4" />
-      <circle cx="385" cy="300" r="4" />
-      <circle cx="385" cy="440" r="4" />
-      <circle cx="385" cy="540" r="4" />
-      <circle cx="385" cy="640" r="4" />
+    <!-- 6. Rail Sights (White Diamonds) -->
+    <g class="sight">
+      <!-- Top Rail (Placed at 1/4, 1/2, 3/4 of the playing surface width) -->
+      <rect x="137.5" y="10" width="5" height="10" transform="rotate(45 137.5 10)" />
+      <rect x="250" y="10" width="5" height="10" transform="rotate(45 250 10)" />
+      <rect x="362.5" y="10" width="5" height="10" transform="rotate(45 362.5 10)" />
+      <!-- Bottom Rail -->
+      <rect x="137.5" y="1030" width="5" height="10" transform="rotate(45 137.5 1030)" />
+      <rect x="250" y="1030" width="5" height="10" transform="rotate(45 250 1030)" />
+      <rect x="362.5" y="1030" width="5" height="10" transform="rotate(45 362.5 1030)" />
+      <!-- Left Rail (Placed at 1/4, 1/2, 3/4 of the playing surface height) -->
+      <rect x="10" y="237.5" width="5" height="10" transform="rotate(45 10 237.5)" />
+      <rect x="10" y="500" width="5" height="10" transform="rotate(45 10 500)" />
+      <rect x="10" y="762.5" width="5" height="10" transform="rotate(45 10 762.5)" />
+      <!-- Right Rail -->
+      <rect x="535" y="237.5" width="5" height="10" transform="rotate(45 535 237.5)" />
+      <rect x="535" y="500" width="5" height="10" transform="rotate(45 535 500)" />
+      <rect x="535" y="762.5" width="5" height="10" transform="rotate(45 535 762.5)" />
     </g>
 
   </g>
