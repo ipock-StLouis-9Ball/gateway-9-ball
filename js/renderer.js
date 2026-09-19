@@ -195,6 +195,14 @@ export class Renderer {
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, this.cssW, this.cssH);
 
+    // 0. Render Table Graphic Layer (full canvas)
+    if (this.tableFuturisticImg && this.tableFuturisticImg.complete && this.tableFuturisticImg.naturalWidth > 0) {
+      ctx.drawImage(this.tableFuturisticImg, 0, 0, this.cssW, this.cssH);
+    } else {
+      ctx.fillStyle = '#0a1d12';
+      ctx.fillRect(0, 0, this.cssW, this.cssH);
+    }
+
     // 1. Felt details (head spot, foot spot, head string) and cushion drop shadows
     this.drawTableFelt(ctx);
 
