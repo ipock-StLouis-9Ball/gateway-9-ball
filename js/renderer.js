@@ -1,7 +1,7 @@
 // ============================================================================
 // renderer.js — 2D Canvas Pool Table Renderer Engine.
 // Renders 2D table graphics directly onto HTML5 2D Canvas:
-// 1. Table Background Layer: './assets/table_futuristic.jpg'
+// 1. Table Background Layer: './assets/Ipocks-table.png'
 // 2. Dropping Balls Animation Layer
 // 3. Ball Shadows Layer: './assets/shadow.svg'
 // 4. Ball Sprites Layer: './assets/ball-0.svg' .. './assets/ball-9.svg'
@@ -69,7 +69,7 @@ export class Renderer {
       return img;
     };
 
-    this.tableFuturisticImg = loadImg(`${ASSET_DIR}/table_futuristic.jpg`);
+    this.tableImg = loadImg(`${ASSET_DIR}/Ipocks-table.png`);
     this.feltImg = loadImg(`${ASSET_DIR}/felt.svg`);
     this.frameImg = loadImg(`${ASSET_DIR}/pool_table_frame.svg`);
     this.shadowImg = loadImg(`${ASSET_DIR}/shadow.svg`);
@@ -126,33 +126,44 @@ export class Renderer {
   }
 
   _computeTableRect() {
-    const W = TABLE.width; // 100 inches
-    const H = TABLE.height; // 50 inches (2:1 aspect ratio)
+    // 768x1376 image table dimensions with 80px side/end rails and 608x1216 inner felt surface
+    const imgW = TABLE.imageWidth || 768.0;
+    const imgH = TABLE.imageHeight || 1376.0;
+    const railPx = TABLE.railPx || 80.0;
+    const innerW = TABLE.innerPxW || 608.0;
+    const innerH = TABLE.innerPxH || 1216.0;
+
     const availW = Math.max(1, this.cssW);
     const availH = Math.max(1, this.cssH);
-    const margin = Math.max(2, Math.min(availW, availH) * 0.005);
-    const maxW = Math.max(1, availW - margin * 2);
-    const maxH = Math.max(1, availH - margin * 2);
 
-    const scale = Math.min(maxW / W, maxH / H);
-    const playW = W * scale;
-    const playH = H * scale;
-    const offsetX = (availW - playW) / 2;
-    const offsetY = (availH - playH) / 2;
+    // Scale image to fit within canvas while maintaining native aspect ratio
+    const scale = Math.min(availW / imgW, availH / imgH);
+    const renderedTableW = imgW * scale;
+    const renderedTableH = imgH * scale;
+    const tableX = (availW - renderedTableW) / 2;
+    const tableY = (availH - renderedTableH) / 2;
+
+    this.tableRect = { x: tableX, y: tableY, w: renderedTableW, h: renderedTableH };
+
+    // Calculate inner playing surface rect 80px inward from image edges
+    const playX = tableX + (railPx * scale);
+    const playY = tableY + (railPx * scale);
+    const playW = innerW * scale;
+    const playH = innerH * scale;
 
     this.scale = scale;
     this.playW = playW;
     this.playH = playH;
-    this.playfieldRect = { x: offsetX, y: offsetY, w: playW, h: playH };
+    this.playfieldRect = { x: playX, y: playY, w: playW, h: playH };
     this.playOffset = { x: 0, y: 0 };
-    this.tableRect = { x: offsetX, y: offsetY, w: playW, h: playH };
   }
 
   coordTransform(x, y) {
     const pf = this.playfieldRect;
+    // Maps physics space (X: 0..100 long axis, Y: 0..50 short axis) to vertical canvas (pf.w: 608px short, pf.h: 1216px long)
     return {
-      x: pf.x + (x / TABLE.width) * pf.w,
-      y: pf.y + pf.h - (y / TABLE.height) * pf.h,
+      x: pf.x + (y / TABLE.height) * pf.w,
+      y: pf.y + (x / TABLE.width) * pf.h,
     };
   }
 
@@ -162,14 +173,16 @@ export class Renderer {
 
   pxToIn(px, py) {
     const pf = this.playfieldRect;
+    const normScreenX = Math.max(0, Math.min(1, (px - pf.x) / pf.w));
+    const normScreenY = Math.max(0, Math.min(1, (py - pf.y) / pf.h));
     return {
-      x: ((px - pf.x) / pf.w) * TABLE.width,
-      y: ((pf.y + pf.h - py) / pf.h) * TABLE.height,
+      x: normScreenY * TABLE.width,
+      y: normScreenX * TABLE.height,
     };
   }
 
   ballRadiusPx() {
-    return (TABLE.ballRadius / TABLE.width) * this.playfieldRect.w;
+    return (TABLE.ballRadius / TABLE.height) * this.playfieldRect.w;
   }
 
   triggerStrikeAnimation(angle, power, cueX, cueY) {
@@ -207,9 +220,10 @@ export class Renderer {
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, this.cssW, this.cssH);
 
-    // 0. Render Table Graphic Layer (full canvas)
-    if (this.tableFuturisticImg && this.tableFuturisticImg.complete && this.tableFuturisticImg.naturalWidth > 0) {
-      ctx.drawImage(this.tableFuturisticImg, 0, 0, this.cssW, this.cssH);
+    // 0. Render Table Graphic Layer centered inside tableRect
+    if (this.tableImg && this.tableImg.complete && this.tableImg.naturalWidth > 0) {
+      const tr = this.tableRect;
+      ctx.drawImage(this.tableImg, tr.x, tr.y, tr.w, tr.h);
     } else {
       ctx.fillStyle = '#0a1d12';
       ctx.fillRect(0, 0, this.cssW, this.cssH);
