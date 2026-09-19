@@ -57,27 +57,25 @@
     <!-- Power Meter Track -->
     <g transform="translate(65, 30)">
       
-      <!-- Solid White Base Track -->
-      <rect x="0" y="0" width="16" height="540" rx="8" ry="8" fill="#ffffff" />
+      <!-- Solid White Base Track with inner panel border -->
+      <rect x="0" y="0" width="16" height="540" rx="8" ry="8" fill="#ffffff" stroke="#161d24" stroke-width="2"/>
 
-      <!-- Cardinal Red Fill (Active Power - currently set to 25% height for visual preview) -->
-      <!-- JavaScript will target this ID to adjust the 'height' attribute dynamically -->
+      <!-- Cardinal Red Fill (Active Power - currently set to 135px / 25% height for visual preview) -->
       <rect id="svg-power-fill" x="0" y="0" width="16" height="135" rx="8" ry="8" fill="#c41e3a" />
 
-      <!-- Track Ticks (Cutouts showing the dark metal underneath) -->
-      <g stroke="#1b242c" stroke-width="3">
+      <!-- Track Ticks -->
+      <g stroke="#1b242c" stroke-width="2">
         <line x1="0" y1="135" x2="16" y2="135" />
         <line x1="0" y1="270" x2="16" y2="270" />
         <line x1="0" y1="405" x2="16" y2="405" />
       </g>
       
-      <!-- Text Labels -->
+      <!-- Corrected Text Labels Aligning Perfectly with Ticks -->
       <g fill="#ffffff" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="start">
-        <text x="35" y="10">25%</text>
-        <text x="35" y="139">50%</text>
-        <text x="35" y="274">75%</text>
-        <text x="35" y="409">75%</text>
-        <text x="35" y="540">100%</text>
+        <text x="30" y="140">25%</text>
+        <text x="30" y="275">50%</text>
+        <text x="30" y="410">75%</text>
+        <text x="30" y="540">100%</text>
       </g>
     </g>
 
@@ -88,10 +86,10 @@
     <g transform="translate(200, 10)">
       <rect x="0" y="0" width="120" height="130" rx="8" ry="8" fill="#1b252f" stroke="#3a4d5e" stroke-width="1.5" inset="true"/>
       
-      <!-- Wallet Button (Top Left, Half Size) -->
+      <!-- Wallet Button (Top Left, Corrected Padding and Legibility) -->
       <g id="wallet-player1" cursor="pointer">
-        <rect x="6" y="6" width="30" height="12" rx="3" ry="3" fill="#1a5c87" stroke="#00e5ff" stroke-width="0.5"/>
-        <text x="21" y="14.5" font-family="Arial, sans-serif" font-size="5.5" fill="#00e5ff" text-anchor="middle" letter-spacing="0.5">WALLET</text>
+        <rect x="8" y="8" width="44" height="16" rx="4" ry="4" fill="#1a5c87" stroke="#00e5ff" stroke-width="1"/>
+        <text x="30" y="19" font-family="Arial, sans-serif" font-size="7" fill="#00e5ff" text-anchor="middle" letter-spacing="0.5" font-weight="bold">WALLET</text>
       </g>
 
       <!-- User Icon -->
@@ -132,7 +130,7 @@
       </defs>
       <circle cx="60" cy="60" r="35" fill="url(#ballGradient)" stroke="#111" stroke-width="1" filter="url(#dropShadow)" />
       <!-- Red Dot -->
-      <circle cx="60" cy="60" r="5" fill="#ff3333" filter="url(#neonGlow)"/>
+      <circle cx="60" cy="60" r="5" fill="#c41e3a" filter="url(#neonGlow)"/>
       
       <!-- Directional Indicators -->
       <path d="M60 12 L 52 24 L 68 24 Z" fill="#5b778c" /> <!-- Up -->
@@ -145,10 +143,10 @@
     <g transform="translate(200, 460)">
       <rect x="0" y="0" width="120" height="130" rx="8" ry="8" fill="#1b252f" stroke="#3a4d5e" stroke-width="1.5" inset="true"/>
       
-      <!-- Wallet Button (Top Left, Half Size) -->
+      <!-- Wallet Button (Top Left, Corrected Padding and Legibility) -->
       <g id="wallet-player2" cursor="pointer">
-        <rect x="6" y="6" width="30" height="12" rx="3" ry="3" fill="#1a5c87" stroke="#00e5ff" stroke-width="0.5"/>
-        <text x="21" y="14.5" font-family="Arial, sans-serif" font-size="5.5" fill="#00e5ff" text-anchor="middle" letter-spacing="0.5">WALLET</text>
+        <rect x="8" y="8" width="44" height="16" rx="4" ry="4" fill="#1a5c87" stroke="#00e5ff" stroke-width="1"/>
+        <text x="30" y="19" font-family="Arial, sans-serif" font-size="7" fill="#00e5ff" text-anchor="middle" letter-spacing="0.5" font-weight="bold">WALLET</text>
       </g>
 
       <!-- User Icon -->
