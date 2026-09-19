@@ -72,25 +72,28 @@
     <!-- Power Meter Track -->
     <g transform="translate(65, 30)">
       
-      <!-- Solid White Base Track with element shadow to pop out -->
+      <!-- Solid White Base Track (Widened to 19.5px) -->
       <g filter="url(#elementShadow)">
-        <rect x="0" y="0" width="16" height="540" rx="8" ry="8" fill="#ffffff" stroke="#061224" stroke-width="1.5"/>
+        <rect x="0" y="0" width="19.5" height="540" rx="9.75" ry="9.75" fill="#ffffff" stroke="#061224" stroke-width="1.5"/>
+        
         <!-- Cardinal Red Fill (Resting as a small drop at 0%) -->
-        <rect id="svg-power-fill" x="0" y="0" width="16" height="16" rx="8" ry="8" fill="#c41e3a" />
+        <rect id="svg-power-fill" x="0" y="0" width="19.5" height="19.5" rx="9.75" ry="9.75" fill="#c41e3a" />
+        
         <!-- Track Ticks -->
         <g stroke="#061224" stroke-width="2">
-          <line x1="0" y1="135" x2="16" y2="135" />
-          <line x1="0" y1="270" x2="16" y2="270" />
-          <line x1="0" y1="405" x2="16" y2="405" />
+          <line x1="0" y1="135" x2="19.5" y2="135" />
+          <line x1="0" y1="270" x2="19.5" y2="270" />
+          <line x1="0" y1="405" x2="19.5" y2="405" />
         </g>
       </g>
       
-      <!-- Restored Neon Cyan Text Labels -->
-      <g fill="#00e5ff" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="start" filter="url(#neonGlow)">
-        <text x="30" y="140">25%</text>
-        <text x="30" y="275">50%</text>
-        <text x="30" y="410">75%</text>
-        <text x="30" y="540">100%</text>
+      <!-- Polished Silver Text Labels -->
+      <g fill="#e2e8f0" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="start" filter="url(#neonGlow)">
+        <text x="33" y="14">0%</text>
+        <text x="33" y="140">25%</text>
+        <text x="33" y="275">50%</text>
+        <text x="33" y="410">75%</text>
+        <text x="33" y="540">100%</text>
       </g>
     </g>
 
@@ -118,11 +121,11 @@
       <text x="60" y="117" font-family="Arial, sans-serif" font-size="12" fill="#ecf0f1" text-anchor="middle" font-weight="bold">PLAYER 1</text>
     </g>
 
-    <!-- Timer Section (Wrapped in elementShadow to pop out) -->
+    <!-- Timer Section (Polished Silver) -->
     <g transform="translate(200, 160)" filter="url(#elementShadow)">
       <circle cx="60" cy="30" r="32" fill="#061224" stroke="#1c4173" stroke-width="3" />
-      <circle cx="60" cy="30" r="30" fill="transparent" stroke="#00e5ff" stroke-width="2" filter="url(#neonGlow)" stroke-dasharray="140 48" stroke-dashoffset="0" />
-      <text x="60" y="36" font-family="Courier New, monospace" font-size="18" fill="#00e5ff" text-anchor="middle" font-weight="bold" filter="url(#neonGlow)">00:45</text>
+      <circle cx="60" cy="30" r="30" fill="transparent" stroke="#e2e8f0" stroke-width="2" filter="url(#neonGlow)" stroke-dasharray="140 48" stroke-dashoffset="0" />
+      <text x="60" y="36" font-family="Courier New, monospace" font-size="18" fill="#e2e8f0" text-anchor="middle" font-weight="bold" filter="url(#neonGlow)">00:45</text>
     </g>
 
     <!-- Pocketed Balls Tracker (Wrapped in elementShadow to pop out) -->
