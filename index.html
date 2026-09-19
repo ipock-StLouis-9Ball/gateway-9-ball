@@ -179,25 +179,99 @@
 
     <!-- UI HUD Sidebar -->
     <div id="ui-sidebar">
-      <svg viewBox="0 0 400 800">
-        <g id="left-panel">
-          <rect x="20" y="25" width="160" height="750" rx="16" fill="#202934"/>
-          <rect id="svg-power-fill" x="38" y="155" width="44" height="0" fill="#00d8f6"/>
+      <svg viewBox="0 0 400 800" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="powerGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#00d8f6"/>
+            <stop offset="60%" stop-color="#ffd700"/>
+            <stop offset="100%" stop-color="#ff2e4e"/>
+          </linearGradient>
+          <radialGradient id="cueBallGrad" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="70%" stop-color="#e2e8f0"/>
+            <stop offset="100%" stop-color="#cbd5e1"/>
+          </radialGradient>
+          <clipPath id="p1-avatar-clip">
+            <circle cx="300" cy="85" r="32"/>
+          </clipPath>
+        </defs>
+
+        <!-- Left Panel: Cue Power Slider -->
+        <g id="left-panel" cursor="pointer">
+          <rect x="10" y="15" width="180" height="770" rx="16" fill="#111827" stroke="rgba(255,215,0,0.2)" stroke-width="1.5"/>
+          <text x="100" y="45" text-anchor="middle" fill="#ffd700" font-weight="700" font-size="13" letter-spacing="1">CUE POWER</text>
+
+          <!-- Cue Stick Graphic -->
+          <g id="cue-stick" transform="translate(0,0)">
+            <line x1="100" y1="60" x2="100" y2="135" stroke="#d9b27a" stroke-width="8" stroke-linecap="round"/>
+            <rect x="96" y="55" width="8" height="6" fill="#ffffff" rx="1"/>
+            <rect x="96" y="52" width="8" height="3" fill="#3a2a1a" rx="1"/>
+          </g>
+
+          <!-- Power Track Background -->
+          <rect x="78" y="155" width="44" height="600" rx="8" fill="#090d14" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+
+          <!-- Power Fill Bar -->
+          <rect id="svg-power-fill" x="78" y="155" width="44" height="0" rx="8" fill="url(#powerGrad)"/>
+
+          <!-- Percentage Ticks -->
+          <line x1="70" y1="155" x2="75" y2="155" stroke="#ff2e4e" stroke-width="2"/>
+          <text x="65" y="159" text-anchor="end" fill="#ff2e4e" font-size="10" font-weight="bold">100%</text>
+
+          <line x1="70" y1="305" x2="75" y2="305" stroke="#ffd700" stroke-width="1.5"/>
+          <text x="65" y="309" text-anchor="end" fill="#ffd700" font-size="10">75%</text>
+
+          <line x1="70" y1="455" x2="75" y2="455" stroke="#ffd700" stroke-width="1.5"/>
+          <text x="65" y="459" text-anchor="end" fill="#ffd700" font-size="10">50%</text>
+
+          <line x1="70" y1="605" x2="75" y2="605" stroke="#00d8f6" stroke-width="1.5"/>
+          <text x="65" y="609" text-anchor="end" fill="#00d8f6" font-size="10">25%</text>
+
+          <line x1="70" y1="755" x2="75" y2="755" stroke="#94a3b8" stroke-width="2"/>
+          <text x="65" y="759" text-anchor="end" fill="#94a3b8" font-size="10">0%</text>
+
+          <text x="100" y="775" text-anchor="middle" fill="#94a3b8" font-size="10">PULL DOWN</text>
         </g>
+
+        <!-- Right Panel: Players, Timer & Spin -->
         <g id="right-panel">
-          <rect x="220" y="25" width="160" height="750" rx="16" fill="#202934"/>
-          <text id="svg-p1-name" x="300" y="100">PLAYER 1</text>
-          <text id="svg-p1-balance" x="300" y="120">DB$0.00</text>
-          <text id="svg-p1-score" x="300" y="150">0</text>
-          <text id="svg-p2-name" x="300" y="700">PLAYER 2</text>
-          <text id="svg-p2-score" x="300" y="670">0</text>
-          <text id="svg-timer" x="300" y="340">00:45</text>
-          <g id="spin-controller">
-            <circle cx="300" cy="495" r="55" fill="#d7dee8"/>
-            <g id="svg-spin-dot-group" transform="translate(300,495)">
-              <circle r="4" fill="red"/>
+          <rect x="210" y="15" width="180" height="770" rx="16" fill="#111827" stroke="rgba(255,215,0,0.2)" stroke-width="1.5"/>
+
+          <!-- Player 1 Card -->
+          <rect id="svg-p1-bg" x="220" y="25" width="160" height="150" rx="12" fill="#1e293b" stroke="rgba(255,255,255,0.1)"/>
+          <g id="svg-p1-avatar-container"></g>
+          <text id="svg-p1-name" x="300" y="138" text-anchor="middle" fill="#ffffff" font-weight="700" font-size="13">PLAYER 1</text>
+          <text id="svg-p1-balance" x="300" y="156" text-anchor="middle" fill="#ffd700" font-size="12" font-weight="600">DB$0.00</text>
+          <rect x="342" y="32" width="30" height="28" rx="6" fill="#0f172a" stroke="rgba(255,215,0,0.3)"/>
+          <text id="svg-p1-score" x="357" y="51" text-anchor="middle" fill="#00d8f6" font-weight="800" font-size="15">0</text>
+
+          <!-- Shot Timer Container -->
+          <rect x="220" y="270" width="160" height="140" rx="12" fill="#0b111a" stroke="rgba(255,255,255,0.05)"/>
+          <circle cx="300" cy="330" r="48" fill="#0f172a" stroke="rgba(255,255,255,0.1)" stroke-width="6"/>
+          <circle id="svg-timer-arc" cx="300" cy="330" r="48" fill="none" stroke="#00f3ff" stroke-width="6" stroke-dasharray="301.59" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 300 330)"/>
+          <text id="svg-timer" x="300" y="337" text-anchor="middle" fill="#ffffff" font-weight="800" font-size="19">00:45</text>
+          <text x="300" y="398" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="1">SHOT TIMER</text>
+
+          <!-- Spin Controller Container -->
+          <rect x="220" y="420" width="160" height="180" rx="12" fill="#0b111a" stroke="rgba(255,255,255,0.05)"/>
+          <text x="300" y="442" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="1">CUE BALL SPIN</text>
+          <g id="spin-controller" cursor="pointer">
+            <circle cx="300" cy="510" r="52" fill="url(#cueBallGrad)" stroke="#ffd700" stroke-width="2"/>
+            <line x1="248" y1="510" x2="352" y2="510" stroke="rgba(0,0,0,0.2)" stroke-dasharray="3,3"/>
+            <line x1="300" y1="458" x2="300" y2="562" stroke="rgba(0,0,0,0.2)" stroke-dasharray="3,3"/>
+            <g id="svg-spin-dot-group" transform="translate(300,510)">
+              <circle r="6" fill="#ff2e4e" stroke="#ffffff" stroke-width="1.5"/>
             </g>
           </g>
+
+          <!-- Player 2 Card -->
+          <rect id="svg-p2-bg" x="220" y="615" width="160" height="150" rx="12" fill="#1e293b" stroke="rgba(255,255,255,0.1)"/>
+          <circle cx="300" cy="658" r="30" fill="#334155" stroke="#ffd700" stroke-width="1.5"/>
+          <text x="300" y="664" text-anchor="middle" fill="#e2e8f0" font-weight="bold" font-size="16">VS</text>
+          <text id="svg-p2-name" x="300" y="715" text-anchor="middle" fill="#ffffff" font-weight="700" font-size="13">PLAYER 2</text>
+          <text x="300" y="733" text-anchor="middle" fill="#94a3b8" font-size="11">OPPONENT</text>
+          <rect x="342" y="622" width="30" height="28" rx="6" fill="#0f172a" stroke="rgba(255,215,0,0.3)"/>
+          <text id="svg-p2-score" x="357" y="641" text-anchor="middle" fill="#00d8f6" font-weight="800" font-size="15">0</text>
         </g>
       </svg>
     </div>
