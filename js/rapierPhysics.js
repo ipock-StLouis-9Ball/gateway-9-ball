@@ -210,7 +210,7 @@ export class RapierPoolWorld {
 
   applyCueStrike(id, angle, speed) {
     const entry = this.ballBodies.get(id);
-    if (!entry) return;
+    if (!entry || !entry.body) return;
 
     const impulseX = Math.cos(angle) * speed * BALL_MASS;
     const impulseY = Math.sin(angle) * speed * BALL_MASS;

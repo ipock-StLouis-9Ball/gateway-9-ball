@@ -497,6 +497,7 @@ function updateHud(hud) {
 // ---------- Game controls ----------
 let cueCharging = false;
 let cueStartY = 0;
+let hasPulled = false;
 let pushOutMode = false;
 
 function updatePowerUI(powerFrac) {
@@ -508,10 +509,10 @@ function updatePowerUI(powerFrac) {
   if (cueStick) {
     cueStick.setAttribute('transform', `translate(1, ${p * 180})`);
   }
-  // Fill power bar overlay upward
+  // Fill power bar overlay top to bottom
   if (powerFill) {
     const fillH = p * 600;
-    powerFill.setAttribute('y', (755 - fillH).toString());
+    powerFill.setAttribute('y', '155');
     powerFill.setAttribute('height', fillH.toString());
   }
 }
@@ -521,9 +522,13 @@ function bindGameControls() {
 
   const chargeFromEvent = (e) => {
     if (!game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
+    const clientY = e.clientY ?? (e.touches && e.touches[0] ? e.touches[0].clientY : cueStartY);
     const rect = leftPanel.getBoundingClientRect();
     const maxPull = rect.height * 0.45;
-    const dy = Math.max(0, (e.clientY - cueStartY));
+    const dy = Math.max(0, clientY - cueStartY);
+    if (dy > 3) {
+      hasPulled = true;
+    }
     let frac = Math.max(0, Math.min(1, dy / maxPull));
     for (const m of [0.25, 0.5, 0.75]) {
       if (Math.abs(frac - m) < 0.035) frac = m;
@@ -532,33 +537,52 @@ function bindGameControls() {
     updatePowerUI(frac);
   };
 
+  const startCueCharge = (e) => {
+    if (!game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
+    cueCharging = true;
+    hasPulled = false;
+    const clientY = e.clientY ?? (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+    cueStartY = clientY;
+    if (leftPanel.setPointerCapture && e.pointerId !== undefined) {
+      try { leftPanel.setPointerCapture(e.pointerId); } catch (err) {}
+    }
+    chargeFromEvent(e);
+  };
+
+  const moveCueCharge = (e) => {
+    if (cueCharging) chargeFromEvent(e);
+  };
+
+  const releaseCue = () => {
+    if (!cueCharging) return;
+    cueCharging = false;
+    if (hasPulled && game && game.state === 'AIMING' && game.currentPlayer === 0) {
+      if (pushOutMode) { pushOutMode = false; game.pushOut(); }
+      else game.shoot();
+    }
+    hasPulled = false;
+    updatePowerUI(0);
+  };
+
   if (leftPanel) {
-    leftPanel.addEventListener('pointerdown', (e) => {
-      if (!game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
-      cueCharging = true;
-      cueStartY = e.clientY;
-      leftPanel.setPointerCapture(e.pointerId);
-      chargeFromEvent(e);
-    });
+    leftPanel.addEventListener('pointerdown', startCueCharge);
+    leftPanel.addEventListener('touchstart', startCueCharge, { passive: true });
 
-    leftPanel.addEventListener('pointermove', (e) => {
-      if (cueCharging) chargeFromEvent(e);
-    });
-
-    const releaseCue = () => {
-      if (!cueCharging) return;
-      cueCharging = false;
-      const firedPower = game.power;
-      if (firedPower >= 0.10 && game.state === 'AIMING' && game.currentPlayer === 0) {
-        if (pushOutMode) { pushOutMode = false; game.pushOut(); }
-        else game.shoot();
-      }
-      updatePowerUI(0);
-    };
+    leftPanel.addEventListener('pointermove', moveCueCharge);
+    leftPanel.addEventListener('touchmove', moveCueCharge, { passive: true });
 
     leftPanel.addEventListener('pointerup', releaseCue);
     leftPanel.addEventListener('pointercancel', releaseCue);
+    leftPanel.addEventListener('touchend', releaseCue);
+    leftPanel.addEventListener('touchcancel', releaseCue);
   }
+
+  window.addEventListener('pointerup', releaseCue);
+  window.addEventListener('pointercancel', releaseCue);
+  window.addEventListener('touchend', releaseCue);
+  window.addEventListener('touchcancel', releaseCue);
+  window.addEventListener('pointermove', moveCueCharge);
+  window.addEventListener('touchmove', moveCueCharge, { passive: true });
 
   // Spin controller inside SVG
   const spinCtrl = document.getElementById('spin-controller');
