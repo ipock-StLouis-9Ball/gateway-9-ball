@@ -371,15 +371,11 @@ function updateSidebarProfile() {
   if (avatarContainer) {
     const av = State.profile.avatar;
     if (av && av.startsWith('data:image/')) {
-      avatarContainer.innerHTML = `<image href="${av}" x="261" y="49" width="78" height="78" clip-path="url(#p1-avatar-clip)" preserveAspectRatio="xMidYMid slice" />`;
+      avatarContainer.innerHTML = `<image href="${av}" x="268" y="53" width="64" height="64" clip-path="url(#p1-avatar-clip)" preserveAspectRatio="xMidYMid slice" />`;
     } else {
-      // Preset text avatar or fallback icon
       avatarContainer.innerHTML = `
-        <g transform="translate(265, 52)">
-          <path d="M35,46 C35,36.5 43,35 50,35 C57,35 65,36.5 65,46 L65,54 L35,54 Z" class="avatar-icon" />
-          <circle cx="50" cy="24" r="12" class="avatar-icon" />
-        </g>
-        <text x="300" y="96" text-anchor="middle" fill="#e2e8f0" font-family="sans-serif" font-weight="bold" font-size="22">${av || 'JP'}</text>
+        <circle cx="300" cy="85" r="32" fill="#334155" stroke="#ffd700" stroke-width="1.5"/>
+        <text x="300" y="92" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="bold" font-size="18">${av || 'JP'}</text>
       `;
     }
   }
@@ -490,14 +486,13 @@ function updateHud(hud) {
   if (spinDot) {
     const dx = hud.english.x * 28;
     const dy = -hud.english.y * 28;
-    spinDot.setAttribute('transform', `translate(${300 + dx}, ${495 + dy})`);
+    spinDot.setAttribute('transform', `translate(${300 + dx}, ${510 + dy})`);
   }
 }
 
 // ---------- Game controls ----------
 let cueCharging = false;
 let cueStartY = 0;
-let hasPulled = false;
 let pushOutMode = false;
 
 function updatePowerUI(powerFrac) {
@@ -507,7 +502,7 @@ function updatePowerUI(powerFrac) {
 
   // Pull cue stick down in SVG coordinates (0 to 180px shift)
   if (cueStick) {
-    cueStick.setAttribute('transform', `translate(1, ${p * 180})`);
+    cueStick.setAttribute('transform', `translate(0, ${p * 180})`);
   }
   // Fill power bar overlay top to bottom
   if (powerFill) {
@@ -521,17 +516,16 @@ function bindGameControls() {
   const leftPanel = document.getElementById('left-panel');
 
   const chargeFromEvent = (e) => {
-    if (!game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
-    const clientY = e.clientY ?? (e.touches && e.touches[0] ? e.touches[0].clientY : cueStartY);
+    if (!cueCharging || !game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
+    const clientY = e.clientY ?? cueStartY;
     const rect = leftPanel.getBoundingClientRect();
-    const maxPull = rect.height * 0.45;
+    const maxPull = Math.max(150, rect.height * 0.5);
     const dy = Math.max(0, clientY - cueStartY);
-    if (dy > 3) {
-      hasPulled = true;
-    }
     let frac = Math.max(0, Math.min(1, dy / maxPull));
-    for (const m of [0.25, 0.5, 0.75]) {
-      if (Math.abs(frac - m) < 0.035) frac = m;
+
+    // Snap close to quarter marks for control feedback
+    for (const m of [0.25, 0.5, 0.75, 1.0]) {
+      if (Math.abs(frac - m) < 0.025) frac = m;
     }
     game.setPower(frac);
     updatePowerUI(frac);
@@ -539,50 +533,52 @@ function bindGameControls() {
 
   const startCueCharge = (e) => {
     if (!game || game.state !== 'AIMING' || game.currentPlayer !== 0) return;
+    if (e.cancelable) e.preventDefault();
     cueCharging = true;
-    hasPulled = false;
-    const clientY = e.clientY ?? (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
-    cueStartY = clientY;
+    cueStartY = e.clientY ?? 0;
     if (leftPanel.setPointerCapture && e.pointerId !== undefined) {
       try { leftPanel.setPointerCapture(e.pointerId); } catch (err) {}
     }
-    chargeFromEvent(e);
+    game.setPower(0);
+    updatePowerUI(0);
   };
 
   const moveCueCharge = (e) => {
-    if (cueCharging) chargeFromEvent(e);
+    if (cueCharging) {
+      if (e.cancelable) e.preventDefault();
+      chargeFromEvent(e);
+    }
   };
 
-  const releaseCue = () => {
+  const releaseCue = (e) => {
     if (!cueCharging) return;
     cueCharging = false;
-    if (hasPulled && game && game.state === 'AIMING' && game.currentPlayer === 0) {
+    if (leftPanel.releasePointerCapture && e?.pointerId !== undefined) {
+      try { leftPanel.releasePointerCapture(e.pointerId); } catch (err) {}
+    }
+
+    const currentPower = game ? game.power : 0;
+    // Execute shot only if power > 0 (meter charged)
+    if (currentPower > 0.02 && game && game.state === 'AIMING' && game.currentPlayer === 0) {
       if (pushOutMode) { pushOutMode = false; game.pushOut(); }
       else game.shoot();
+    } else {
+      // Power returned to 0% -> cancel shot without firing
+      if (game) game.setPower(0);
     }
-    hasPulled = false;
     updatePowerUI(0);
   };
 
   if (leftPanel) {
     leftPanel.addEventListener('pointerdown', startCueCharge);
-    leftPanel.addEventListener('touchstart', startCueCharge, { passive: true });
-
     leftPanel.addEventListener('pointermove', moveCueCharge);
-    leftPanel.addEventListener('touchmove', moveCueCharge, { passive: true });
-
     leftPanel.addEventListener('pointerup', releaseCue);
     leftPanel.addEventListener('pointercancel', releaseCue);
-    leftPanel.addEventListener('touchend', releaseCue);
-    leftPanel.addEventListener('touchcancel', releaseCue);
   }
 
+  window.addEventListener('pointermove', moveCueCharge);
   window.addEventListener('pointerup', releaseCue);
   window.addEventListener('pointercancel', releaseCue);
-  window.addEventListener('touchend', releaseCue);
-  window.addEventListener('touchcancel', releaseCue);
-  window.addEventListener('pointermove', moveCueCharge);
-  window.addEventListener('touchmove', moveCueCharge, { passive: true });
 
   // Spin controller inside SVG
   const spinCtrl = document.getElementById('spin-controller');
@@ -598,7 +594,7 @@ function bindGameControls() {
 
     spinCtrl.addEventListener('pointerdown', (e) => {
       setSpinFromEvent(e);
-      spinCtrl.setPointerCapture(e.pointerId);
+      if (spinCtrl.setPointerCapture) try { spinCtrl.setPointerCapture(e.pointerId); } catch (err) {}
     });
     spinCtrl.addEventListener('pointermove', (e) => {
       if (e.buttons) setSpinFromEvent(e);
