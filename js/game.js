@@ -114,6 +114,7 @@ export class Game {
       power: this.power,
       english: this.english,
       ballsLeft: this.balls.filter((b) => !b.pocketed && b.id !== CUE_ID).length,
+      pocketedBalls: this.balls.filter((b) => b.pocketed && b.id !== CUE_ID).map((b) => b.id).sort((a, b) => a - b),
       match: m,
       isPractice: !!this.opts.practice,
       pushOutAvailable: this.pushOutAvailable && this.state === 'AIMING' && this.currentPlayer === 0,

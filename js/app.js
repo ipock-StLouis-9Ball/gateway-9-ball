@@ -360,6 +360,51 @@ document.getElementById('wd-btn').addEventListener('click', async () => {
 });
 
 // ---------- Sidebar Dynamic Profile Renderer ----------
+const BALL_COLORS = {
+  1: '#ffd700',
+  2: '#0055ff',
+  3: '#ff2e4e',
+  4: '#9900ff',
+  5: '#ff8800',
+  6: '#00b33c',
+  7: '#880033',
+  8: '#111111',
+  9: '#ffd700',
+};
+
+function updatePocketedBalls(pocketed) {
+  const container = document.getElementById('svg-pocketed-container');
+  if (!container) return;
+
+  const balls = pocketed || [];
+  let html = '';
+  // Max size per ball: 12px x 12px (radius r=5.5px, 11px diameter, spacing 11px)
+  balls.forEach((id, index) => {
+    const x = index * 11;
+    const color = BALL_COLORS[id] || '#ffffff';
+    const isStripe = id === 9;
+
+    if (isStripe) {
+      html += `
+        <g transform="translate(${x}, 0)">
+          <circle cx="0" cy="0" r="5.5" fill="#ffffff" stroke="#111111" stroke-width="0.5"/>
+          <rect x="-5.5" y="-2" width="11" height="4" fill="${color}"/>
+          <text x="0" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="#000000">${id}</text>
+        </g>
+      `;
+    } else {
+      const textColor = (id === 1) ? '#000000' : '#ffffff';
+      html += `
+        <g transform="translate(${x}, 0)">
+          <circle cx="0" cy="0" r="5.5" fill="${color}" stroke="#ffffff" stroke-width="0.5"/>
+          <text x="0" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="${textColor}">${id}</text>
+        </g>
+      `;
+    }
+  });
+  container.innerHTML = html;
+}
+
 function updateSidebarProfile() {
   const p1Name = document.getElementById('svg-p1-name');
   if (p1Name) p1Name.textContent = State.profile.name.toUpperCase();
@@ -371,11 +416,11 @@ function updateSidebarProfile() {
   if (avatarContainer) {
     const av = State.profile.avatar;
     if (av && av.startsWith('data:image/')) {
-      avatarContainer.innerHTML = `<image href="${av}" x="268" y="53" width="64" height="64" clip-path="url(#p1-avatar-clip)" preserveAspectRatio="xMidYMid slice" />`;
+      avatarContainer.innerHTML = `<image href="${av}" x="30" y="20" width="60" height="60" clip-path="url(#p1-avatar-clip)" preserveAspectRatio="xMidYMid slice" />`;
     } else {
       avatarContainer.innerHTML = `
-        <circle cx="300" cy="85" r="32" fill="#334155" stroke="#ffd700" stroke-width="1.5"/>
-        <text x="300" y="92" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="bold" font-size="18">${av || 'JP'}</text>
+        <circle cx="60" cy="50" r="30" fill="#334155" stroke="#ffd700" stroke-width="1.5"/>
+        <text x="60" y="56" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="bold" font-size="20">${av || 'JP'}</text>
       `;
     }
   }
@@ -438,10 +483,20 @@ async function startGame(opts) {
 function updateHud(hud) {
   updateSidebarProfile();
 
-  const p1Score = document.getElementById('svg-p1-score');
-  if (p1Score) p1Score.textContent = hud.match ? hud.match.racksWon[0] : '0';
-  const p2Score = document.getElementById('svg-p2-score');
-  if (p2Score) p2Score.textContent = hud.match ? hud.match.racksWon[1] : '0';
+  const p1Dot = document.getElementById('svg-p1-win-dot');
+  if (p1Dot) {
+    const wins = hud.match ? hud.match.racksWon[0] : 0;
+    p1Dot.setAttribute('fill', wins >= 1 ? '#ffd700' : '#061224');
+    if (wins >= 1) p1Dot.setAttribute('filter', 'url(#neonGlow)');
+    else p1Dot.removeAttribute('filter');
+  }
+  const p2Dot = document.getElementById('svg-p2-win-dot');
+  if (p2Dot) {
+    const wins = hud.match ? hud.match.racksWon[1] : 0;
+    p2Dot.setAttribute('fill', wins >= 1 ? '#ffd700' : '#061224');
+    if (wins >= 1) p2Dot.setAttribute('filter', 'url(#neonGlow)');
+    else p2Dot.removeAttribute('filter');
+  }
 
   const p1Bg = document.getElementById('svg-p1-bg');
   const p2Bg = document.getElementById('svg-p2-bg');
@@ -456,15 +511,17 @@ function updateHud(hud) {
 
   const timerArc = document.getElementById('svg-timer-arc');
   if (timerArc) {
-    const totalDash = 301.59;
+    const totalDash = 188.5;
     const frac = Math.max(0, Math.min(1, hud.shotTimer / 45));
     timerArc.style.strokeDashoffset = (totalDash * (1 - frac)).toString();
-    timerArc.setAttribute('stroke', hud.shotTimer <= 8 ? '#ff2e4e' : '#00f3ff');
+    timerArc.setAttribute('stroke', hud.shotTimer <= 8 ? '#c41e3a' : '#00e5ff');
   }
 
   if (!cueCharging) {
     updatePowerUI(0);
   }
+
+  updatePocketedBalls(hud.pocketedBalls);
 
   const banner = document.getElementById('msg-banner');
   if (hud.message) { banner.textContent = hud.message; banner.classList.remove('hidden'); }
@@ -486,7 +543,7 @@ function updateHud(hud) {
   if (spinDot) {
     const dx = hud.english.x * 28;
     const dy = -hud.english.y * 28;
-    spinDot.setAttribute('transform', `translate(${300 + dx}, ${510 + dy})`);
+    spinDot.setAttribute('transform', `translate(${60 + dx}, ${60 + dy})`);
   }
 }
 
@@ -500,14 +557,14 @@ function updatePowerUI(powerFrac) {
   const cueStick = document.getElementById('cue-stick');
   const powerFill = document.getElementById('svg-power-fill');
 
-  // Pull cue stick down in SVG coordinates (0 to 180px shift)
+  // Pull cue stick down in SVG coordinates (0 to 540px shift)
   if (cueStick) {
-    cueStick.setAttribute('transform', `translate(0, ${p * 180})`);
+    cueStick.setAttribute('transform', `translate(0, ${p * 540})`);
   }
   // Fill power bar overlay top to bottom
   if (powerFill) {
-    const fillH = p * 600;
-    powerFill.setAttribute('y', '155');
+    const fillH = p * 540;
+    powerFill.setAttribute('y', '0');
     powerFill.setAttribute('height', fillH.toString());
   }
 }
@@ -579,6 +636,10 @@ function bindGameControls() {
   window.addEventListener('pointermove', moveCueCharge);
   window.addEventListener('pointerup', releaseCue);
   window.addEventListener('pointercancel', releaseCue);
+
+  // Wallet buttons on HUD cards
+  document.getElementById('wallet-player1')?.addEventListener('click', () => show('wallet'));
+  document.getElementById('wallet-player2')?.addEventListener('click', () => show('wallet'));
 
   // Spin controller inside SVG
   const spinCtrl = document.getElementById('spin-controller');
