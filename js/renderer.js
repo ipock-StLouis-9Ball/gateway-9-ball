@@ -126,17 +126,18 @@ export class Renderer {
   }
 
   _computeTableRect() {
-    // 768x1376 image table dimensions with 80px side/end rails and 608x1216 inner felt surface
-    const imgW = TABLE.imageWidth || 768.0;
-    const imgH = TABLE.imageHeight || 1376.0;
+    // Table rotated 90°: horizontal footprint dimensions 1376px width x 768px height
+    // 80px thick rails on all sides, 1216px width x 608px height inner felt playing surface
+    const imgW = TABLE.imageHeight || 1376.0; // Horizontal length
+    const imgH = TABLE.imageWidth || 768.0;   // Vertical width
     const railPx = TABLE.railPx || 80.0;
-    const innerW = TABLE.innerPxW || 608.0;
-    const innerH = TABLE.innerPxH || 1216.0;
+    const innerW = TABLE.innerPxH || 1216.0;  // Inner felt horizontal length
+    const innerH = TABLE.innerPxW || 608.0;   // Inner felt vertical width
 
     const availW = Math.max(1, this.cssW);
     const availH = Math.max(1, this.cssH);
 
-    // Scale image to fit within canvas while maintaining native aspect ratio
+    // Scale image to fit within canvas while maintaining horizontal aspect ratio
     const scale = Math.min(availW / imgW, availH / imgH);
     const renderedTableW = imgW * scale;
     const renderedTableH = imgH * scale;
@@ -160,10 +161,10 @@ export class Renderer {
 
   coordTransform(x, y) {
     const pf = this.playfieldRect;
-    // Maps physics space (X: 0..100 long axis, Y: 0..50 short axis) to vertical canvas (pf.w: 608px short, pf.h: 1216px long)
+    // Maps physics space (X: 0..100 horizontal long axis, Y: 0..50 vertical short axis)
     return {
-      x: pf.x + (y / TABLE.height) * pf.w,
-      y: pf.y + (x / TABLE.width) * pf.h,
+      x: pf.x + (x / TABLE.width) * pf.w,
+      y: pf.y + (y / TABLE.height) * pf.h,
     };
   }
 
@@ -176,13 +177,13 @@ export class Renderer {
     const normScreenX = Math.max(0, Math.min(1, (px - pf.x) / pf.w));
     const normScreenY = Math.max(0, Math.min(1, (py - pf.y) / pf.h));
     return {
-      x: normScreenY * TABLE.width,
-      y: normScreenX * TABLE.height,
+      x: normScreenX * TABLE.width,
+      y: normScreenY * TABLE.height,
     };
   }
 
   ballRadiusPx() {
-    return (TABLE.ballRadius / TABLE.height) * this.playfieldRect.w;
+    return (TABLE.ballRadius / TABLE.width) * this.playfieldRect.w;
   }
 
   triggerStrikeAnimation(angle, power, cueX, cueY) {
@@ -220,10 +221,14 @@ export class Renderer {
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, this.cssW, this.cssH);
 
-    // 0. Render Table Graphic Layer centered inside tableRect
+    // 0. Render Table Graphic Layer centered inside tableRect (rotated 90° clockwise)
     if (this.tableImg && this.tableImg.complete && this.tableImg.naturalWidth > 0) {
       const tr = this.tableRect;
-      ctx.drawImage(this.tableImg, tr.x, tr.y, tr.w, tr.h);
+      ctx.save();
+      ctx.translate(tr.x + tr.w / 2, tr.y + tr.h / 2);
+      ctx.rotate(Math.PI / 2);
+      ctx.drawImage(this.tableImg, -tr.h / 2, -tr.w / 2, tr.h, tr.w);
+      ctx.restore();
     } else {
       ctx.fillStyle = '#0a1d12';
       ctx.fillRect(0, 0, this.cssW, this.cssH);
@@ -541,27 +546,27 @@ export class Renderer {
   }
 
   drawTableFelt(ctx) {
-    // Draws head spot and foot spot on the felt surface
-    const headPx = this.toPx(25.0, 25.0);
-    const footPx = this.toPx(75.0, 25.0);
+    // Draws head spot (right break spot) and foot spot (left rack spot) on the felt surface
+    const headPx = this.toPx(75.0, 25.0);
+    const footPx = this.toPx(25.0, 25.0);
     const spotR = Math.max(2, this.ballRadiusPx() * 0.18);
 
     ctx.save();
-    // Head Spot
+    // Head Spot (right break spot)
     ctx.beginPath();
     ctx.arc(headPx.x, headPx.y, spotR, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(20, 20, 20, 0.6)';
     ctx.fill();
 
-    // Foot Spot
+    // Foot Spot (left rack spot)
     ctx.beginPath();
     ctx.arc(footPx.x, footPx.y, spotR, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(20, 20, 20, 0.6)';
     ctx.fill();
 
-    // Subtle Head String line
-    const pTopHead = this.toPx(25.0, 50.0);
-    const pBotHead = this.toPx(25.0, 0.0);
+    // Subtle Head String line (vertical line at x = 75.0)
+    const pTopHead = this.toPx(75.0, 0.0);
+    const pBotHead = this.toPx(75.0, 50.0);
     ctx.beginPath();
     ctx.moveTo(pTopHead.x, pTopHead.y);
     ctx.lineTo(pBotHead.x, pBotHead.y);

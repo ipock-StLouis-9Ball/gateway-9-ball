@@ -124,7 +124,7 @@ export async function resolveShot(input) {
     const nine = finalBalls.find((b) => b.id === 9);
     if (nine && nine.pocketed) {
       nine.pocketed = false;
-      nine.x = TABLE.width * 0.7;
+      nine.x = TABLE.width * 0.25; // Left side foot spot area
       nine.y = TABLE.height / 2;
       nine.vx = 0;
       nine.vy = 0;
