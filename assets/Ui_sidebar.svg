@@ -1,26 +1,28 @@
 <svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <!-- Machined Metal Surface Gradient -->
+    <!-- Concave Metallic Cobalt Blue Gradient (Bright left/right edges, steep drop to dark center) -->
     <linearGradient id="metalBase" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#1b242c" />
-      <stop offset="20%" stop-color="#2e3f4f" />
-      <stop offset="50%" stop-color="#1e2a35" />
-      <stop offset="80%" stop-color="#2e3f4f" />
-      <stop offset="100%" stop-color="#161d24" />
+      <stop offset="0%" stop-color="#3676c4" />
+      <stop offset="12%" stop-color="#143663" />
+      <stop offset="50%" stop-color="#030c1c" />
+      <stop offset="88%" stop-color="#143663" />
+      <stop offset="100%" stop-color="#3676c4" />
     </linearGradient>
     
-    <!-- 3D Milled Bevel Highlight -->
-    <linearGradient id="metalBevel" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#5b778c" stop-opacity="0.9"/>
-      <stop offset="100%" stop-color="#0a0f14" stop-opacity="0.9"/>
+    <!-- Left-to-Right Edge Bevel (Forces the extreme left and right rims to catch the light) -->
+    <linearGradient id="metalBevel" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7baaf7" stop-opacity="1"/>
+      <stop offset="4%" stop-color="#061224" stop-opacity="1"/>
+      <stop offset="96%" stop-color="#061224" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#7baaf7" stop-opacity="1"/>
     </linearGradient>
     
-    <!-- Drop Shadow for Panels -->
+    <!-- Drop Shadow for the Main Panels against the checkered background -->
     <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="4" />
-      <feOffset dx="4" dy="6" result="offsetblur" />
+      <feGaussianBlur in="SourceAlpha" stdDeviation="5" />
+      <feOffset dx="6" dy="8" result="offsetblur" />
       <feComponentTransfer>
-        <feFuncA type="linear" slope="0.6" />
+        <feFuncA type="linear" slope="0.7" />
       </feComponentTransfer>
       <feMerge>
         <feMergeNode />
@@ -28,7 +30,20 @@
       </feMerge>
     </filter>
 
-    <!-- Neon Glow Filter for Timer and Red Dot -->
+    <!-- Drop Shadow to make internal elements pop off the concave panel -->
+    <filter id="elementShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3.5" />
+      <feOffset dx="0" dy="5" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.85" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Neon Glow Filter for Timer, Labels, and Red Dot -->
     <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur1" />
       <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur2" />
@@ -57,21 +72,21 @@
     <!-- Power Meter Track -->
     <g transform="translate(65, 30)">
       
-      <!-- Solid White Base Track with inner panel border -->
-      <rect x="0" y="0" width="16" height="540" rx="8" ry="8" fill="#ffffff" stroke="#161d24" stroke-width="2"/>
-
-      <!-- Cardinal Red Fill (Active Power - currently set to 135px / 25% height for visual preview) -->
-      <rect id="svg-power-fill" x="0" y="0" width="16" height="135" rx="8" ry="8" fill="#c41e3a" />
-
-      <!-- Track Ticks -->
-      <g stroke="#1b242c" stroke-width="2">
-        <line x1="0" y1="135" x2="16" y2="135" />
-        <line x1="0" y1="270" x2="16" y2="270" />
-        <line x1="0" y1="405" x2="16" y2="405" />
+      <!-- Solid White Base Track with element shadow to pop out -->
+      <g filter="url(#elementShadow)">
+        <rect x="0" y="0" width="16" height="540" rx="8" ry="8" fill="#ffffff" stroke="#061224" stroke-width="1.5"/>
+        <!-- Cardinal Red Fill (Resting as a small drop at 0%) -->
+        <rect id="svg-power-fill" x="0" y="0" width="16" height="16" rx="8" ry="8" fill="#c41e3a" />
+        <!-- Track Ticks -->
+        <g stroke="#061224" stroke-width="2">
+          <line x1="0" y1="135" x2="16" y2="135" />
+          <line x1="0" y1="270" x2="16" y2="270" />
+          <line x1="0" y1="405" x2="16" y2="405" />
+        </g>
       </g>
       
-      <!-- Corrected Text Labels Aligning Perfectly with Ticks -->
-      <g fill="#ffffff" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="start">
+      <!-- Restored Neon Cyan Text Labels -->
+      <g fill="#00e5ff" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="start" filter="url(#neonGlow)">
         <text x="30" y="140">25%</text>
         <text x="30" y="275">50%</text>
         <text x="30" y="410">75%</text>
@@ -82,11 +97,11 @@
     <!-- Right Panel: Player Info and Controls -->
     <rect x="180" y="0" width="160" height="600" rx="12" ry="12" fill="url(#metalBase)" stroke="url(#metalBevel)" stroke-width="2" />
 
-    <!-- Player 1 Section -->
-    <g transform="translate(200, 10)">
-      <rect x="0" y="0" width="120" height="130" rx="8" ry="8" fill="#1b252f" stroke="#3a4d5e" stroke-width="1.5" inset="true"/>
+    <!-- Player 1 Section (Wrapped in elementShadow to pop out) -->
+    <g transform="translate(200, 10)" filter="url(#elementShadow)">
+      <rect x="0" y="0" width="120" height="130" rx="8" ry="8" fill="#0d213b" stroke="#1c4173" stroke-width="1.5"/>
       
-      <!-- Wallet Button (Top Left, Corrected Padding and Legibility) -->
+      <!-- Wallet Button -->
       <g id="wallet-player1" cursor="pointer">
         <rect x="8" y="8" width="44" height="16" rx="4" ry="4" fill="#1a5c87" stroke="#00e5ff" stroke-width="1"/>
         <text x="30" y="19" font-family="Arial, sans-serif" font-size="7" fill="#00e5ff" text-anchor="middle" letter-spacing="0.5" font-weight="bold">WALLET</text>
@@ -94,33 +109,33 @@
 
       <!-- User Icon -->
       <g transform="translate(15, 9) scale(0.75)">
-        <circle cx="60" cy="50" r="30" fill="#5b778c" />
-        <path d="M60 90 C 40 90, 20 105, 20 120 L 100 120 C 100 105, 80 90, 60 90 Z" fill="#5b778c" />
+        <circle cx="60" cy="50" r="30" fill="#4b8ce6" />
+        <path d="M60 90 C 40 90, 20 105, 20 120 L 100 120 C 100 105, 80 90, 60 90 Z" fill="#4b8ce6" />
       </g>
       
       <!-- Player 1 Text -->
-      <rect x="10" y="102" width="100" height="22" rx="4" ry="4" fill="#161d24" />
+      <rect x="10" y="102" width="100" height="22" rx="4" ry="4" fill="#061224" />
       <text x="60" y="117" font-family="Arial, sans-serif" font-size="12" fill="#ecf0f1" text-anchor="middle" font-weight="bold">PLAYER 1</text>
     </g>
 
-    <!-- Timer Section -->
-    <g transform="translate(200, 160)">
-      <circle cx="60" cy="30" r="32" fill="#161d24" stroke="#3a4d5e" stroke-width="3" />
+    <!-- Timer Section (Wrapped in elementShadow to pop out) -->
+    <g transform="translate(200, 160)" filter="url(#elementShadow)">
+      <circle cx="60" cy="30" r="32" fill="#061224" stroke="#1c4173" stroke-width="3" />
       <circle cx="60" cy="30" r="30" fill="transparent" stroke="#00e5ff" stroke-width="2" filter="url(#neonGlow)" stroke-dasharray="140 48" stroke-dashoffset="0" />
       <text x="60" y="36" font-family="Courier New, monospace" font-size="18" fill="#00e5ff" text-anchor="middle" font-weight="bold" filter="url(#neonGlow)">00:45</text>
     </g>
 
-    <!-- Pocketed Balls Tracker -->
-    <g transform="translate(200, 240)">
-      <rect x="0" y="0" width="120" height="50" rx="8" ry="8" fill="#1b252f" stroke="#3a4d5e" stroke-width="1.5" />
-      <text x="60" y="16" font-family="Arial, sans-serif" font-size="10" fill="#88a0b5" text-anchor="middle" letter-spacing="1" font-weight="bold">POCKETED</text>
-      <rect x="5" y="24" width="110" height="18" rx="9" ry="9" fill="#0c1116" stroke="#2a3b4c" stroke-width="1"/>
+    <!-- Pocketed Balls Tracker (Wrapped in elementShadow to pop out) -->
+    <g transform="translate(200, 240)" filter="url(#elementShadow)">
+      <rect x="0" y="0" width="120" height="50" rx="8" ry="8" fill="#0d213b" stroke="#1c4173" stroke-width="1.5" />
+      <text x="60" y="16" font-family="Arial, sans-serif" font-size="10" fill="#7baaf7" text-anchor="middle" letter-spacing="1" font-weight="bold">POCKETED</text>
+      <rect x="5" y="24" width="110" height="18" rx="9" ry="9" fill="#030812" stroke="#143663" stroke-width="1"/>
     </g>
 
-    <!-- Cue Ball Control Section -->
-    <g transform="translate(200, 310)">
-      <circle cx="60" cy="60" r="55" fill="#1b252f" stroke="#3a4d5e" stroke-width="1.5" />
-      <!-- Cue Ball (Added subtle radial gradient for 3D sphere look) -->
+    <!-- Cue Ball Control Section (Wrapped in elementShadow to pop out) -->
+    <g transform="translate(200, 310)" filter="url(#elementShadow)">
+      <circle cx="60" cy="60" r="55" fill="#0d213b" stroke="#1c4173" stroke-width="1.5" />
+      
       <defs>
         <radialGradient id="ballGradient" cx="40%" cy="30%" r="60%">
           <stop offset="0%" stop-color="#ffffff"/>
@@ -128,22 +143,23 @@
           <stop offset="100%" stop-color="#8895a0"/>
         </radialGradient>
       </defs>
-      <circle cx="60" cy="60" r="35" fill="url(#ballGradient)" stroke="#111" stroke-width="1" filter="url(#dropShadow)" />
+      <circle cx="60" cy="60" r="35" fill="url(#ballGradient)" stroke="#111" stroke-width="1" />
+      
       <!-- Red Dot -->
       <circle cx="60" cy="60" r="5" fill="#c41e3a" filter="url(#neonGlow)"/>
       
       <!-- Directional Indicators -->
-      <path d="M60 12 L 52 24 L 68 24 Z" fill="#5b778c" /> <!-- Up -->
-      <path d="M108 60 L 96 52 L 96 68 Z" fill="#5b778c" /> <!-- Right -->
-      <path d="M60 108 L 52 96 L 68 96 Z" fill="#5b778c" /> <!-- Down -->
-      <path d="M12 60 L 24 52 L 24 68 Z" fill="#5b778c" /> <!-- Left -->
+      <path d="M60 12 L 52 24 L 68 24 Z" fill="#4b8ce6" /> <!-- Up -->
+      <path d="M108 60 L 96 52 L 96 68 Z" fill="#4b8ce6" /> <!-- Right -->
+      <path d="M60 108 L 52 96 L 68 96 Z" fill="#4b8ce6" /> <!-- Down -->
+      <path d="M12 60 L 24 52 L 24 68 Z" fill="#4b8ce6" /> <!-- Left -->
     </g>
 
-    <!-- Player 2 Section -->
-    <g transform="translate(200, 460)">
-      <rect x="0" y="0" width="120" height="130" rx="8" ry="8" fill="#1b252f" stroke="#3a4d5e" stroke-width="1.5" inset="true"/>
+    <!-- Player 2 Section (Wrapped in elementShadow to pop out) -->
+    <g transform="translate(200, 460)" filter="url(#elementShadow)">
+      <rect x="0" y="0" width="120" height="130" rx="8" ry="8" fill="#0d213b" stroke="#1c4173" stroke-width="1.5"/>
       
-      <!-- Wallet Button (Top Left, Corrected Padding and Legibility) -->
+      <!-- Wallet Button -->
       <g id="wallet-player2" cursor="pointer">
         <rect x="8" y="8" width="44" height="16" rx="4" ry="4" fill="#1a5c87" stroke="#00e5ff" stroke-width="1"/>
         <text x="30" y="19" font-family="Arial, sans-serif" font-size="7" fill="#00e5ff" text-anchor="middle" letter-spacing="0.5" font-weight="bold">WALLET</text>
@@ -151,12 +167,12 @@
 
       <!-- User Icon -->
       <g transform="translate(15, 9) scale(0.75)">
-        <circle cx="60" cy="50" r="30" fill="#5b778c" />
-        <path d="M60 90 C 40 90, 20 105, 20 120 L 100 120 C 100 105, 80 90, 60 90 Z" fill="#5b778c" />
+        <circle cx="60" cy="50" r="30" fill="#4b8ce6" />
+        <path d="M60 90 C 40 90, 20 105, 20 120 L 100 120 C 100 105, 80 90, 60 90 Z" fill="#4b8ce6" />
       </g>
       
       <!-- Player 2 Text -->
-      <rect x="10" y="102" width="100" height="22" rx="4" ry="4" fill="#161d24" />
+      <rect x="10" y="102" width="100" height="22" rx="4" ry="4" fill="#061224" />
       <text x="60" y="117" font-family="Arial, sans-serif" font-size="12" fill="#ecf0f1" text-anchor="middle" font-weight="bold">PLAYER 2</text>
     </g>
 
