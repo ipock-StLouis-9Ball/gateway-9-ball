@@ -56,9 +56,9 @@ export function getPocketBlueprint(W = TABLE.width, H = TABLE.height) {
 }
 
 export function createRegulationRackPositions() {
-  const apexX = 75.0; // Foot spot (WPA 100" x 50" surface)
+  const apexX = 25.0; // Foot spot on left side (WPA 100" x 50" surface)
   const apexY = 25.0; // Center Y
-  const cueX = 25.0;  // Head spot
+  const cueX = 75.0;  // Head spot on right side
   const cueY = 25.0;
 
   const epsilon = 0.005; // Spacing epsilon to prevent overlap explosion on frame 0
@@ -85,21 +85,21 @@ export function createRegulationRackPositions() {
   // Row 1 (1 ball)
   positions.push({ id: 1, x: apexX, y: apexY });
 
-  // Row 2 (2 balls)
-  positions.push({ id: otherBalls[0], x: apexX + rowDX, y: apexY - d / 2.0 });
-  positions.push({ id: otherBalls[1], x: apexX + rowDX, y: apexY + d / 2.0 });
+  // Row 2 (2 balls, expanding leftwards away from break area)
+  positions.push({ id: otherBalls[0], x: apexX - rowDX, y: apexY - d / 2.0 });
+  positions.push({ id: otherBalls[1], x: apexX - rowDX, y: apexY + d / 2.0 });
 
   // Row 3 (3 balls, 9-ball strictly in center)
-  positions.push({ id: otherBalls[2], x: apexX + rowDX * 2, y: apexY - d });
-  positions.push({ id: 9,              x: apexX + rowDX * 2, y: apexY });
-  positions.push({ id: otherBalls[3], x: apexX + rowDX * 2, y: apexY + d });
+  positions.push({ id: otherBalls[2], x: apexX - rowDX * 2, y: apexY - d });
+  positions.push({ id: 9,              x: apexX - rowDX * 2, y: apexY });
+  positions.push({ id: otherBalls[3], x: apexX - rowDX * 2, y: apexY + d });
 
   // Row 4 (2 balls)
-  positions.push({ id: otherBalls[4], x: apexX + rowDX * 3, y: apexY - d / 2.0 });
-  positions.push({ id: otherBalls[5], x: apexX + rowDX * 3, y: apexY + d / 2.0 });
+  positions.push({ id: otherBalls[4], x: apexX - rowDX * 3, y: apexY - d / 2.0 });
+  positions.push({ id: otherBalls[5], x: apexX - rowDX * 3, y: apexY + d / 2.0 });
 
   // Row 5 (1 ball)
-  positions.push({ id: otherBalls[6], x: apexX + rowDX * 4, y: apexY });
+  positions.push({ id: otherBalls[6], x: apexX - rowDX * 4, y: apexY });
 
   return positions;
 }

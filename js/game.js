@@ -71,7 +71,7 @@ export class Game {
 
   newRack(firstRack = false) {
     this.balls = createRack();
-    this.aimAngle = 0;
+    this.aimAngle = Math.PI; // Aim left towards rack at x=25
     this.power = 0.6;
     this.english = { x: 0, y: 0 };
     this.shotTimer = 45;
@@ -371,7 +371,7 @@ export class Game {
       const cue = this.balls.find((b) => b.id === CUE_ID);
       if (cue && cue.pocketed) {
         cue.pocketed = false;
-        cue.x = TABLE.width * 0.25;
+        cue.x = TABLE.width * 0.75; // Right side (head spot area)
         cue.y = TABLE.height / 2;
         cue.vx = 0;
         cue.vy = 0;
@@ -383,7 +383,14 @@ export class Game {
       this.aiTimer = 1.2;
     }
     this.shotTimer = 45;
-    this.aimAngle = 0;
+    const cue = this.balls.find((b) => b.id === CUE_ID && !b.pocketed);
+    const live = this.balls.filter((b) => !b.pocketed && b.id !== CUE_ID);
+    if (cue && live.length) {
+      const target = live.reduce((a, b) => (a.id < b.id ? a : b));
+      this.aimAngle = Math.atan2(target.y - cue.y, target.x - cue.x);
+    } else {
+      this.aimAngle = Math.PI;
+    }
     this._updateAim();
     this._pushHud();
   }
