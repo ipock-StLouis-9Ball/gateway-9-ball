@@ -38,8 +38,18 @@ export const ECONOMY = {
 // A regulation 9-foot table: playing surface ~50" x 100" (2:1 ratio).
 // We work in arbitrary "inches" and scale to pixels at render time.
 export const TABLE = {
-  name: "WPA Regulation 9-Foot Tournament Table",
+  name: "Ipocks Custom Tournament Table (768x1376)",
   units: "inches",
+  // Image total footprint: 768px width x 1376px height
+  // Side/End Rails: 80px thick each
+  // Inner Felt Surface: 608px width x 1216px height (1:2 WPA ratio)
+  // Mapping game coordinate space directly to inner playing surface (0..100 X, 0..50 Y in 2:1 aspect)
+  imageWidth: 768.0,
+  imageHeight: 1376.0,
+  railPx: 80.0,
+  innerPxW: 608.0,
+  innerPxH: 1216.0,
+
   width: 100.0, // playfield length (x-axis), inches
   height: 50.0, // playfield width (y-axis), inches
   overallWidth: 112.0,
@@ -66,7 +76,7 @@ export const TABLE = {
     jawRestitution: 0.12, // Absorbs bounce in pocket jaws
     ballRestitution: 0.96
   },
-  // WPA Exact Pocket Center Points (Corner: 0,0 / 100,0 / 0,50 / 100,50; Side: 50,0 / 50,50)
+  // Exact Pocket Center Points mapped to playfield boundaries (0,0 to 100,50)
   pockets: [
     { id: "bottom_left",   center: { x: 0.0, y: 0.0 },   triggerRadius: 2.8 },
     { id: "bottom_right",  center: { x: 100.0, y: 0.0 },  triggerRadius: 2.8 },
@@ -75,7 +85,7 @@ export const TABLE = {
     { id: "bottom_side",   center: { x: 50.0, y: 0.0 },   triggerRadius: 2.5 },
     { id: "top_side",      center: { x: 50.0, y: 50.0 },  triggerRadius: 2.5 }
   ],
-  // WPA Exact Cushion Nose Segments & Pocket Jaw Facings
+  // Exact Cushion Nose Segments & Pocket Jaw Facings
   // Corner mouth: 4 7/8" (± 2.4375"), Facing cut angle 142°
   // Side mouth: 5 3/8" (± 2.6875"), Facing cut angle 103°
   cushions: [
