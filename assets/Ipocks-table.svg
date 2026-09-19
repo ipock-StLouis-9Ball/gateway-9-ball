@@ -1,95 +1,120 @@
-<svg width="550" height="1050" viewBox="0 0 550 1050" xmlns="http://www.w3.org/2000/svg">
-  <!-- 
-    WPA REGULATION-COMPLIANT POOL TABLE SCHEMATIC
-    
-    Dimensions are based on a standard 9-foot table (100" x 50" playing surface).
-    The SVG is scaled to 1000px x 500px for the playing surface, with 25px rails.
-    Total SVG canvas: 550px x 1050px.
-    
-    All colors are flat (no gradients or textures).
-  -->
-
-  <!-- Definitions for colors -->
+<svg width="450" height="800" viewBox="0 0 450 800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Definitions for gradients and textures -->
   <defs>
-    <style type="text/css">
-      .felt { fill: #C19A6B; } /* Flat Tan Felt */
-      .rail { fill: #8B4513; } /* Flat Brown Wood Color */
-      .metal { fill: #B0B0B0; } /* Flat Gray Metal */
-      .pocket { fill: #1A1A1A; } /* Flat Black Pocket */
-      .sight { fill: #FFFFFF; } /* Flat White Sights */
-    </style>
+    <!-- Clean Light Oak Wood Grain Pattern (Replaces the flawed texture) -->
+    <pattern id="cleanWoodGrain" patternUnits="userSpaceOnUse" width="200" height="200">
+      <image href="https://www.transparenttextures.com/patterns/light-wood.png" width="200" height="200" />
+      <!-- This uses a clean, seamless light wood pattern from a public texture library -->
+    </pattern>
+    
+    <!-- Felt Color -->
+    <linearGradient id="feltGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d2b48c" /> <!-- Tan -->
+      <stop offset="100%" stop-color="#c19a6b" /> <!-- Slightly darker tan -->
+    </linearGradient>
+    
+    <!-- Metal Corner/Pocket Finish -->
+    <linearGradient id="metalGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#d1d5db" />
+      <stop offset="50%" stop-color="#f3f4f6" />
+      <stop offset="100%" stop-color="#d1d5db" />
+    </linearGradient>
+    
+    <!-- Ruby Red Accent Color -->
+    <radialGradient id="rubyRed" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#ef4444" />
+      <stop offset="100%" stop-color="#991b1b" />
+    </radialGradient>
   </defs>
 
   <!-- Background -->
-  <rect width="100%" height="100%" fill="#222222" />
+  <rect width="100%" height="100%" fill="#1a1a1a" />
 
-  <!-- Main Table Group (Centered) -->
+  <!-- Pool Table Group -->
   <g transform="translate(25, 25)">
     
-    <!-- 1. Outer Table Frame (Total width: 500px, Total height: 1000px) -->
-    <rect x="0" y="0" width="500" height="1000" rx="15" ry="15" class="rail" />
+    <!-- Outer Table Frame (Wood) -->
+    <rect x="0" y="0" width="400" height="750" rx="15" ry="15" fill="url(#cleanWoodGrain)" />
 
-    <!-- 2. Inner Playing Surface (Exact 2:1 Ratio: 450px x 900px) -->
-    <rect x="25" y="25" width="450" height="900" class="felt" />
+    <!-- Inner Felt Area -->
+    <rect x="30" y="30" width="340" height="690" fill="url(#feltGradient)" />
 
-    <!-- 3. Cushion Rails (Complex Paths for WPA Pocket Geometry) -->
-    <g class="rail">
+    <!-- Cushion Rails (Wood) -->
+    <g fill="url(#cleanWoodGrain)">
       <!-- Top Rail -->
-      <path d="M 25 25 L 475 25 L 450 75 L 75 75 Z" />
+      <path d="M 30 30 L 370 30 L 355 60 L 95 60 Z" />
       <!-- Bottom Rail -->
-      <path d="M 25 975 L 475 975 L 450 925 L 75 925 Z" />
+      <path d="M 30 720 L 370 720 L 355 690 L 95 690 Z" />
       <!-- Left Rail -->
-      <path d="M 25 25 L 75 75 L 75 925 L 25 975 Z" />
+      <path d="M 30 30 L 60 95 L 60 655 L 30 720 Z" />
       <!-- Right Rail -->
-      <path d="M 475 25 L 450 75 L 450 925 L 475 975 Z" />
+      <path d="M 370 30 L 340 95 L 340 655 L 370 720 Z" />
     </g>
 
-    <!-- 4. Pocket Liners (Metal Bezels) -->
-    <g class="metal">
+    <!-- Pocket Liners (Metal) -->
+    <g fill="url(#metalGradient)">
       <!-- Top Left -->
-      <path d="M 75 75 A 20 20 0 0 0 35 35 L 75 35 Z" transform="rotate(-45 75 75)" />
+      <path d="M 30 30 A 20 20 0 0 0 10 50 L 30 50 Z" transform="rotate(-45 30 30)" />
       <!-- Top Right -->
-      <path d="M 425 75 A 20 20 0 0 1 465 35 L 425 35 Z" transform="rotate(45 425 75)" />
+      <path d="M 370 30 A 20 20 0 0 1 390 50 L 370 50 Z" transform="rotate(45 370 30)" />
       <!-- Bottom Left -->
-      <path d="M 75 925 A 20 20 0 0 1 35 965 L 75 965 Z" transform="rotate(45 75 925)" />
+      <path d="M 30 720 A 20 20 0 0 1 10 700 L 30 700 Z" transform="rotate(45 30 720)" />
       <!-- Bottom Right -->
-      <path d="M 425 925 A 20 20 0 0 0 465 965 L 425 965 Z" transform="rotate(-45 425 925)" />
+      <path d="M 370 720 A 20 20 0 0 0 390 700 L 370 700 Z" transform="rotate(-45 370 720)" />
       <!-- Side Left -->
-      <path d="M 25 500 A 20 20 0 0 0 5 500 L 25 500 Z" />
+      <path d="M 30 375 A 20 20 0 0 0 10 375 L 30 375 Z" />
       <!-- Side Right -->
-      <path d="M 475 500 A 20 20 0 0 1 495 500 L 475 500 Z" />
+      <path d="M 370 375 A 20 20 0 0 1 390 375 L 370 375 Z" />
     </g>
 
-    <!-- 5. Pocket Openings (Dark Circles) -->
-    <g class="pocket">
-      <!-- Corner Pockets (Radius: 22.5px) -->
-      <circle cx="25" cy="25" r="22.5" />
-      <circle cx="475" cy="25" r="22.5" />
-      <circle cx="25" cy="975" r="22.5" />
-      <circle cx="475" cy="975" r="22.5" />
-      <!-- Side Pockets (Radius: 25px) -->
-      <circle cx="25" cy="500" r="25" />
-      <circle cx="475" cy="500" r="25" />
+    <!-- Pocket Openings (Dark) -->
+    <g fill="#000">
+      <!-- Top Left -->
+      <circle cx="30" cy="30" r="18" />
+      <!-- Top Right -->
+      <circle cx="370" cy="30" r="18" />
+      <!-- Bottom Left -->
+      <circle cx="30" cy="720" r="18" />
+      <!-- Bottom Right -->
+      <circle cx="370" cy="720" r="18" />
+      <!-- Side Left -->
+      <circle cx="30" cy="375" r="18" />
+      <!-- Side Right -->
+      <circle cx="370" cy="375" r="18" />
     </g>
 
-    <!-- 6. Rail Sights (White Diamonds) -->
-    <g class="sight">
-      <!-- Top Rail (Placed at 1/4, 1/2, 3/4 of the playing surface width) -->
-      <rect x="137.5" y="10" width="5" height="10" transform="rotate(45 137.5 10)" />
-      <rect x="250" y="10" width="5" height="10" transform="rotate(45 250 10)" />
-      <rect x="362.5" y="10" width="5" height="10" transform="rotate(45 362.5 10)" />
+    <!-- Corner Metal Protectors -->
+    <g fill="url(#metalGradient)">
+      <path d="M 0 0 L 30 0 A 30 30 0 0 0 0 30 Z" />
+      <path d="M 400 0 L 370 0 A 30 30 0 0 1 400 30 Z" />
+      <path d="M 0 750 L 30 750 A 30 30 0 0 1 0 720 Z" />
+      <path d="M 400 750 L 370 750 A 30 30 0 0 0 400 720 Z" />
+    </g>
+
+    <!-- Rail Sights (Ruby Red Dots) -->
+    <g fill="url(#rubyRed)">
+      <!-- Top Rail -->
+      <circle cx="100" cy="15" r="4" />
+      <circle cx="200" cy="15" r="4" />
+      <circle cx="300" cy="15" r="4" />
       <!-- Bottom Rail -->
-      <rect x="137.5" y="1030" width="5" height="10" transform="rotate(45 137.5 1030)" />
-      <rect x="250" y="1030" width="5" height="10" transform="rotate(45 250 1030)" />
-      <rect x="362.5" y="1030" width="5" height="10" transform="rotate(45 362.5 1030)" />
-      <!-- Left Rail (Placed at 1/4, 1/2, 3/4 of the playing surface height) -->
-      <rect x="10" y="237.5" width="5" height="10" transform="rotate(45 10 237.5)" />
-      <rect x="10" y="500" width="5" height="10" transform="rotate(45 10 500)" />
-      <rect x="10" y="762.5" width="5" height="10" transform="rotate(45 10 762.5)" />
+      <circle cx="100" cy="735" r="4" />
+      <circle cx="200" cy="735" r="4" />
+      <circle cx="300" cy="735" r="4" />
+      <!-- Left Rail -->
+      <circle cx="15" cy="100" r="4" />
+      <circle cx="15" cy="200" r="4" />
+      <circle cx="15" cy="300" r="4" />
+      <circle cx="15" cy="450" r="4" />
+      <circle cx="15" cy="550" r="4" />
+      <circle cx="15" cy="650" r="4" />
       <!-- Right Rail -->
-      <rect x="535" y="237.5" width="5" height="10" transform="rotate(45 535 237.5)" />
-      <rect x="535" y="500" width="5" height="10" transform="rotate(45 535 500)" />
-      <rect x="535" y="762.5" width="5" height="10" transform="rotate(45 535 762.5)" />
+      <circle cx="385" cy="100" r="4" />
+      <circle cx="385" cy="200" r="4" />
+      <circle cx="385" cy="300" r="4" />
+      <circle cx="385" cy="450" r="4" />
+      <circle cx="385" cy="550" r="4" />
+      <circle cx="385" cy="650" r="4" />
     </g>
 
   </g>
