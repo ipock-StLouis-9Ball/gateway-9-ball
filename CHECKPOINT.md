@@ -1,49 +1,58 @@
 # Project Checkpoint: Nine-Ball Tournament Engine
-## Date: 2026-06-11
+## Date: 2026-06-25
 ## Status: Authoritative PvP Core Complete
 
 
-### 1. Backend Architecture (Node.js)
-- **File:** `server.js`
-- **Logic:** Authoritative state machine for 9-ball.
-- **Rules:** APA Tournament Standards (Lowest ball first, Ball-in-hand, 9-ball respot on foul).
-- **Matchmaking:** Skill-based queue (200 Elo threshold).
-- **Financial Trigger:** Winner-Takes-All (90% payout) strictly after **one specific player** reaches 2 set wins.
-    *   **Tie-Breaker:** If the score is 1-1, the funds remain in Escrow and a 3rd "Decisive" set is triggered.
-    *   **Payout Logic:** Distribution only executes when the final match score becomes 2-0, 2-1, 0-2, or 1-2.
-    *   **90s Forfeit Window:** If a player disconnects, they have 90 seconds to rejoin. Failure results in an authoritative forfeit; the remaining player wins the match and the funds.
+### 1. Backend Architecture (Node.js & TypeScript)
+- **Files:** `server/src/index.ts`, `server/src/db.ts`, `server/src/paypal.ts`, `js/rules.js`, `js/rapierPhysics.js`
+- **Logic:** Authoritative state machine and shot resolution engine for 9-ball running `@dimforge/rapier2d-compat` 120Hz fixed timestep physics.
+- **Rules:** APA / WPA Tournament Standards (Lowest numbered ball hit first, Ball-in-hand on foul, 9-ball respot on foul/break).
+- **Matchmaking & Match Execution:** Skill-based queue (200 Elo threshold) and authoritative PvP match state management.
+- **Financial Trigger:** Winner-Takes-All (90% payout pool, 10% platform fee) awarded upon authoritative match resolution.
+    *   **Tie-Breaker:** If the score is tied in set play, funds remain locked in Escrow until a decisive set concludes.
+    *   **Payout Logic:** Disbursement executes strictly upon final match completion.
+    *   **90s Forfeit Window:** If a player disconnects, they have 90 seconds to rejoin. Failure results in an authoritative forfeit; the remaining player wins the match and escrow pool.
 - **AI Security Sentinel:** 24/7/365 background service monitoring network signals for "forced disconnection" tactics (lag-switching/DDoS) to ensure integrity.
 
 
 ### 2. Financial & Compliance Systems
-- **Revenue Logic:** 10% Platform fee + tiered withdrawal fees ($0.25 min).
-- **Withdrawal System:** `withdrawalService.js` handles tiered fees (4-10%) and three payout options:
-    1. **Instant Debit Card:** (Base Fee + 1.5% convenience fee).
-    2. **ACH Payment:** (Base Fee only, 1-3 day wait time).
-- **Escrow:** Funds locked in virtual match vault during gameplay.
-- **Audit Trail:** `matchLogger.js` records every shot, physics vector, foul, and disbursement for legal compliance.
-- **Analytics:** `revenueService.js` provides real-time volume and profit tracking.
-- **AML Program:** `amlService.js` enforces CIP/KYC, OFAC screening, and utilizes Vertex AI (Agent Delta) for Transaction Monitoring and automated SAR (Suspicious Activity Report) escalation.
-- **Geo-Compliance:** Blocks real-money play in restricted states (AR, CT, DE, LA, SD).
+- **Revenue Logic:** 10% Platform fee on wager pools. Double-entry ledger architecture in PostgreSQL/DB (`server/src/db.ts`) deriving balances strictly from immutable ACID ledger entries.
+- **Payment & Payout Gateway:** `server/src/paypal.ts` implements PayPal REST API integration supporting OAuth authentication, Order creation (`v2/checkout/orders`), Order capture, and Payout execution (`v1/payments/payouts`).
+- **Withdrawal System:** Supports two payout tiers:
+    1. **Standard ACH Payment:** (0% payout fee, 1-3 day bank processing window).
+    2. **Instant Payout:** (1.5% convenience fee for immediate delivery).
+- **Escrow Vault:** Funds locked in virtual match vault during active gameplay with ACID transactional guarantees.
+- **Audit Trail & Ledger:** Detailed double-entry transaction logging for all wagers, deposits, withdrawals, and fee distributions for legal compliance.
+- **AML Program:** Enforces CIP/KYC screening, OFAC checks, and utilizes Vertex AI (Agent Delta) for Transaction Monitoring and automated SAR (Suspicious Activity Report) escalation.
+- **Geo-Compliance:** Blocks real-money play in restricted jurisdictions (AR, CT, DE, LA, SD).
 
 
-### 3. 3D & Mobile Immersion (C++ / React Native)
-- **Camera:** Over-the-shoulder "Cue View" with procedural breathing sway (`PoolCuePlayer.cpp`).
-- **Visuals:** SVG/PBR procedural ball materials with specular highlights.
-- **Sensory:** Authoritative haptic and sound triggers synced via server broadcasts.
+### 3. 2D Canvas Engine & Visuals
+- **Rendering System:** High-performance HTML5 2D Canvas renderer (`js/renderer.js`) displaying a horizontal 2:1 playing bed using `assets/Ipocks-table.png` (768x1376 PNG asset with 80px margins, rotated 90° clockwise).
+- **Visual Assets:** Dynamic SVG ball renderings (`assets/balls/`) for customized ball schemes, 18 ruby red diamond inlays (`#E0115F`), and an HUD sidebar overlay displaying real-time match state, score dots, and pocketed ball icons.
+- **Cue Mechanics:** Cue stick positioning with default 6-diameter gap offset during aiming, pointer displacement power slider, and forward strike animation on shot release.
+- **Audio Subsystem:** `js/audioManager.js` Web Audio API sound engine with logarithmic impulse volume scaling and fallback synthesized Web Audio oscillators for realistic ball collision and pocket impact audio.
 
 
 ### 4. Premium Game Store (Monetization)
-- **Catalog:** `store_items.json` defines all purchasable assets.
-- **Pool Cues:** 6 Premium designs (Newtonian, Kinetic, Void, etc.).
-- **Ball Schemes:** 5 Thematic designs (Celestial, Atomic, Synthwave, etc.).
-- **Integration:** All items include ID, description, and pricing for automated processing.
+- **Catalog:** `config/store_items.json` defines all purchasable assets.
+- **Pool Cues:** 5 Premium designs:
+    1. **The Newtonian** ($2.99): Solid oak with inlaid brass physics equations.
+    2. **The Hustler** ($0.99): Distressed wood with a duct-taped grip and misaligned ferrule.
+    3. **The Sovereign** ($14.99): Gold-plated filigree butt with a crushed velvet wrap.
+    4. **The Void** ($9.99): Coated in light-absorbing black material, completely reflectionless.
+    5. **The Industrialist** ($3.99): Heavy steel shaft with exposed rivets and a raw leather grip.
+- **Ball Schemes:** 3 Thematic designs:
+    1. **High Roller** ($5.99): Styled like heavy clay poker chips with metallic inlaid numbers.
+    2. **Polished Metallic** ($4.99): Anodized titanium and chrome finishes with deep-etched metallic numbers and sharp specular reflections.
+    3. **Pearlescent Accent** ($5.99): Multi-stage custom automotive pearl coatings with subtle shifting highlights and clean contrast.
+- **Integration:** All store items include item ID, name, description, and USD pricing mapped to player inventory and profile persistence.
 
 
 ### 5. GCP Infrastructure
 - **Project:** `St. Louis 9 Ball hustle`
-- **Permissions:** Project Editor active.
-- **Storage:** `St. Louis 9 Ball hustle` bucket for redundancy.
+- **Services:** GCP Cloud Run container deployment, Cloud SQL / PostgreSQL for durable ACID transactional state boundary, Artifact Registry for automated container builds, and Cloud Storage (`St. Louis 9 Ball hustle` bucket) for asset distribution and audit logs.
+- **Environment Configuration:** Managed via GCP Secret Manager and environment variables for `DATABASE_URL`, `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, and `PAYPAL_MODE`.
 
 
 ### 6. The AI Agent Ecosystem (Vertex AI)
