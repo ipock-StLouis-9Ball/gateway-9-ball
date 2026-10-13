@@ -1,5 +1,6 @@
 // ============================================================================
 // game.js — Game loop, input, aiming via Rapier2D shape-casting, replay loop.
+// Integrates Pyodide physics and Firebase lockstep state consensus verification.
 // ============================================================================
 
 import { createRack, speedForPower, stateHash } from './rules.js';
@@ -8,6 +9,13 @@ import { resolveShotRemote, hasBackend } from './resolverClient.js';
 import { queuePocketDropAnimation } from './renderer.js';
 import { RapierPoolWorld, CUE_ID, initRapier } from './rapierPhysics.js';
 import { audioManager } from './audioManager.js';
+import {
+  submitShotParameters,
+  submitVerificationHash,
+  computeStateHash,
+  listenToVerifications,
+  getCurrentUser
+} from './firebaseConfig.js';
 
 export class Game {
   constructor(canvas, renderer, opts = {}) {
@@ -17,7 +25,7 @@ export class Game {
     this.opts = opts;
     this.balls = [];
     this.state = 'IDLE';
-    this.currentPlayer = 0; // 0 = you, 1 = AI
+    this.currentPlayer = 0; // 0 = you, 1 = AI / Opponent
     this.aimAngle = 0;
     this.power = 0.6;
     this.english = { x: 0, y: 0 };
@@ -34,6 +42,7 @@ export class Game {
     // Replay state
     this.replay = null;
     this.replayElapsed = 0;
+    this.shotIndex = 0;
 
     this.rapierWorld = null;
 
@@ -81,6 +90,7 @@ export class Game {
     this.consecutiveFouls = [0, 0];
     this.replay = null;
     this.replayElapsed = 0;
+    this.shotIndex = 0;
     this.state = this.currentPlayer === 1 ? 'AI_THINKING' : 'AIMING';
     this.message = this.currentPlayer === 0 ? 'Your break' : 'Opponent breaks';
     if (this.state === 'AI_THINKING') this.aiTimer = 1.2;
@@ -181,13 +191,24 @@ export class Game {
     const cue = this.balls.find((b) => b.id === CUE_ID && !b.pocketed);
     if (!cue) return;
 
+    this.shotIndex += 1;
+    const currentShotIndex = this.shotIndex;
+
     const shotInput = {
       balls: this.balls.map((b) => ({ ...b })),
       angle: this.aimAngle,
       power: this.power,
+      englishX: this.english.x,
+      englishY: this.english.y,
       cueBallId: CUE_ID,
       shotMode,
     };
+
+    // If multiplayer match active, submit shot parameters to Firestore
+    const match = this.opts.match;
+    if (match && match.id) {
+      await submitShotParameters(match.id, currentShotIndex, shotInput);
+    }
 
     this.pushOutAvailable = false;
     this.state = 'REPLAYING';
@@ -203,8 +224,29 @@ export class Game {
 
     audioManager.playCueStrike(speedForPower(this.power));
 
+    // Run local physics engine (Pyodide)
     const result = await resolveShotRemote(shotInput);
     if (!this.running) return;
+
+    // Lockstep consensus verification hash calculation
+    if (match && match.id) {
+      const user = getCurrentUser();
+      const playerId = user ? user.uid : 'playerA';
+      const playerA = match.playerA || 'playerA';
+      const playerB = match.playerB || 'playerB';
+      const nextTurn = result.continueShooting ? this.currentPlayer : 1 - this.currentPlayer;
+
+      const hash = await computeStateHash(result.balls, nextTurn);
+      await submitVerificationHash(match.id, currentShotIndex, playerId, hash);
+
+      listenToVerifications(match.id, currentShotIndex, playerA, playerB, (consensus) => {
+        if (!consensus.match) {
+          console.error('[Anti-Cheat] Desync Detected! State hash mismatch between players.');
+          this.message = 'Desync Detected — Hash Mismatch (Anti-Cheat Triggered)';
+          this._pushHud();
+        }
+      });
+    }
 
     this.replay = {
       frames: result.frames,

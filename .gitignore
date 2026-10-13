@@ -17,3 +17,4 @@ server/dist/
 # Local env / secrets
 .env
 .env.local
+__pycache__/

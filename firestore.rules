@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Matches collection
+    match /matches/{matchId} {
+      // Allow read access to all authenticated players
+      allow read: if request.auth != null;
+
+      // Match document creation
+      allow create: if request.auth != null
+        && request.resource.data.playerA == request.auth.uid;
+
+      // Active shooting player writes ONLY shot parameters
+      allow update: if request.auth != null
+        && (request.auth.uid == resource.data.playerA || request.auth.uid == resource.data.playerB)
+        && request.auth.uid == resource.data.currentTurn
+        // Prevent writing final ball positions directly
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['balls', 'finalState', 'desync']);
+
+      // Verification subcollection for lockstep state consensus
+      match /verifications/{verificationId} {
+        allow read: if request.auth != null;
+        allow create, update: if request.auth != null
+          && (request.resource.data.playerId == request.auth.uid)
+          && request.resource.data.keys().hasAll(['playerId', 'hash', 'shotIndex', 'timestamp']);
+      }
+    }
+  }
+}
