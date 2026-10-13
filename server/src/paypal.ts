@@ -4,8 +4,11 @@
 // ============================================================================
 
 export function getPayPalCredentials() {
-  const clientId = process.env.PAYPAL_CLIENT_ID || '';
-  const clientSecret = process.env.PAYPAL_CLIENT_SECRET || '';
+  const clientId = process.env.PAYPAL_CLIENT_ID;
+  const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+  if (!clientId || !clientSecret) {
+    throw new Error('Missing PayPal API credentials. PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET must be set.');
+  }
   const mode = process.env.PAYPAL_MODE || 'sandbox'; // sandbox or live
   const baseUrl = mode === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
   return { clientId, clientSecret, mode, baseUrl };
