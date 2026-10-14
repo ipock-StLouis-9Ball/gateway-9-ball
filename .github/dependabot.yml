@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # Monitor our Python server dependencies (pooltool, numpy, fastapi, etc.)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Monitor our JavaScript dependencies (Firebase stateless logic)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
