@@ -1,0 +1,73 @@
+{
+  "match_settings": {
+    "available_buy_ins": [
+      {
+        "value": 5,
+        "winner_payout": 4.40,
+        "platform_fee_percentage": 12,
+        "platform_fee_amount": 0.60
+      },
+      {
+        "value": 10,
+        "winner_payout": 8.80,
+        "platform_fee_percentage": 12,
+        "platform_fee_amount": 1.20
+      },
+      {
+        "value": 15,
+        "winner_payout": 13.20,
+        "platform_fee_percentage": 12,
+        "platform_fee_amount": 1.80
+      },
+      {
+        "value": 20,
+        "winner_payout": 17.60,
+        "platform_fee_percentage": 12,
+        "platform_fee_amount": 2.40
+      }
+    ],
+    "platform_fee_type": "percentage",
+    "platform_fee_value": 12
+  },
+  "withdrawal_fees": {
+    "tiers": [
+      {
+        "min": 0,
+        "max": 9.99,
+        "fee_percentage": 11.5
+      },
+      {
+        "min": 10,
+        "max": 20,
+        "fee_percentage": 8.5
+      },
+      {
+        "min": 20.01,
+        "max": 40,
+        "fee_percentage": 6
+      },
+      {
+        "min": 40.01,
+        "max": null,
+        "fee_percentage": 2.5
+      }
+    ],
+    "methods": {
+      "instant": {
+        "label": "Instant Debit Card",
+        "extra_fee_amount": 2.0,
+        "processing_time": "Instant"
+      },
+      "ach": {
+        "label": "ACH Payment",
+        "extra_fee_amount": 0,
+        "processing_time": "1-3 Business Days"
+      }
+    }
+  },
+  "legal_compliance": {
+    "restricted_states": ["AR", "CT", "DE", "LA", "SD"],
+    "minimum_age": 18,
+    "game_type": "Skill-Based Tournament (Authoritative Physics)"
+  }
+}

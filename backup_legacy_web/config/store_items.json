@@ -1,0 +1,24 @@
+{
+  "categories": [
+    {
+      "id": "cues",
+      "label": "Pool Cues",
+      "items": [
+        { "id": "cue_newtonian", "name": "The Newtonian", "description": "Solid oak with inlaid brass physics equations.", "price": 2.99 },
+        { "id": "cue_hustler", "name": "The Hustler", "description": "Distressed wood with a duct-taped grip and misaligned ferrule.", "price": 0.99 },
+        { "id": "cue_sovereign", "name": "The Sovereign", "description": "Gold-plated filigree butt with a crushed velvet wrap.", "price": 14.99 },
+        { "id": "cue_void", "name": "The Void", "description": "Coated in light-absorbing black material, completely reflectionless.", "price": 9.99 },
+        { "id": "cue_industrialist", "name": "The Industrialist", "description": "Heavy steel shaft with exposed rivets and a raw leather grip.", "price": 3.99 }
+      ]
+    },
+    {
+      "id": "ball_schemes",
+      "label": "Ball Schemes",
+      "items": [
+        { "id": "balls_high_roller", "name": "High Roller", "description": "Styled like heavy clay poker chips with metallic inlaid numbers.", "price": 5.99 },
+        { "id": "balls_metallic", "name": "Polished Metallic", "description": "Anodized titanium and chrome finishes with deep-etched metallic numbers and sharp specular reflections.", "price": 4.99 },
+        { "id": "balls_pearl", "name": "Pearlescent Accent", "description": "Multi-stage custom automotive pearl coatings with subtle shifting highlights and clean contrast.", "price": 5.99 }
+      ]
+    }
+  ]
+}

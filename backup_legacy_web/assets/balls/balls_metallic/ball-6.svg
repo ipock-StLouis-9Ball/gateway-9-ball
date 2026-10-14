@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="100%" height="100%" shape-rendering="geometricPrecision">
+  <defs>
+    <linearGradient id="metalBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6" />
+      <stop offset="30%" stop-color="#22a652" />
+      <stop offset="70%" stop-color="#10141a" />
+      <stop offset="100%" stop-color="#22a652" />
+    </linearGradient>
+    <radialGradient id="chromePlate" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="50%" stop-color="#d0d8e0" />
+      <stop offset="80%" stop-color="#707880" />
+      <stop offset="100%" stop-color="#202428" />
+    </radialGradient>
+    <radialGradient id="sharpSpecular" cx="30%" cy="22%" r="22%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+      <stop offset="35%" stop-color="#ffffff" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
+    </radialGradient>
+  </defs>
+  <circle cx="128" cy="128" r="120" fill="url(#metalBody)" />
+  <circle cx="128" cy="128" r="54" fill="url(#chromePlate)" stroke="#11151a" stroke-width="3" />
+  <circle cx="128" cy="128" r="46" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.9" />
+  <text x="128" y="142" font-family="Inter, system-ui, sans-serif" font-weight="900" font-size="48" fill="#0d1117" text-anchor="middle">6</text>
+  <line x1="108" y1="152" x2="148" y2="152" stroke="#0d1117" stroke-width="4" stroke-linecap="round" />
+  <ellipse cx="85" cy="72" rx="45" ry="22" fill="url(#sharpSpecular)" transform="rotate(-25 85 72)" />
+</svg>

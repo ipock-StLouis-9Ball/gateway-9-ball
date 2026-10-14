@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="100%" height="100%" shape-rendering="geometricPrecision">
+  <defs>
+    <radialGradient id="goldCoinGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#fff4cc" />
+      <stop offset="40%" stop-color="#e8c258" />
+      <stop offset="80%" stop-color="#b88a28" />
+      <stop offset="100%" stop-color="#6e4f10" />
+    </radialGradient>
+    <radialGradient id="ballShade" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35" />
+      <stop offset="60%" stop-color="#ffffff" stop-opacity="0.0" />
+      <stop offset="85%" stop-color="#000000" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.8" />
+    </radialGradient>
+    <radialGradient id="specular" cx="32%" cy="25%" r="28%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.75" />
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
+    </radialGradient>
+  </defs>
+  <circle cx="128" cy="128" r="120" fill="#1f7a34" />
+  <circle cx="128" cy="128" r="108" fill="none" stroke="#ffffff" stroke-width="12" stroke-dasharray="18 18" opacity="0.8" />
+  <circle cx="128" cy="128" r="98" fill="none" stroke="#000000" stroke-width="3" opacity="0.4" />
+  <circle cx="128" cy="128" r="54" fill="url(#goldCoinGrad)" stroke="#3a2808" stroke-width="3" />
+  <circle cx="128" cy="128" r="46" fill="none" stroke="#fff1bd" stroke-width="1.5" opacity="0.8" />
+  <text x="128" y="142" font-family="Inter, system-ui, sans-serif" font-weight="900" font-size="48" fill="#261a05" text-anchor="middle">6</text>
+  <line x1="108" y1="152" x2="148" y2="152" stroke="#261a05" stroke-width="4" stroke-linecap="round" />
+  <circle cx="128" cy="128" r="120" fill="url(#ballShade)" />
+  <ellipse cx="90" cy="80" rx="50" ry="28" fill="url(#specular)" transform="rotate(-20 90 80)" />
+</svg>
