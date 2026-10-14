@@ -1,0 +1,5 @@
+panda3d>=1.10.13
+pooltool>=0.3.0
+websocket-client>=1.5.0
+numpy>=1.22.0
+scipy>=1.8.0

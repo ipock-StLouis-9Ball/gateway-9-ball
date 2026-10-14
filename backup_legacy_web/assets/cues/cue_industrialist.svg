@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 50" width="100%" height="100%" shape-rendering="geometricPrecision">
+  <defs>
+    <linearGradient id="brushedSteel" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="20%" stop-color="#b0b8c0" />
+      <stop offset="50%" stop-color="#788088" />
+      <stop offset="80%" stop-color="#a0a8b0" />
+      <stop offset="100%" stop-color="#404850" />
+    </linearGradient>
+    <pattern id="rawLeatherCrosshatch" width="10" height="10" patternUnits="userSpaceOnUse">
+      <rect width="10" height="10" fill="#6e4a28" />
+      <path d="M 0,0 L 10,10 M 10,0 L 0,10" stroke="#3b2410" stroke-width="1.2" />
+    </pattern>
+    <radialGradient id="rivetGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="60%" stop-color="#808890" />
+      <stop offset="100%" stop-color="#202428" />
+    </radialGradient>
+  </defs>
+
+  <!-- Brushed Industrial Steel Tapered Shaft -->
+  <polygon points="15,21 795,11 795,39 15,29" fill="url(#brushedSteel)" />
+
+  <!-- Hardened Steel Ferrule & Tip -->
+  <rect x="0" y="21.5" width="5" height="7" fill="#202020" />
+  <rect x="5" y="21" width="10" height="8" fill="#d8e0e8" stroke="#505860" stroke-width="0.5" />
+
+  <!-- Exposed Steel Joint & Rivet Accents (x=380..420) -->
+  <rect x="380" y="17.5" width="30" height="15" fill="#303840" />
+  <circle cx="390" cy="21" r="2" fill="url(#rivetGrad)" />
+  <circle cx="390" cy="29" r="2" fill="url(#rivetGrad)" />
+  <circle cx="400" cy="21" r="2" fill="url(#rivetGrad)" />
+  <circle cx="400" cy="29" r="2" fill="url(#rivetGrad)" />
+  <circle cx="410" cy="21" r="2" fill="url(#rivetGrad)" />
+  <circle cx="410" cy="29" r="2" fill="url(#rivetGrad)" />
+
+  <!-- Cross-Hatched Raw Leather Grip Wrap (x=480..680) -->
+  <polygon points="480,16 680,13 680,37 480,34" fill="url(#rawLeatherCrosshatch)" stroke="#382010" stroke-width="1.5" />
+
+  <!-- Steel Butt Collar with Rivet Ring -->
+  <rect x="710" y="12" width="20" height="26" fill="#303840" />
+  <circle cx="720" cy="18" r="2.2" fill="url(#rivetGrad)" />
+  <circle cx="720" cy="25" r="2.2" fill="url(#rivetGrad)" />
+  <circle cx="720" cy="32" r="2.2" fill="url(#rivetGrad)" />
+
+  <!-- Heavy Steel End Cap -->
+  <rect x="795" y="10" width="5" height="30" rx="1" fill="#252a30" />
+</svg>

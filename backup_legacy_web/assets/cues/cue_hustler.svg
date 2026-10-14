@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 50" width="100%" height="100%" shape-rendering="geometricPrecision">
+  <defs>
+    <linearGradient id="distressedWood" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#b08453" />
+      <stop offset="30%" stop-color="#734d28" />
+      <stop offset="65%" stop-color="#523418" />
+      <stop offset="100%" stop-color="#301c0a" />
+    </linearGradient>
+    <linearGradient id="ductTapeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e0e0e0" />
+      <stop offset="50%" stop-color="#a0a8b0" />
+      <stop offset="100%" stop-color="#606870" />
+    </linearGradient>
+  </defs>
+
+  <!-- Tapered Main Shaft Body -->
+  <polygon points="15,21 795,11 795,39 15,29" fill="url(#distressedWood)" />
+
+  <!-- Distressed Wood Scratches & Wear Stains -->
+  <path d="M 80,22 L 200,24 M 140,20 L 280,22 M 350,18 L 450,21" stroke="#221205" stroke-width="1.2" opacity="0.6" />
+
+  <!-- Misaligned / Slightly Offset Ferrule (x=5..15 tilted slightly) -->
+  <rect x="0" y="21" width="5" height="7" fill="#3a2215" transform="rotate(1.5 5 24)" />
+  <polygon points="5,20.5 15,22 15,30 5,28.5" fill="#e8e0d0" stroke="#807868" stroke-width="0.5" />
+
+  <!-- Duct-Taped Textured Silver-Gray Grip Wrap (x=480..680) -->
+  <g id="duct-tape-wrap">
+    <polygon points="480,16 680,13 680,37 480,34" fill="url(#ductTapeGrad)" />
+    <!-- Wrinkle & Seam Lines on Tape -->
+    <path d="M 500,16 L 515,34 M 540,15 L 555,35 M 580,15 L 595,36 M 620,14 L 635,36 M 660,13 L 672,37" stroke="#ffffff" stroke-width="1.5" opacity="0.6" />
+    <path d="M 508,16 L 523,34 M 548,15 L 563,35 M 588,15 L 603,36 M 628,14 L 643,36" stroke="#404850" stroke-width="1" opacity="0.5" />
+  </g>
+
+  <!-- Chipped Rubber Butt Cap -->
+  <polygon points="795,11 800,12 798,38 795,39" fill="#202020" />
+</svg>
