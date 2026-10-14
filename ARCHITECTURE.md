@@ -1,20 +1,14 @@
-# Gateway 9-Ball architecture
+# Gateway 9-Ball Serverless Architecture
 
-## Active runtime
+## Active Runtime
 
-- **Frontend:** vanilla ES modules, HTML, CSS, and Canvas in `index.html`, `styles.css`, and `js/`.
-- **Backend:** TypeScript/Express in `server/src/`, compiled to `server/dist/` and run with Node.js.
-- **Persistence:** PostgreSQL via `DATABASE_URL`. User profiles, account ownership, and immutable double-entry ledger transactions are stored transactionally.
-- **Game authority:** `js/rules.js` is shared by the resolver; production match orchestration should keep canonical match state server-side and publish authoritative state snapshots.
+- **Frontend & UI:** Vanilla HTML5, CSS3, ES modules, and 2D Canvas (`index.html`, `styles.css`, `js/`).
+- **Local Physics Engine:** Pyodide (Python compiled to WebAssembly) running `pooltool` natively in the browser via `js/physicsBridge.js`.
+- **Multiplayer & Synchronization:** Firebase v10 Web SDK (Auth & Firestore) for lockstep consensus and real-time turn state synchronization (`/matches/{matchId}`).
 
-## Financial invariants
+## Lockstep Consensus & Anti-Cheat
 
-Every wallet movement is represented as a ledger transfer from one account to another. Balances are derived from ledger entries rather than stored mutable balance fields. Match escrow, payouts, platform fees, deposits, and withdrawals must be completed in ACID transactions.
-
-## Deployment
-
-The Cloud Run image builds TypeScript during Docker build and runs compiled JavaScript. Cloud Run may scale to zero and horizontally scale instances; PostgreSQL is the durable shared state boundary. Configure `DATABASE_URL`, PayPal credentials, and a production CORS allow-list through secrets/environment configuration.
-
-## Roadmap
-
-Multi-region read replicas, sharding, Cloud Spanner/BigQuery analytics, WebSocket matchmaking, Cloud Armor policies, and advanced KYC/AML integrations are future infrastructure modules. They are not active runtime dependencies of this lean HTTP resolver.
+- Clients communicate shot execution solely via shot parameters (angle, power, english).
+- Both clients independently execute the physics simulation locally using Pyodide and `pooltool`.
+- Ball coordinates are rounded to 3 decimal places before producing a SHA-256 digest (`crypto.subtle.digest`).
+- Hashes are submitted to `/matches/{matchId}/verifications`. Firestore security rules block match progression if hashes mismatch ("Desync").
