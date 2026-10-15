@@ -8,9 +8,9 @@ class AutonomicDevOpsAgent:
     Enforces automated quarantines, disconnects suspicious traffic, triggers self-healing state rollbacks,
     and dispatches high-priority administrative SMS/push alerts on critical ledger breaches.
     """
-    def __init__(self, project_id: Optional[str] = None, firestore_db=None):
+    def __init__(self, project_id: Optional[str] = None, db_client=None):
         self.project_id = project_id or os.environ.get("GCP_PROJECT", "st-louis-9-ball-hustle")
-        self.db = firestore_db
+        self.db = db_client
         self.quarantined_players: set = set()
         self.alert_routing_line = os.environ.get("ADMIN_ALERT_PHONE", "+18005550199")
 
@@ -51,11 +51,11 @@ class AutonomicDevOpsAgent:
         print(f"[VertexAI DevOps Agent] Player {player_id} placed in AUTOMATED QUARANTINE: {reason}")
 
     def execute_self_healing_rollback(self):
-        """Rollback match/ledger state to last uncorrupted Firestore snapshot."""
-        print("[VertexAI DevOps Agent] EXECUTING SELF-HEALING STATE ROLLBACK to last known uncorrupted Firestore snapshot...")
+        """Rollback match/ledger state to last uncorrupted snapshot in Cloud SQL."""
+        print("[VertexAI DevOps Agent] EXECUTING SELF-HEALING STATE ROLLBACK to last known uncorrupted Cloud SQL snapshot...")
         if self.db:
             try:
-                # Firestore state restoration logic
+                # Cloud SQL state restoration logic
                 pass
             except Exception as e:
                 print(f"Self-healing rollback error: {e}")

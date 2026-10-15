@@ -16,7 +16,7 @@ except ImportError:
     ShowBase = object
 
 class Pool3DApp(ShowBase):
-    def __init__(self, server_ws_url: str = "ws://localhost:8000/match_runner/ws/match_runner/room_1"):
+    def __init__(self, server_ws_url: str = "ws://localhost:8000/ws/match_runner/room_1"):
         if PANDA3D_AVAILABLE:
             super().__init__()
             self.setup_orthographic_camera()
@@ -25,8 +25,8 @@ class Pool3DApp(ShowBase):
             print("[Panda3D App] Running in headless/mock mode (Panda3D package omitted on backend).")
 
         self.predictor = SkillTrajectoryPredictor()
-        self.network = NetworkManager(server_url=server_ws_url)
-        self.network.connect(on_message=self.handle_server_message)
+        self.network = NetworkManager(fallback_ws_url=server_ws_url)
+        self.network.connect(ws_url=server_ws_url, on_message=self.handle_server_message)
 
         # Game state & touch parameters
         self.cue_pos = (0.0, 0.0)
