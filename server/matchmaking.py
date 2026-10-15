@@ -1,23 +1,23 @@
 import time
 import os
 from typing import Optional, Dict, Any, List
+from server.api.db import db_manager
 
 class SBMMQueue:
-    def __init__(self, redis_client=None, firestore_db=None):
+    def __init__(self, redis_client=None, db_client=None):
         self.redis = redis_client
-        self.db = firestore_db
+        self.db = db_client or db_manager
         # Fallback local memory queue if Redis is not configured
         self._local_queue: Dict[str, Dict[str, Any]] = {}
 
     def get_player_elo(self, player_id: str) -> int:
         if self.db:
             try:
-                doc = self.db.collection('users').document(player_id).get()
-                if doc.exists:
-                    data = doc.to_dict()
-                    return data.get('elo', 1200)
+                user = self.db.get_user(player_id)
+                if user:
+                    return user.get('elo', 1200)
             except Exception as e:
-                print(f"Firestore get_player_elo error: {e}")
+                print(f"Database get_player_elo error: {e}")
         return 1200
 
     def enqueue_player(self, player_id: str, elo: Optional[int] = None) -> int:
@@ -90,3 +90,5 @@ class SBMMQueue:
         # Enqueue current player if no opponent was found
         self.enqueue_player(player_id, player_elo)
         return None
+
+global_sbmm_queue = SBMMQueue()

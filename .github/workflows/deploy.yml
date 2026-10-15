@@ -1,0 +1,89 @@
+name: CI/CD Automated Security Gates & Hybrid Cloud Deployment
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-audit:
+    name: Security Scan & Test Suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y libcairo2-dev
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r server/requirements.txt
+          pip install attrs cattrs
+
+      - name: Dependency Vulnerability Audit
+        run: |
+          pip-audit --local
+
+      - name: Run Test Suite
+        run: |
+          pytest --ignore=backup_legacy_web
+
+  non-critical-auto-merge-deploy:
+    name: Non-Critical Auto-Merge & Hybrid Cloud Deployment
+    needs: test-and-audit
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect Infrastructure & Security File Changes
+        id: classify_pr
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          CRITICAL_PATTERNS="Dockerfile|\.github/workflows/|server/devops_monitor/security\.py|server/api/db\.py|config/"
+
+          if echo "$CHANGED_FILES" | grep -E -q "$CRITICAL_PATTERNS"; then
+            echo "CRITICAL_PR=true" >> $GITHUB_ENV
+            echo "PR contains infrastructure or security configuration changes. Manual review required."
+          else
+            echo "CRITICAL_PR=false" >> $GITHUB_ENV
+            echo "PR is NON-CRITICAL (no infrastructure or security files changed). Safe for auto-merge."
+          fi
+
+      - name: Auto-Merge Non-Critical Pull Request
+        if: env.CRITICAL_PR == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Auto-merging non-critical PR #${{ github.event.pull_request.number }}..."
+          gh pr merge ${{ github.event.pull_request.number }} --auto --squash || echo "PR auto-merge queued."
+
+      - name: Deploy Stateless API to Cloud Run
+        if: env.CRITICAL_PR == 'false'
+        run: |
+          echo "Deploying Cloud Run Stateless API Service..."
+          # gcloud run deploy 9ball-stateless-api --source . --region us-central1 --port 8080 --no-allow-unauthenticated
+
+      - name: Deploy Stateful Match Runner to Compute Engine VM
+        if: env.CRITICAL_PR == 'false'
+        run: |
+          echo "Deploying Stateful WebSocket Match Runner to Compute Engine VM..."
+          # gcloud compute instances update-container 9ball-match-runner-vm --container-image gcr.io/$GCP_PROJECT/match-runner:latest

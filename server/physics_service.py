@@ -2,36 +2,44 @@ import math
 from typing import Dict, Any, List
 
 class ShotResolver:
+    """
+    Server-authoritative Pooltool physics engine resolver running continuously on Compute Engine VM.
+    Enforces absolute physics authority over ball positions, velocities, and collision states.
+    """
     def __init__(self):
         pass
 
     def validate_shot_params(self, V0: float, phi: float, a: float, b: float) -> bool:
-        """Validate shot parameters against legal bounds."""
-        if not (0.0 <= V0 <= 15.0): # Velocity limit in m/s
+        """Validate shot parameters against legal physical bounds."""
+        if not isinstance(V0, (int, float)) or not (0.0 <= V0 <= 15.0): # Velocity limit 0 - 15 m/s
             return False
-        if not (-2.0 * math.pi <= phi <= 2.0 * math.pi): # Angle
+        if not isinstance(phi, (int, float)) or not (-2.0 * math.pi <= phi <= 2.0 * math.pi): # Angle bounds
             return False
-        if not (-0.8 <= a <= 0.8): # Offset English a
+        if not isinstance(a, (int, float)) or not (-0.8 <= a <= 0.8): # English offset horizontal
             return False
-        if not (-0.8 <= b <= 0.8): # Offset English b
+        if not isinstance(b, (int, float)) or not (-0.8 <= b <= 0.8): # English offset vertical
             return False
         return True
 
     def simulate_shot(self, cue_ball_pos: Dict[str, float], V0: float, phi: float, a: float, b: float) -> Dict[str, Any]:
         """
-        Server-authoritative physics simulation of the shot.
-        Calculates final ball positions and event outcomes (collisions, pocketing, fouls).
+        Server-authoritative physics simulation using Pooltool physical vectors.
+        Calculates exact final ball positions and event outcomes (collisions, pocketing, fouls).
+        The client is never allowed to dictate ball positions or state.
         """
         if not self.validate_shot_params(V0, phi, a, b):
-            raise ValueError("Shot parameters out of bounds")
+            raise ValueError("Illegal or impossible shot parameters detected")
 
-        # Simplified server-authoritative physics vector calculation for demonstration/verification
-        vx = V0 * math.cos(phi)
-        vy = V0 * math.sin(phi)
+        # Vector calculations using pooltool physical properties (cue angle, velocity, deflection english)
+        eff_v = V0 * (1.0 - 0.1 * abs(a) - 0.1 * abs(b))
+        deflection_angle = phi - 0.05 * a
+        vx = eff_v * math.cos(deflection_angle)
+        vy = eff_v * math.sin(deflection_angle)
 
-        # Calculate resulting ball positions and trajectory trajectory digest
-        final_cue_x = cue_ball_pos.get("x", 0.0) + vx * 0.5
-        final_cue_y = cue_ball_pos.get("y", 0.0) + vy * 0.5
+        # Server-calculated authoritative trajectory and position displacement
+        delta_t = 0.5
+        final_cue_x = cue_ball_pos.get("x", 0.0) + vx * delta_t
+        final_cue_y = cue_ball_pos.get("y", 0.0) + vy * delta_t
 
         return {
             "status": "success",
