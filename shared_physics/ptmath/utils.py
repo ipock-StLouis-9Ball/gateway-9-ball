@@ -314,6 +314,24 @@ def rotate_vectors(
 
 
 @jit(nopython=True, cache=const.use_numba_cache)
+def coordinate_rotation_x(v: NDArray[np.float64], theta: float) -> NDArray[np.float64]:
+    """Rotate vector/matrix around the x-axis by angle theta in radians
+
+    (just-in-time compiled)
+    """
+    cos_theta = np.cos(theta)
+    sin_theta = np.sin(theta)
+    rotation = np.zeros((3, 3), np.float64)
+    rotation[0, 0] = 1.0
+    rotation[1, 1] = cos_theta
+    rotation[1, 2] = -sin_theta
+    rotation[2, 1] = sin_theta
+    rotation[2, 2] = cos_theta
+
+    return np.dot(rotation, v)
+
+
+@jit(nopython=True, cache=const.use_numba_cache)
 def coordinate_rotation(v: NDArray[np.float64], phi: float) -> NDArray[np.float64]:
     """Rotate vector/matrix from one frame of reference to another (3D FIXME)
 
