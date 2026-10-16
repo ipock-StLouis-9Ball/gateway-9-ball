@@ -135,12 +135,10 @@ class InstantaneousPoint3D(CoreStickBallCollision):
         # ball_Q represents the point Q_cue after a passive coordinate frame rotation by theta around the x-axis
         # cue_Q = [cue_a, cue_c, cue_b]
         # ball_Q = [ball_a, ball_c, ball_b]
-        # FIXME: use a common rotation function
         theta_rad = cue.theta * np.pi / 180
         cue_c = np.sqrt(1.0 - cue.a**2 - cue.b**2)
-        ball_a = cue.a
-        ball_c = np.cos(theta_rad) * cue_c - np.sin(theta_rad) * cue.b
-        ball_b = np.sin(theta_rad) * cue_c + np.cos(theta_rad) * cue.b
+        cue_Q = np.array([cue.a, cue_c, cue.b])
+        ball_a, ball_c, ball_b = ptmath.coordinate_rotation_x(cue_Q, theta_rad)
 
         v, w = cue_strike(
             ball.params.m,
