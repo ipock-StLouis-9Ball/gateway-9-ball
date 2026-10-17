@@ -170,10 +170,26 @@ def test_ball_physics_and_pocket_drop_mechanics():
     assert resolver.validate_shot_params(V0=999.0, phi=0.5, a=0.2, b=-0.1) is False
     assert resolver.validate_shot_params(V0=10.0, phi=0.5, a=2.5, b=-0.1) is False
 
-    # 2. Test shot physics trajectory calculation
+    # 2. Test non-numeric / special value rejection (NaN, Inf, booleans)
+    assert resolver.validate_shot_params(V0=float('nan'), phi=0.5, a=0.0, b=0.0) is False
+    assert resolver.validate_shot_params(V0=10.0, phi=float('inf'), a=0.0, b=0.0) is False
+    assert resolver.validate_shot_params(V0=True, phi=0.5, a=0.0, b=0.0) is False
+    assert resolver.validate_shot_params(V0=10.0, phi=0.5, a=False, b=0.0) is False
+
+    # 3. Test shot physics trajectory calculation
     res = resolver.simulate_shot({"x": 0.0, "y": 0.0}, V0=10.0, phi=0.0, a=0.0, b=0.0)
     assert res["status"] == "success"
     assert res["cue_ball_final"]["x"] == 5.0 # V0=10.0 * dt=0.5 -> delta_x = 5.0
+
+def test_settle_match_validation_and_limits():
+    # Oversized shot ledger > 500 items must be rejected with 422 Unprocessable Entity
+    huge_ledger = [{"player_id": "p1", "input": {"V0": 5.0}} for _ in range(501)]
+    res = client.post("/api/settle_match", json={
+        "match_id": "huge_match_1",
+        "winner_id": "p1",
+        "shot_ledger": huge_ledger
+    })
+    assert res.status_code == 422
 
 if __name__ == "__main__":
     test_stateless_api_endpoints()
@@ -182,4 +198,5 @@ if __name__ == "__main__":
     test_single_use_token_consumption_and_reconnect()
     test_authoritative_replay_verification_and_anti_cheat()
     test_ball_physics_and_pocket_drop_mechanics()
+    test_settle_match_validation_and_limits()
     print("All architecture & security tests passed successfully!")
