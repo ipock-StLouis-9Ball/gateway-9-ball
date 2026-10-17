@@ -1,0 +1,4 @@
+## 2025-05-18 - Python Boolean Subclassing and NaN/Inf Float Validation Gap
+**Vulnerability:** In Python, `isinstance(True, (int, float))` evaluates to `True` because `bool` is a subclass of `int`. As a result, boolean inputs (`True`/`False`) pass standard `isinstance(x, (int, float))` and numeric boundary comparisons (`0.0 <= x <= 15.0`), allowing booleans to reach mathematical calculations where `True` resolves to `1.0` and `False` resolves to `0.0`. Similarly, `float('nan')` and `float('inf')` can bypass numeric checks if not explicitly checked with `math.isnan` and `math.isinf`.
+**Learning:** Checking `isinstance(val, (int, float))` alone is insufficient for strict numeric parameter validation in Python.
+**Prevention:** Explicitly filter out booleans using `isinstance(param, bool)` and check `math.isnan(param)` and `math.isinf(param)` before performing range and physics calculations on numerical inputs.

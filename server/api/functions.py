@@ -4,7 +4,7 @@ import secrets
 import jwt
 from typing import Dict, Any, Optional, List
 from fastapi import APIRouter, HTTPException, Request, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
@@ -25,27 +25,27 @@ MATCH_RUNNER_VM_URL = os.environ.get("MATCH_RUNNER_VM_URL", "wss://vm.9ballhustl
 pending_match_handoffs: Dict[str, Dict[str, Any]] = {}
 
 class UserAccountRequest(BaseModel):
-    player_id: str
-    username: str
-    widevine_id: str
-    build_fingerprint: str
+    player_id: str = Field(..., max_length=128)
+    username: str = Field(..., max_length=64)
+    widevine_id: str = Field(..., max_length=256)
+    build_fingerprint: str = Field(..., max_length=256)
 
 class ProfileUpdateRequest(BaseModel):
-    player_id: str
-    bio: Optional[str] = None
-    avatar: Optional[str] = None
+    player_id: str = Field(..., max_length=128)
+    bio: Optional[str] = Field(None, max_length=1000)
+    avatar: Optional[str] = Field(None, max_length=512)
 
 class MatchmakeRequest(BaseModel):
-    player_id: str
-    elo: Optional[int] = None
+    player_id: str = Field(..., max_length=128)
+    elo: Optional[int] = Field(None, ge=0, le=5000)
 
 class SettleMatchRequest(BaseModel):
-    match_id: str
-    winner_id: str
-    loser_id: Optional[str] = ""
+    match_id: str = Field(..., max_length=128)
+    winner_id: str = Field(..., max_length=128)
+    loser_id: Optional[str] = Field("", max_length=128)
     forfeit: Optional[bool] = False
-    finish_reason: Optional[str] = ""
-    shot_ledger: List[Dict[str, Any]]
+    finish_reason: Optional[str] = Field("", max_length=512)
+    shot_ledger: List[Dict[str, Any]] = Field(..., max_length=500)
     players: Optional[Dict[str, Any]] = None
     payouts: Optional[Dict[str, Any]] = None
 
@@ -295,6 +295,7 @@ def request_matchmaking(request: Request, req: MatchmakeRequest):
     }
 
 @router.post("/settle_match")
+@limiter.limit("5/minute")
 def settle_match_endpoint(request: Request, req: SettleMatchRequest):
     """Sole permitted route for final match stats, telemetry ledgers, and payout settlement instructions."""
     res = process_authoritative_settlement(req.model_dump())
