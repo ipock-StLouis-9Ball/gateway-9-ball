@@ -11,6 +11,9 @@ class ShotResolver:
 
     def validate_shot_params(self, V0: float, phi: float, a: float, b: float) -> bool:
         """Validate shot parameters against legal physical bounds."""
+        for param in (V0, phi, a, b):
+            if isinstance(param, bool):
+                return False
         if not isinstance(V0, (int, float)) or not (0.0 <= V0 <= 15.0): # Velocity limit 0 - 15 m/s
             return False
         if not isinstance(phi, (int, float)) or not (-2.0 * math.pi <= phi <= 2.0 * math.pi): # Angle bounds
