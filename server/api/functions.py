@@ -295,6 +295,7 @@ def request_matchmaking(request: Request, req: MatchmakeRequest):
     }
 
 @router.post("/settle_match")
+@limiter.limit("5/minute")
 def settle_match_endpoint(request: Request, req: SettleMatchRequest):
     """Sole permitted route for final match stats, telemetry ledgers, and payout settlement instructions."""
     res = process_authoritative_settlement(req.model_dump())

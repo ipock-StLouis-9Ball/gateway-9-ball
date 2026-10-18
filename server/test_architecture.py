@@ -165,10 +165,11 @@ def test_authoritative_replay_verification_and_anti_cheat():
 def test_ball_physics_and_pocket_drop_mechanics():
     resolver = ShotResolver()
 
-    # 1. Test legal shot bounds validation
+    # 1. Test legal shot bounds validation and boolean type rejection
     assert resolver.validate_shot_params(V0=10.0, phi=0.5, a=0.2, b=-0.1) is True
     assert resolver.validate_shot_params(V0=999.0, phi=0.5, a=0.2, b=-0.1) is False
     assert resolver.validate_shot_params(V0=10.0, phi=0.5, a=2.5, b=-0.1) is False
+    assert resolver.validate_shot_params(V0=True, phi=0.5, a=0.2, b=-0.1) is False
 
     # 2. Test shot physics trajectory calculation
     res = resolver.simulate_shot({"x": 0.0, "y": 0.0}, V0=10.0, phi=0.0, a=0.0, b=0.0)
