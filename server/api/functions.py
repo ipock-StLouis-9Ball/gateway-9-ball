@@ -297,5 +297,15 @@ def request_matchmaking(request: Request, req: MatchmakeRequest):
 @router.post("/settle_match")
 def settle_match_endpoint(request: Request, req: SettleMatchRequest):
     """Sole permitted route for final match stats, telemetry ledgers, and payout settlement instructions."""
+    # Security: Require valid JWT token in Authorization header to prevent unauthorized match settlement
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Authentication token required for match settlement.")
+    token = auth_header.split(" ", 1)[1]
+    try:
+        jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid or expired settlement authentication token.")
+
     res = process_authoritative_settlement(req.model_dump())
     return res
