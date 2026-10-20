@@ -1,6 +1,7 @@
 import math
 import time
 import secrets
+import jwt
 import pytest
 from fastapi.testclient import TestClient
 
@@ -9,6 +10,7 @@ from server.match_runner.runner import app as vm_app, GameRoom, rooms
 from server.physics_service import ShotResolver
 from server.matchmaking import SBMMQueue
 from server.api.db import db_manager, AccessDeniedError
+from server.api.functions import JWT_SECRET, JWT_ALGORITHM
 
 client = TestClient(cloud_run_app)
 vm_client = TestClient(vm_app)
@@ -118,6 +120,19 @@ def test_single_use_token_consumption_and_reconnect():
 
 def test_authoritative_replay_verification_and_anti_cheat():
     resolver = ShotResolver()
+
+    # 0. Calling /api/settle_match without a valid JWT token MUST fail with HTTP 401
+    unauth_res = client.post("/api/settle_match", json={
+        "match_id": "unauth_match_1",
+        "winner_id": "honest_player",
+        "shot_ledger": []
+    })
+    assert unauth_res.status_code == 401
+
+    # Generate valid JWT Bearer token for authorized match runner
+    auth_token = jwt.encode({"sub": "match_runner", "role": "server"}, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    auth_headers = {"Authorization": f"Bearer {auth_token}"}
+
     # 1. Clean match shot ledger
     clean_shot = {
         "player_id": "honest_player",
@@ -125,7 +140,7 @@ def test_authoritative_replay_verification_and_anti_cheat():
         "physics_result": resolver.simulate_shot({"x": 0.0, "y": 0.0}, V0=5.0, phi=0.0, a=0.0, b=0.0)
     }
 
-    clean_settlement = client.post("/api/settle_match", json={
+    clean_settlement = client.post("/api/settle_match", headers=auth_headers, json={
         "match_id": "clean_match_1",
         "winner_id": "honest_player",
         "loser_id": "cheater_player",
@@ -142,7 +157,7 @@ def test_authoritative_replay_verification_and_anti_cheat():
         "physics_result": {"cue_ball_final": {"x": 500.0, "y": 0.0}}
     }
 
-    tampered_settlement = client.post("/api/settle_match", json={
+    tampered_settlement = client.post("/api/settle_match", headers=auth_headers, json={
         "match_id": "tampered_match_1",
         "winner_id": "cheater_player",
         "loser_id": "honest_player",

@@ -3,7 +3,7 @@ import os
 import secrets
 import jwt
 from typing import Dict, Any, Optional, List
-from fastapi import APIRouter, HTTPException, Request, Depends
+from fastapi import APIRouter, HTTPException, Request, Depends, Header
 from pydantic import BaseModel
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -294,8 +294,32 @@ def request_matchmaking(request: Request, req: MatchmakeRequest):
         "token": handoff["token"]
     }
 
+def verify_jwt_token(authorization: Optional[str] = Header(None)) -> Dict[str, Any]:
+    """
+    Security Verification:
+    Validates the JWT Bearer token in the Authorization header to protect sensitive
+    match settlement and payout endpoints against unauthorized external requests.
+    """
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=401,
+            detail="Missing or invalid Authorization header. JWT Bearer token required."
+        )
+    token = authorization.split(" ", 1)[1]
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="JWT token has expired.")
+    except jwt.InvalidTokenError as e:
+        raise HTTPException(status_code=401, detail=f"Invalid JWT token: {e}")
+
 @router.post("/settle_match")
-def settle_match_endpoint(request: Request, req: SettleMatchRequest):
+def settle_match_endpoint(
+    request: Request,
+    req: SettleMatchRequest,
+    token_payload: Dict[str, Any] = Depends(verify_jwt_token)
+):
     """Sole permitted route for final match stats, telemetry ledgers, and payout settlement instructions."""
     res = process_authoritative_settlement(req.model_dump())
     return res
