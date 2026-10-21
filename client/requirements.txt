@@ -1,5 +1,5 @@
 panda3d>=1.10.16
-pooltool>=0.3.0
+pooltool>=2.1.2
 websocket-client>=1.5.0
 numpy>=1.22.0
 scipy>=1.18.1
