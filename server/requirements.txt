@@ -8,6 +8,6 @@ scipy>=1.18.1
 pooltool>=0.3.0
 pydantic>=2.14.1
 PyJWT>=2.8.0
-psycopg2-binary>=2.9.0
+psycopg2-binary>=2.9.13
 slowapi>=0.1.9
 pip-audit>=2.7.0
