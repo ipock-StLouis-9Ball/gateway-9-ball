@@ -1,6 +1,7 @@
 import math
 import time
 import secrets
+import jwt
 import pytest
 from fastapi.testclient import TestClient
 
@@ -118,6 +119,19 @@ def test_single_use_token_consumption_and_reconnect():
 
 def test_authoritative_replay_verification_and_anti_cheat():
     resolver = ShotResolver()
+    # Generate valid JWT Bearer token for settlement requests
+    from server.api.functions import JWT_SECRET, JWT_ALGORITHM
+    valid_jwt = jwt.encode({"sub": "match_runner_vm"}, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    auth_headers = {"Authorization": f"Bearer {valid_jwt}"}
+
+    # 0. Unauthorized request without JWT Bearer header must fail with 401
+    unauth_settlement = client.post("/api/settle_match", json={
+        "match_id": "unauth_match",
+        "winner_id": "p1",
+        "shot_ledger": []
+    })
+    assert unauth_settlement.status_code == 401
+
     # 1. Clean match shot ledger
     clean_shot = {
         "player_id": "honest_player",
@@ -125,7 +139,7 @@ def test_authoritative_replay_verification_and_anti_cheat():
         "physics_result": resolver.simulate_shot({"x": 0.0, "y": 0.0}, V0=5.0, phi=0.0, a=0.0, b=0.0)
     }
 
-    clean_settlement = client.post("/api/settle_match", json={
+    clean_settlement = client.post("/api/settle_match", headers=auth_headers, json={
         "match_id": "clean_match_1",
         "winner_id": "honest_player",
         "loser_id": "cheater_player",
@@ -142,7 +156,7 @@ def test_authoritative_replay_verification_and_anti_cheat():
         "physics_result": {"cue_ball_final": {"x": 500.0, "y": 0.0}}
     }
 
-    tampered_settlement = client.post("/api/settle_match", json={
+    tampered_settlement = client.post("/api/settle_match", headers=auth_headers, json={
         "match_id": "tampered_match_1",
         "winner_id": "cheater_player",
         "loser_id": "honest_player",
