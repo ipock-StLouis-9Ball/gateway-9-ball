@@ -116,8 +116,24 @@ def test_single_use_token_consumption_and_reconnect():
         assert reconnected_data["event"] == "reconnected"
         assert reconnected_data["player_id"] == "p1_token_test"
 
+import jwt
+from server.api.functions import JWT_SECRET, JWT_ALGORITHM
+
 def test_authoritative_replay_verification_and_anti_cheat():
     resolver = ShotResolver()
+
+    # 0. Unauthenticated settlement requests MUST be rejected with HTTP 401
+    unauth_settlement = client.post("/api/settle_match", json={
+        "match_id": "unauth_match",
+        "winner_id": "honest_player",
+        "shot_ledger": []
+    })
+    assert unauth_settlement.status_code == 401
+
+    # Generate valid Bearer token for settlement calls
+    valid_token = jwt.encode({"sub": "match_runner", "exp": time.time() + 300}, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    auth_headers = {"Authorization": f"Bearer {valid_token}"}
+
     # 1. Clean match shot ledger
     clean_shot = {
         "player_id": "honest_player",
@@ -131,7 +147,7 @@ def test_authoritative_replay_verification_and_anti_cheat():
         "loser_id": "cheater_player",
         "shot_ledger": [clean_shot],
         "players": {"honest_player": {}, "cheater_player": {}}
-    })
+    }, headers=auth_headers)
     assert clean_settlement.status_code == 200
     assert clean_settlement.json()["divergence_detected"] is False
 
@@ -148,7 +164,7 @@ def test_authoritative_replay_verification_and_anti_cheat():
         "loser_id": "honest_player",
         "shot_ledger": [tampered_shot],
         "players": {"honest_player": {}, "cheater_player": {}}
-    })
+    }, headers=auth_headers)
     assert tampered_settlement.status_code == 200
     t_data = tampered_settlement.json()
     assert t_data["divergence_detected"] is True
