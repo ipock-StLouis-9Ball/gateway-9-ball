@@ -1,6 +1,7 @@
 import math
 import time
 import secrets
+import jwt
 import pytest
 from fastapi.testclient import TestClient
 
@@ -9,6 +10,7 @@ from server.match_runner.runner import app as vm_app, GameRoom, rooms
 from server.physics_service import ShotResolver
 from server.matchmaking import SBMMQueue
 from server.api.db import db_manager, AccessDeniedError
+from server.api.functions import JWT_SECRET, JWT_ALGORITHM
 
 client = TestClient(cloud_run_app)
 vm_client = TestClient(vm_app)
@@ -118,6 +120,17 @@ def test_single_use_token_consumption_and_reconnect():
 
 def test_authoritative_replay_verification_and_anti_cheat():
     resolver = ShotResolver()
+    valid_token = jwt.encode({"sub": "match_runner_server", "exp": time.time() + 3600}, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    auth_headers = {"Authorization": f"Bearer {valid_token}"}
+
+    # 0. Unauthenticated settlement request MUST be rejected with HTTP 401
+    unauth_res = client.post("/api/settle_match", json={
+        "match_id": "unauth_match",
+        "winner_id": "p1",
+        "shot_ledger": []
+    })
+    assert unauth_res.status_code == 401
+
     # 1. Clean match shot ledger
     clean_shot = {
         "player_id": "honest_player",
@@ -131,7 +144,7 @@ def test_authoritative_replay_verification_and_anti_cheat():
         "loser_id": "cheater_player",
         "shot_ledger": [clean_shot],
         "players": {"honest_player": {}, "cheater_player": {}}
-    })
+    }, headers=auth_headers)
     assert clean_settlement.status_code == 200
     assert clean_settlement.json()["divergence_detected"] is False
 
@@ -148,7 +161,7 @@ def test_authoritative_replay_verification_and_anti_cheat():
         "loser_id": "honest_player",
         "shot_ledger": [tampered_shot],
         "players": {"honest_player": {}, "cheater_player": {}}
-    })
+    }, headers=auth_headers)
     assert tampered_settlement.status_code == 200
     t_data = tampered_settlement.json()
     assert t_data["divergence_detected"] is True

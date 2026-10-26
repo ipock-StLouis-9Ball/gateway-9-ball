@@ -49,6 +49,23 @@ class SettleMatchRequest(BaseModel):
     players: Optional[Dict[str, Any]] = None
     payouts: Optional[Dict[str, Any]] = None
 
+def verify_jwt_token(request: Request):
+    """
+    Validates JWT Bearer token in Authorization header for secure server endpoints like match settlement.
+    """
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header.")
+
+    token = auth_header.split(" ", 1)[1]
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired.")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token signature.")
+
 def seed_match_on_vm(
     match_id: str,
     player1_id: str,
@@ -295,7 +312,11 @@ def request_matchmaking(request: Request, req: MatchmakeRequest):
     }
 
 @router.post("/settle_match")
-def settle_match_endpoint(request: Request, req: SettleMatchRequest):
+def settle_match_endpoint(
+    request: Request,
+    req: SettleMatchRequest,
+    token_payload: dict = Depends(verify_jwt_token)
+):
     """Sole permitted route for final match stats, telemetry ledgers, and payout settlement instructions."""
     res = process_authoritative_settlement(req.model_dump())
     return res
