@@ -1,6 +1,7 @@
 import math
 import time
 import secrets
+import jwt
 import pytest
 from fastapi.testclient import TestClient
 
@@ -12,6 +13,9 @@ from server.api.db import db_manager, AccessDeniedError
 
 client = TestClient(cloud_run_app)
 vm_client = TestClient(vm_app)
+
+JWT_SECRET = "super-secret-gcp-match-key-9ball"
+JWT_ALGORITHM = "HS256"
 
 def test_stateless_api_endpoints():
     # 1. Test account creation
@@ -118,6 +122,20 @@ def test_single_use_token_consumption_and_reconnect():
 
 def test_authoritative_replay_verification_and_anti_cheat():
     resolver = ShotResolver()
+
+    # Unauthenticated settlement request MUST be rejected with HTTP 401
+    unauth_settlement = client.post("/api/settle_match", json={
+        "match_id": "unauth_match_1",
+        "winner_id": "honest_player",
+        "loser_id": "cheater_player",
+        "shot_ledger": []
+    })
+    assert unauth_settlement.status_code == 401
+
+    # Generate valid JWT token for authenticated settlement calls
+    auth_token = jwt.encode({"sub": "match_runner_service", "exp": time.time() + 300}, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    auth_headers = {"Authorization": f"Bearer {auth_token}"}
+
     # 1. Clean match shot ledger
     clean_shot = {
         "player_id": "honest_player",
@@ -131,7 +149,7 @@ def test_authoritative_replay_verification_and_anti_cheat():
         "loser_id": "cheater_player",
         "shot_ledger": [clean_shot],
         "players": {"honest_player": {}, "cheater_player": {}}
-    })
+    }, headers=auth_headers)
     assert clean_settlement.status_code == 200
     assert clean_settlement.json()["divergence_detected"] is False
 
@@ -148,7 +166,7 @@ def test_authoritative_replay_verification_and_anti_cheat():
         "loser_id": "honest_player",
         "shot_ledger": [tampered_shot],
         "players": {"honest_player": {}, "cheater_player": {}}
-    })
+    }, headers=auth_headers)
     assert tampered_settlement.status_code == 200
     t_data = tampered_settlement.json()
     assert t_data["divergence_detected"] is True
