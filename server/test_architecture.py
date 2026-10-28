@@ -1,6 +1,7 @@
 import math
 import time
 import secrets
+import jwt
 import pytest
 from fastapi.testclient import TestClient
 
@@ -9,6 +10,7 @@ from server.match_runner.runner import app as vm_app, GameRoom, rooms
 from server.physics_service import ShotResolver
 from server.matchmaking import SBMMQueue
 from server.api.db import db_manager, AccessDeniedError
+from server.api.functions import JWT_SECRET, JWT_ALGORITHM
 
 client = TestClient(cloud_run_app)
 vm_client = TestClient(vm_app)
@@ -118,37 +120,62 @@ def test_single_use_token_consumption_and_reconnect():
 
 def test_authoritative_replay_verification_and_anti_cheat():
     resolver = ShotResolver()
-    # 1. Clean match shot ledger
+    valid_token = jwt.encode({"role": "match_runner_vm", "exp": time.time() + 300}, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+    # 0. Unauthenticated or invalid token settlement request MUST be rejected
+    unauth_res = client.post("/api/settle_match", json={
+        "match_id": "unauth_match",
+        "winner_id": "player_a",
+        "shot_ledger": []
+    })
+    assert unauth_res.status_code == 401
+
+    invalid_token_res = client.post("/api/settle_match", json={
+        "match_id": "invalid_token_match",
+        "winner_id": "player_a",
+        "shot_ledger": []
+    }, headers={"Authorization": "Bearer bad_token"})
+    assert invalid_token_res.status_code == 401
+
+    # 1. Clean match shot ledger with valid JWT Bearer token
     clean_shot = {
         "player_id": "honest_player",
         "input": {"V0": 5.0, "phi": 0.0, "a": 0.0, "b": 0.0},
         "physics_result": resolver.simulate_shot({"x": 0.0, "y": 0.0}, V0=5.0, phi=0.0, a=0.0, b=0.0)
     }
 
-    clean_settlement = client.post("/api/settle_match", json={
-        "match_id": "clean_match_1",
-        "winner_id": "honest_player",
-        "loser_id": "cheater_player",
-        "shot_ledger": [clean_shot],
-        "players": {"honest_player": {}, "cheater_player": {}}
-    })
+    clean_settlement = client.post(
+        "/api/settle_match",
+        json={
+            "match_id": "clean_match_1",
+            "winner_id": "honest_player",
+            "loser_id": "cheater_player",
+            "shot_ledger": [clean_shot],
+            "players": {"honest_player": {}, "cheater_player": {}}
+        },
+        headers={"Authorization": f"Bearer {valid_token}"}
+    )
     assert clean_settlement.status_code == 200
     assert clean_settlement.json()["divergence_detected"] is False
 
-    # 2. Tampered shot ledger (impossibly high V0 power)
+    # 2. Tampered shot ledger (impossibly high V0 power) with valid JWT Bearer token
     tampered_shot = {
         "player_id": "cheater_player",
         "input": {"V0": 999.0, "phi": 0.0, "a": 0.0, "b": 0.0},
         "physics_result": {"cue_ball_final": {"x": 500.0, "y": 0.0}}
     }
 
-    tampered_settlement = client.post("/api/settle_match", json={
-        "match_id": "tampered_match_1",
-        "winner_id": "cheater_player",
-        "loser_id": "honest_player",
-        "shot_ledger": [tampered_shot],
-        "players": {"honest_player": {}, "cheater_player": {}}
-    })
+    tampered_settlement = client.post(
+        "/api/settle_match",
+        json={
+            "match_id": "tampered_match_1",
+            "winner_id": "cheater_player",
+            "loser_id": "honest_player",
+            "shot_ledger": [tampered_shot],
+            "players": {"honest_player": {}, "cheater_player": {}}
+        },
+        headers={"Authorization": f"Bearer {valid_token}"}
+    )
     assert tampered_settlement.status_code == 200
     t_data = tampered_settlement.json()
     assert t_data["divergence_detected"] is True
