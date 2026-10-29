@@ -117,7 +117,22 @@ def test_single_use_token_consumption_and_reconnect():
         assert reconnected_data["player_id"] == "p1_token_test"
 
 def test_authoritative_replay_verification_and_anti_cheat():
+    import jwt
+    from server.api.functions import JWT_SECRET, JWT_ALGORITHM
+
     resolver = ShotResolver()
+    # 0. Unauthenticated settlement request MUST fail with HTTP 401 Unauthorized
+    unauth_settlement = client.post("/api/settle_match", json={
+        "match_id": "unauth_match_1",
+        "winner_id": "honest_player",
+        "shot_ledger": []
+    })
+    assert unauth_settlement.status_code == 401
+
+    # Generate valid settlement JWT token
+    valid_token = jwt.encode({"sub": "settlement_service", "exp": time.time() + 300}, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    auth_headers = {"Authorization": f"Bearer {valid_token}"}
+
     # 1. Clean match shot ledger
     clean_shot = {
         "player_id": "honest_player",
@@ -125,13 +140,17 @@ def test_authoritative_replay_verification_and_anti_cheat():
         "physics_result": resolver.simulate_shot({"x": 0.0, "y": 0.0}, V0=5.0, phi=0.0, a=0.0, b=0.0)
     }
 
-    clean_settlement = client.post("/api/settle_match", json={
-        "match_id": "clean_match_1",
-        "winner_id": "honest_player",
-        "loser_id": "cheater_player",
-        "shot_ledger": [clean_shot],
-        "players": {"honest_player": {}, "cheater_player": {}}
-    })
+    clean_settlement = client.post(
+        "/api/settle_match",
+        json={
+            "match_id": "clean_match_1",
+            "winner_id": "honest_player",
+            "loser_id": "cheater_player",
+            "shot_ledger": [clean_shot],
+            "players": {"honest_player": {}, "cheater_player": {}}
+        },
+        headers=auth_headers
+    )
     assert clean_settlement.status_code == 200
     assert clean_settlement.json()["divergence_detected"] is False
 
@@ -142,13 +161,17 @@ def test_authoritative_replay_verification_and_anti_cheat():
         "physics_result": {"cue_ball_final": {"x": 500.0, "y": 0.0}}
     }
 
-    tampered_settlement = client.post("/api/settle_match", json={
-        "match_id": "tampered_match_1",
-        "winner_id": "cheater_player",
-        "loser_id": "honest_player",
-        "shot_ledger": [tampered_shot],
-        "players": {"honest_player": {}, "cheater_player": {}}
-    })
+    tampered_settlement = client.post(
+        "/api/settle_match",
+        json={
+            "match_id": "tampered_match_1",
+            "winner_id": "cheater_player",
+            "loser_id": "honest_player",
+            "shot_ledger": [tampered_shot],
+            "players": {"honest_player": {}, "cheater_player": {}}
+        },
+        headers=auth_headers
+    )
     assert tampered_settlement.status_code == 200
     t_data = tampered_settlement.json()
     assert t_data["divergence_detected"] is True
