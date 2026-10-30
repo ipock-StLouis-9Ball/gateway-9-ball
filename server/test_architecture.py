@@ -118,6 +118,21 @@ def test_single_use_token_consumption_and_reconnect():
 
 def test_authoritative_replay_verification_and_anti_cheat():
     resolver = ShotResolver()
+
+    # Generate valid JWT token for settlement requests
+    import jwt
+    from server.api.functions import JWT_SECRET, JWT_ALGORITHM
+    token = jwt.encode({"sub": "match_runner_vm"}, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # 0. Unauthenticated settlement attempt MUST fail with 401
+    unauth_res = client.post("/api/settle_match", json={
+        "match_id": "unauth_match",
+        "winner_id": "honest_player",
+        "shot_ledger": []
+    })
+    assert unauth_res.status_code == 401
+
     # 1. Clean match shot ledger
     clean_shot = {
         "player_id": "honest_player",
@@ -125,7 +140,7 @@ def test_authoritative_replay_verification_and_anti_cheat():
         "physics_result": resolver.simulate_shot({"x": 0.0, "y": 0.0}, V0=5.0, phi=0.0, a=0.0, b=0.0)
     }
 
-    clean_settlement = client.post("/api/settle_match", json={
+    clean_settlement = client.post("/api/settle_match", headers=headers, json={
         "match_id": "clean_match_1",
         "winner_id": "honest_player",
         "loser_id": "cheater_player",
@@ -142,7 +157,7 @@ def test_authoritative_replay_verification_and_anti_cheat():
         "physics_result": {"cue_ball_final": {"x": 500.0, "y": 0.0}}
     }
 
-    tampered_settlement = client.post("/api/settle_match", json={
+    tampered_settlement = client.post("/api/settle_match", headers=headers, json={
         "match_id": "tampered_match_1",
         "winner_id": "cheater_player",
         "loser_id": "honest_player",
