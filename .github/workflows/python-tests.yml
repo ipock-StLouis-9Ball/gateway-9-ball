@@ -1,0 +1,54 @@
+name: Antigravity Automated PR Review, Test & Approve
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  review-test-and-approve:
+    if: |
+      github.event.pull_request.draft == false &&
+      (github.event.pull_request.author_association == 'OWNER' || github.event.pull_request.author_association == 'COLLABORATOR' || github.actor == 'dependabot[bot]')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR Branch
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python & Dependencies
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Dependencies
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest
+
+      - name: Install Antigravity CLI
+        run: npm install -g @google/antigravity-cli
+
+      - name: Configure Git Identity
+        run: |
+          git config user.name "Antigravity Agent"
+          git config user.email "antigravity-bot@users.noreply.github.com"
+
+      - name: Run Antigravity Review, Fix & Test
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          agy --mode auto -p "Thoroughly audit and test all changes in this pull request against the base branch (${{ github.base_ref }}). Run the full test suite and check for any errors of any kind—including runtime bugs, logic flaws, security vulnerabilities, dependency conflicts, type or syntax errors, and broken edge cases across the entire repository. Fix every issue you find directly in the codebase, re-run all tests to verify everything passes with zero errors, and commit and push your fixes back to this PR branch. Exit with a non-zero status if any error or test failure remains unresolved." >> $GITHUB_STEP_SUMMARY
+
+      - name: Approve Pull Request
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr review ${{ github.event.pull_request.number }} --approve --body "Automated tests and full Antigravity code review passed with zero errors." || echo "Skipped approval (GitHub does not allow approving your own PR)."
+
