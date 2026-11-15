@@ -1,5 +1,5 @@
 fastapi>=0.100.0
-uvicorn>=0.22.0
+uvicorn>=0.54.0
 websockets>=17.2
 redis>=4.5.0
 google-cloud-aiplatform>=1.30.0
