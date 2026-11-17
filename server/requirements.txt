@@ -5,9 +5,9 @@ redis>=4.5.0
 google-cloud-aiplatform>=1.30.0
 numpy>=1.22.0
 scipy>=1.18.1
-pooltool>=0.3.0
+pooltool-billiards==0.4.0
 pydantic>=2.14.1
 PyJWT>=2.8.0
-psycopg2-binary>=2.9.0
-slowapi>=0.1.10
+psycopg2-binary>=2.9.13
+slowapi>=0.1.9
 pip-audit>=2.7.0
